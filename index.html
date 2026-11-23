@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>Зимний поход</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -464,6 +465,29 @@ main.wrap{padding-block:34px 40px}
 .foot{text-align:center;color:var(--snow-dim);font-size:13px;padding-block:28px 36px}
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--snow);color:var(--ink);padding:10px 16px;border-radius:99px;font-size:14px;font-weight:700;z-index:60;max-width:calc(100% - 32px);box-shadow:0 10px 30px rgba(0,0,0,.4)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+/* Телефон и Telegram: все остановки маршрута в один ряд, подписи календаря не наезжают */
+@media (max-width:720px){
+  .stops{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));overflow:visible;gap:2px;padding:8px 4px}
+  .stops li{flex:none;min-width:0}
+  .stop{padding:6px 2px;gap:4px}
+}
+@media (max-width:480px){
+  .stop .ic{width:38px;height:38px}
+  .stop .ic svg{width:20px;height:20px}
+  .stop .d{font-size:9.5px;letter-spacing:0}
+  .stop .n{font-size:10.5px;line-height:1.15;letter-spacing:-.01em;hyphens:auto;-webkit-hyphens:auto}
+  .stop .pr{font-size:10px}
+  .stop .ok{width:16px;height:16px;font-size:10px;right:-3px;top:-3px}
+  .cv-week{padding:4px 2px 0}
+  .cv-day .lb{visibility:hidden;overflow:visible;font-size:9px;letter-spacing:0}
+  .cv-day.on .lb{visibility:visible}
+}
+@media (max-width:350px){
+  .stop .n{font-size:9.5px}
+  .stop .ic{width:34px;height:34px}
+}
+html,body{overscroll-behavior-y:none}
+button,a,label{-webkit-tap-highlight-color:transparent}
 </style>
 </head>
 <body>
@@ -945,6 +969,20 @@ document.addEventListener('input',e=>{ if(e.target.matches&&e.target.matches('.f
 document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&e.target.matches&&e.target.matches('textarea.one')) e.preventDefault(); });
 new MutationObserver(()=>document.querySelectorAll('#day .f textarea').forEach(autosize)).observe(document.getElementById('day'),{childList:true});
 window.addEventListener('resize',()=>document.querySelectorAll('#day .f textarea').forEach(autosize));
+/* Telegram: раскрыть на весь экран, цвет шапки под ночное небо, не закрывать при прокрутке */
+const TG=window.Telegram&&window.Telegram.WebApp;
+if(TG){
+  try{
+    TG.ready();
+    TG.expand();
+    if(TG.isVersionAtLeast&&TG.isVersionAtLeast('6.1')){
+      TG.setHeaderColor('#0f1c33');
+      TG.setBackgroundColor('#0f1c33');
+    }
+    if(TG.isVersionAtLeast&&TG.isVersionAtLeast('7.10')&&TG.setBottomBarColor) TG.setBottomBarColor('#0f1c33');
+    if(TG.isVersionAtLeast&&TG.isVersionAtLeast('7.7')&&TG.disableVerticalSwipes) TG.disableVerticalSwipes();
+  }catch(e){}
+}
 load(); fromHash(); snowfall();
 if(S.storeErr==='blocked') toast('Этот браузер не сохраняет записи. Открой ссылку в обычном окне, не в инкогнито');
 })();
