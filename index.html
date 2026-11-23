@@ -512,7 +512,7 @@ body::before{height:max(env(safe-area-inset-top,0px),calc(var(--tg-safe-area-ins
 .btn.start{padding:13px 24px;font-size:16px;border-radius:99px;margin-top:4px}
 body.locked .btn.start{display:none}
 @media (max-width:700px){
-  .cover .wrap{padding-block:46px 22vw;gap:8px}
+  .cover .wrap{padding-block:46px calc(58.5vw - 30px);gap:8px}
   .cover h1{font-size:34px}
   .tframe{padding:18px 16px 16px;gap:8px}
   .promise{font-size:15px}
@@ -593,7 +593,7 @@ body.locked .btn.start{display:none}
 /* в Telegram нижнюю кнопку заменяет кнопка Telegram */
 body.tg .day-end{display:none}
 .gate.reg h2{margin:10px 0}
-.gate.reg a{color:var(--yellow);text-decoration:underline;text-underline-offset:5px;text-decoration-thickness:2px}
+.gate.reg a{color:var(--yellow);text-decoration:underline!important;cursor:pointer;text-underline-offset:5px;text-decoration-thickness:2px}
 .gate-cd span{font-size:12px;letter-spacing:0}
 .lt-addr span,.cv-rem .k{font-size:12px}
 .day-end{justify-content:flex-end}
@@ -608,8 +608,6 @@ body.tg .day-end{display:none}
   <div class="paper" aria-hidden="true"></div>
   <div class="wrap">
     <div class="tframe"><h1>зимний поход</h1><div class="sub"><mark>29.11 — 03.12</mark> пять остановок, чтобы найти свою историю и снять о ней ролик</div></div>
-    <p class="promise">Снять короткий ролик 30–60 секунд о себе — из того, что уже есть в телефоне, или из 5–7 новых кадров</p>
-    <button class="btn fire start" type="button" id="startBtn" data-start="1">Начать · 5 минут</button>
   </div>
 </header>
 
@@ -642,6 +640,7 @@ const CFG = {
   DAY3_URL: '',             // короткий разбор на день 3 (необязательно)
   EXP_URL: 'https://solopovafilmyourstory.com/home#rec826934466',
   EXP_START: '15 декабря',  // старт курса
+  TEST_OPEN: true,          // ТЕСТ: пока true — мини-апп открыт всем без проверки регистрации и без заглушки до 29.11. Перед запуском поставить false
   BOT_URL: 'https://t.me/alinasolopova_fys_bot',  // бот регистрации на мастер-класс
   CHECK_URL: 'https://wrhkgedbwgdjzcjtctcy.supabase.co/functions/v1/bot?check',  // проверка, зарегистрирована ли участница
   EXP_PRICE: '',            // цена или «спеццена для участников похода»
@@ -847,7 +846,7 @@ function syncDone(){ if(!D.done||typeof D.done!=='object') D.done={}; [0,1,2,3,4
 const EXP_OPEN=new Date('2026-12-03T18:00:00+01:00');
 const PREVIEW=/[?&]preview=1/.test(location.search);
 let ADMIN=false;   /* админ (по ответу CHECK_URL) видит всё, как с ?preview=1 */
-const expOpen=()=>PREVIEW||ADMIN||Date.now()>=EXP_OPEN.getTime()||dayDone(4);
+const expOpen=()=>PREVIEW||ADMIN||CFG.TEST_OPEN===true||Date.now()>=EXP_OPEN.getTime()||dayDone(4);
 const CAL_VIEW=[
   {img:'img/dna.jpg',cap:'сборы',what:'сборы',sub:'собираем рюкзак перед дорогой'},
   {img:'img/night.jpg',cap:'в путь',what:'съёмка',sub:'отправляемся в путь'},
@@ -927,12 +926,10 @@ function dnaBlock(){
       +fs('06','inspire','Кто тебя вдохновляет?',list('dna.inspire','режиссёры, авторы, музыка'))
     +'</section>';
 }
-const PROMISE='Снять короткий ролик 30–60 секунд о себе — из того, что уже есть в телефоне, или из 5–7 новых кадров.';
 function day0(){
   /* один факт вместо трёх; второй и третий показываем, только если они уже были заполнены раньше */
   const facts=[['me.f1','пишу письма себе в будущее'],['me.f2','собираю звуки городов на диктофон'],['me.f3','плачу на финальных титрах любых фильмов']].filter(([k],i)=>i===0||(getP(k)||'').trim()).map(([k,ph],i)=>'<textarea class="one" rows="1" data-b="'+k+'" placeholder="'+esc(ph)+'" aria-label="Факт '+(i+1)+'">'+esc(getP(k)||'')+'</textarea>').join('');
-  return '<p class="promise-d"><b>Цель похода:</b> '+esc(PROMISE)+'</p>'
-    +'<div class="grid">'+routeBlock()
+  return '<div class="grid">'+routeBlock()
     +'<section class="talk" id="s-kto"><span class="t-part">кто я</span><span class="t-time">займёт 5 минут</span><p class="t-lead">Мы начинаем создавать гениальные вещи, когда познаём свою внутреннюю глубину.</p>'
       +stp('01','Как тебя зовут?','',field('me.name','','имя'))
       +stp('02','Что о тебе знают немногие?','Один неочевидный факт, который отражает тебя больше всего.','<div class="f">'+facts+'</div>')
@@ -1272,7 +1269,7 @@ function cloudPull(){ const C=cs(); if(!C){ cloudReady=true; return; }
 }
 /* Заглушка до старта: до 29.11, 00:00 по Берлину вместо маршрута отсчёт. Для команды: добавить ?preview=1 к адресу */
 const HIKE_START=new Date('2026-11-29T00:00:00+01:00');
-const isLocked=()=>Date.now()<HIKE_START.getTime()&&!PREVIEW&&!ADMIN;
+const isLocked=()=>Date.now()<HIKE_START.getTime()&&!PREVIEW&&!ADMIN&&CFG.TEST_OPEN!==true;
 function gate(){
   document.body.classList.add('locked');
   $('#day').innerHTML='<section class="gate"><span class="k">старт 29.11 · 00:00 по Берлину</span><h2>До старта похода</h2>'
@@ -1295,7 +1292,9 @@ function gate(){
 function startApp(){ if(isLocked()){ if(!$('#gD')) gate(); tgButtons(); } else { document.body.classList.remove('locked'); fromHash(); } cloudPull(); }
 function regScreen(){
   ACCESS=false; document.body.classList.add('locked');
-  $('#day').innerHTML='<section class="gate reg"><h2>зарегистрироваться на мастер-класс по видео можно <a href="'+esc(CFG.BOT_URL)+'" target="_blank" rel="noopener noreferrer">в этом боте</a></h2></section>';
+  $('#day').innerHTML='<section class="gate reg"><h2>зарегистрироваться на мастер-класс по видео можно <a href="'+esc(CFG.BOT_URL)+'" target="_blank" rel="noopener noreferrer" id="botLink">в этом боте</a></h2></section>';
+  /* в Telegram открываем бота средствами Telegram, иначе — обычная ссылка */
+  const bl=$('#botLink'); if(bl) bl.addEventListener('click',e=>{ const W=window.Telegram&&window.Telegram.WebApp; if(W&&W.openTelegramLink&&(W.initData||(W.platform&&W.platform!=='unknown'))){ e.preventDefault(); e.stopPropagation(); try{ W.openTelegramLink(CFG.BOT_URL); }catch(err){ location.href=CFG.BOT_URL; } } });
   tgButtons();
 }
 function checkAccess(){
@@ -1312,7 +1311,7 @@ function checkAccess(){
     .catch(()=>{ clearTimeout(tm); regScreen(); });
 }
 load(); renderCover(); snowfall();
-if(PREVIEW){ ACCESS=true; startApp(); } else checkAccess();
+if(PREVIEW||CFG.TEST_OPEN===true){ ACCESS=true; startApp(); } else checkAccess();
 if(S.storeErr==='blocked') toast('Этот браузер не сохраняет записи. Открой ссылку в обычном окне, не в инкогнито');
 })();
 </script>
