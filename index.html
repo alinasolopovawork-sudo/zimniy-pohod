@@ -27,7 +27,7 @@
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 html{background:var(--night)}
-body{background-color:var(--night);background-image:radial-gradient(130% 70% at 50% 40%,transparent 55%,rgba(5,10,22,.45) 100%),url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='260' height='260'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .78  0 0 0 0 .74  0 0 0 0 .66  0 0 0 .2 0'/></filter><rect width='100%' height='100%' filter='url(%23g)'/></svg>");background-attachment:fixed,scroll;color:var(--snow);font-family:var(--f);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:clip}
+body{background-color:var(--night);background-image:radial-gradient(130% 70% at 50% 40%,transparent 55%,rgba(5,10,22,.45) 100%),url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='260' height='260'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .78  0 0 0 0 .74  0 0 0 0 .66  0 0 0 .2 0'/></filter><rect width='100%' height='100%' filter='url(%23g)'/></svg>");color:var(--snow);font-family:var(--f);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:clip}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:#0a1630}
 button,input,select,textarea{font:inherit;color:inherit}
 button{cursor:pointer}
@@ -69,7 +69,7 @@ button{cursor:pointer}
 
 /* route */
 .route{position:relative;z-index:2;margin-top:-62px}
-.stops{list-style:none;margin:0;padding:12px;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;background:rgba(15,28,51,.82);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--snow-line);border-radius:18px;position:relative}
+.stops{list-style:none;margin:0;padding:12px;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;background:var(--night);border:1px solid var(--snow-line);border-radius:18px;position:relative}
 .stop{border:0;background:transparent;color:var(--snow-dim);display:grid;justify-items:center;gap:6px;padding:10px 6px;border-radius:12px;text-align:center;width:100%;position:relative;z-index:1}
 .stop:hover{background:var(--snow-fill);color:var(--snow)}
 .stop .ic{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;background:var(--night-2);border:1.5px solid var(--snow-line);color:var(--snow);position:relative}
@@ -131,8 +131,8 @@ main.wrap{padding-block:34px 40px}
 @media (max-width:760px){ .sec-photo{height:230px;margin:-24px -18px 4px;border-radius:18px 18px 0 0} }
 /* photo sections: darkened where the text is, clear mountains in the open space at the bottom */
 .grid>.sec.ph{background-color:#0d1830;background-repeat:no-repeat;background-size:cover,cover;padding-bottom:190px;border-color:rgba(244,247,251,.1)}
-.grid>.sec.ph-sunset{background-image:linear-gradient(180deg,rgba(9,16,32,.84) 0%,rgba(9,16,32,.72) 45%,rgba(9,16,32,.2) 72%,rgba(9,16,32,0) 100%),url("img/sunset.jpg");background-position:center,center 60%}
-.grid>.sec.ph-night{background-image:linear-gradient(180deg,rgba(9,16,32,.82) 0%,rgba(9,16,32,.68) 45%,rgba(9,16,32,.15) 74%,rgba(9,16,32,0) 100%),url("img/night.jpg");background-position:center,center 52%}
+.grid>.sec.ph-sunset{background-image:linear-gradient(180deg,rgba(9,16,32,.84) 0%,rgba(9,16,32,.72) 45%,rgba(9,16,32,.2) 72%,rgba(9,16,32,0) 100%),url("img/sunset.jpg");background-image:linear-gradient(180deg,rgba(9,16,32,.84) 0%,rgba(9,16,32,.72) 45%,rgba(9,16,32,.2) 72%,rgba(9,16,32,0) 100%),image-set(url("img/sunset.webp") type("image/webp"),url("img/sunset.jpg") type("image/jpeg"));background-position:center,center 60%}
+.grid>.sec.ph-night{background-image:linear-gradient(180deg,rgba(9,16,32,.82) 0%,rgba(9,16,32,.68) 45%,rgba(9,16,32,.15) 74%,rgba(9,16,32,0) 100%),url("img/night.jpg");background-image:linear-gradient(180deg,rgba(9,16,32,.82) 0%,rgba(9,16,32,.68) 45%,rgba(9,16,32,.15) 74%,rgba(9,16,32,0) 100%),image-set(url("img/night.webp") type("image/webp"),url("img/night.jpg") type("image/jpeg"));background-position:center,center 52%}
 @media (max-width:760px){ .grid>.sec.ph{padding-bottom:150px} }
 .sec.wide .sec-h{grid-template-columns:auto minmax(0,1fr);column-gap:14px;align-items:center}
 .sec.wide .sec-h .ico{grid-row:span 2;margin:0}
@@ -295,8 +295,8 @@ main.wrap{padding-block:34px 40px}
 @media (max-width:480px){ .cv-app{border-radius:22px;box-shadow:0 0 0 5px #1a2742,0 22px 36px -20px rgba(0,0,0,.9)} .cv-top span{display:none} .cv-day .dn{width:36px;height:36px;font-size:16px} .cv-pol{width:35%;right:8px} .cv-clip{right:18px} .cv-note{font-size:20px} .cv-pol figcaption{font-size:16px} .cv-top b{font-size:19px} }
 
 /* campfire live reminder */
-.live{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:18px;align-items:center;margin:34px 0 8px;padding:30px 28px;border-radius:20px;min-height:280px;border:1px solid rgba(239,219,85,.35);background:linear-gradient(90deg,rgba(12,18,36,.88) 0%,rgba(12,18,36,.72) 45%,rgba(12,18,36,.25) 100%),linear-gradient(0deg,rgba(12,18,36,.55),transparent 55%),url('img/fire.jpg') center 82%/cover no-repeat}
-@media (max-width:600px){ .live{background:linear-gradient(180deg,rgba(12,18,36,.35) 0%,rgba(12,18,36,.85) 55%,rgba(12,18,36,.94) 100%),url('img/fire.jpg') 52% 85%/cover no-repeat;padding-top:150px;min-height:380px;align-content:end} }
+.live{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:18px;align-items:center;margin:34px 0 8px;padding:30px 28px;border-radius:20px;min-height:280px;border:1px solid rgba(239,219,85,.35);background:linear-gradient(90deg,rgba(12,18,36,.88) 0%,rgba(12,18,36,.72) 45%,rgba(12,18,36,.25) 100%),linear-gradient(0deg,rgba(12,18,36,.55),transparent 55%),url('img/fire.jpg') center 82%/cover no-repeat;background-image:linear-gradient(90deg,rgba(12,18,36,.88) 0%,rgba(12,18,36,.72) 45%,rgba(12,18,36,.25) 100%),linear-gradient(0deg,rgba(12,18,36,.55),transparent 55%),image-set(url('img/fire.webp') type('image/webp'),url('img/fire.jpg') type('image/jpeg'))}
+@media (max-width:600px){ .live{background:linear-gradient(180deg,rgba(12,18,36,.35) 0%,rgba(12,18,36,.85) 55%,rgba(12,18,36,.94) 100%),url('img/fire.jpg') 52% 85%/cover no-repeat;background-image:linear-gradient(180deg,rgba(12,18,36,.35) 0%,rgba(12,18,36,.85) 55%,rgba(12,18,36,.94) 100%),image-set(url('img/fire.webp') type('image/webp'),url('img/fire.jpg') type('image/jpeg'));padding-top:150px;min-height:380px;align-content:end} }
 .live-ic{width:58px;height:58px;border-radius:50%;background:var(--yellow);color:#23262d;display:grid;place-items:center}
 .live-ic svg{width:28px;height:28px}
 .live-t{display:grid;gap:4px;min-width:0}
@@ -503,17 +503,113 @@ body.locked{min-height:100vh}
   .gate-cd b{font-size:30px}
   .gate-cd span{font-size:9.5px}
 }
+/* ===== Доработки перед запуском ===== */
+:root{padding-top:max(env(safe-area-inset-top,0px),calc(var(--tg-safe-area-inset-top,0px) + var(--tg-content-safe-area-inset-top,0px)))}
+html{scroll-padding-top:max(env(safe-area-inset-top,0px),calc(var(--tg-safe-area-inset-top,0px) + var(--tg-content-safe-area-inset-top,0px)))}
+body::before{height:max(env(safe-area-inset-top,0px),calc(var(--tg-safe-area-inset-top,0px) + var(--tg-content-safe-area-inset-top,0px)))}
+/* обещание и кнопка «Начать» на обложке */
+.promise{margin:6px 0 0;max-width:40ch;font-size:16px;line-height:1.45;color:#eef2f8;text-shadow:0 2px 12px rgba(8,19,41,.6);text-wrap:balance}
+.btn.start{padding:13px 24px;font-size:16px;border-radius:99px;margin-top:4px}
+body.locked .btn.start{display:none}
+@media (max-width:700px){
+  .cover .wrap{padding-block:46px 22vw;gap:8px}
+  .cover h1{font-size:34px}
+  .tframe{padding:18px 16px 16px;gap:8px}
+  .promise{font-size:15px}
+  .route{margin-top:-10px}
+}
+/* маршрут: остановки в один ряд, без прокрутки */
+.stops{grid-template-columns:repeat(var(--n,6),minmax(0,1fr))}
+@media (max-width:720px){ .stops{grid-template-columns:repeat(var(--n,6),minmax(0,1fr))} }
+@media (max-width:480px){
+  .stops{padding:8px 2px}
+  .stop{padding:6px 1px}
+  .stop .ic{width:42px;height:42px}
+  .stop .ic svg{width:22px;height:22px}
+  .stop .d{font-size:12px;letter-spacing:-.02em}
+  .stop .n{font-size:12px;letter-spacing:-.02em;hyphens:none;-webkit-hyphens:none;white-space:nowrap}
+  .stop .pr{font-size:12px;letter-spacing:-.03em;white-space:nowrap}
+  .stops.six .stop .ic{width:38px;height:38px}
+  .stops.six .stop .pr{display:none}
+  .stops.six .stop .n{font-size:11px}
+  .cv-day .lb{display:none}
+}
+@media (max-width:350px){ .stop .ic{width:36px;height:36px} .stop .n,.stop .pr,.stop .d{font-size:11px} }
+.stop .pr{color:var(--snow-dim)}
+/* строка «что и сколько времени» под заголовком дня */
+.dh-time{display:flex;align-items:center;gap:8px;margin:0;font-family:var(--mono);font-size:13px;letter-spacing:.02em;text-transform:uppercase;color:var(--yellow)}
+.dh-time svg{width:16px;height:16px;flex:none}
+.promise-d{margin:0 0 22px;padding:12px 16px;border-left:3px solid var(--yellow);background:var(--snow-fill);border-radius:0 10px 10px 0;font-size:16px;color:var(--snow)}
+.t-time{justify-self:start;margin-top:10px;font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:.05em;background:var(--yellow);color:#23262d;padding:2px 8px}
+/* «Главное» и «Для смелых» в календаре */
+.cv-grp{font-family:var(--mono);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#7a7060;margin:2px 0 10px}
+.cv-ev .b b em{font-style:normal;font-weight:500;color:#8a7f69;white-space:nowrap}
+.fold>summary{list-style:none;cursor:pointer}
+.fold>summary::-webkit-details-marker{display:none}
+.cv-brave{margin-top:14px;border-top:1px dashed #cbbfa4;padding-top:10px}
+.cv-brave>summary{display:inline-flex;align-items:center;min-height:44px;font-weight:700;font-size:15px;color:var(--rose-deep)}
+.cv-brave[open]>summary{margin-bottom:8px}
+.cv-ok{font-size:13px;font-weight:600;color:#4b6328}
+.cv-acts{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:center}
+.cv-acts .cv-act{min-height:32px;display:inline-flex;align-items:center}
+/* свёрнутые шаги */
+.t-b>.fold>summary{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px}
+.t-b>.fold>summary::after{content:"↓";color:var(--yellow);font-size:18px;flex:none}
+.t-b>.fold[open]>summary::after{content:"↑"}
+.t-b>.fold>.in{display:grid;gap:10px;margin-top:10px}
+.fold.mini>summary{display:inline-flex;align-items:center;min-height:44px;color:var(--fire);font-weight:700;font-size:15px}
+.fold.mini>.in{display:grid;gap:10px;padding-top:4px}
+/* подсказки для идеи */
+.ichips{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.ichip{border:1px solid rgba(239,219,85,.5);background:transparent;color:var(--snow);border-radius:99px;padding:8px 14px;font-size:14px;min-height:40px;text-align:left}
+.ichip:hover{border-color:var(--yellow)}
+/* переключатель «Монтирую на» */
+.seg{display:inline-grid;grid-template-columns:1fr 1fr;border:1px solid var(--snow-line);border-radius:99px;padding:3px;gap:3px;justify-self:start}
+.seg button{border:0;background:transparent;color:var(--snow-dim);border-radius:99px;padding:9px 18px;font-weight:600;font-size:15px;min-height:44px}
+.seg button[aria-pressed="true"]{background:var(--yellow);color:#23262d}
+.howto{list-style:none;margin:0;padding:0;display:grid;gap:0;counter-reset:h}
+.howto li{counter-increment:h;display:grid;grid-template-columns:34px minmax(0,1fr);gap:10px;padding:12px 0;border-bottom:1px solid var(--snow-line);font-size:16px}
+.howto li::before{content:"0" counter(h);font-family:var(--mono);font-size:13px;color:var(--yellow);padding-top:3px}
+/* отправка ролика */
+.sendbox{display:grid;gap:12px}
+.sendbox .btn{justify-self:start}
+.boolrow{display:flex;gap:14px;align-items:center;min-height:44px;cursor:pointer;font-size:17px}
+.boolrow input{appearance:none;-webkit-appearance:none;width:24px;height:24px;border-radius:50%;border:1.5px solid rgba(244,247,251,.45);margin:0;flex:none;display:grid;place-items:center;cursor:pointer;background:transparent}
+.boolrow input:checked{background:var(--pine);border-color:var(--pine)}
+.boolrow input:checked::after{content:"";width:6px;height:11px;border:solid #fff;border-width:0 2px 2px 0;transform:translateY(-1px) rotate(45deg)}
+.live-meta{font-size:14px!important;color:var(--snow-dim)!important}
+.live-acts{display:grid;gap:8px;justify-items:start}
+.live-acts a,.live-acts .lk{color:var(--yellow);font-size:14px;font-weight:700;text-decoration:underline;text-underline-offset:3px;background:none;border:0;padding:0;min-height:32px;display:inline-flex;align-items:center;cursor:pointer}
+@media (max-width:600px){ .live-acts{grid-column:1/-1} }
+.lesson.razbor{background:linear-gradient(120deg,rgba(150,128,240,.28),rgba(30,55,100,.12))}
+.lesson .lt-hint{display:block;margin-top:4px;color:#dfe6f2;font-style:italic;font-size:15px}
+/* зоны нажатия не меньше 44 px */
+.lines li button{min-width:44px;min-height:44px;display:inline-grid;place-items:center;margin:-12px -10px -12px 0}
+.chip button{min-width:32px;min-height:32px}
+.sw .x,.ref .x{min-height:44px;min-width:44px}
+.ref .row{align-items:center}
+.task input,.cv-ev input,.checks input{position:relative}
+.task input::before,.cv-ev input::before{content:"";position:absolute;inset:-10px}
+/* в Telegram нижнюю кнопку заменяет кнопка Telegram */
+body.tg .day-end{display:none}
+.gate.reg h2{margin:10px 0}
+.gate.reg a{color:var(--yellow);text-decoration:underline;text-underline-offset:5px;text-decoration-thickness:2px}
+.gate-cd span{font-size:12px;letter-spacing:0}
+.lt-addr span,.cv-rem .k{font-size:12px}
+.day-end{justify-content:flex-end}
 </style>
 </head>
 <body>
 <header class="cover" id="cover">
   <svg id="land" viewBox="0 0 2000 667" preserveAspectRatio="xMidYMax slice" aria-hidden="true"></svg>
   <div class="photo" id="coverPhoto" hidden></div>
-  <img class="moon-m" src="img/moon.png" alt="" aria-hidden="true">
+  <picture><source srcset="img/moon.webp" type="image/webp"><img class="moon-m" src="img/moon.png" alt="" aria-hidden="true"></picture>
   <canvas id="snow" aria-hidden="true"></canvas>
   <div class="paper" aria-hidden="true"></div>
   <div class="wrap">
     <div class="tframe"><h1>зимний поход</h1><div class="sub"><mark>29.11 — 03.12</mark> пять остановок, чтобы найти свою историю и снять о ней ролик</div></div>
+    <p class="promise">Снять короткий ролик 30–60 секунд о себе — из того, что уже есть в телефоне, или из 5–7 новых кадров</p>
+    <button class="btn fire start" type="button" id="startBtn" data-start="1">Начать · 5 минут</button>
   </div>
 </header>
 
@@ -529,13 +625,37 @@ body.locked{min-height:100vh}
 
 <script>
 (function(){
-/* ===== Ссылки на уроки и эфир: вставь сюда, когда будут готовы ===== */
-const LESSON_1='';            // ссылка на YouTube, урок дня 1
-const LESSON_2='';            // ссылка на YouTube, урок дня 2
-const LIVE_URL='';            // ссылка на прямой эфир у костра
-const CHANNEL_URL='';         // ссылка на канал похода (Telegram и т.п.)
-const LIVE_TIME='';           // время эфира, например: '19:00 по Берлину'
-const LIVE_WHEN='';
+/* ===== НАСТРОЙКИ: всё, что нужно заполнить. Пустое значение = на сайте строки нет или «Время сообщим в канале» ===== */
+const CFG = {
+  CHANNEL_URL: 'https://t.me/+zEnjgArTqOxkMmVi',          // ссылка на канал похода (https://t.me/...)
+  LESSON_1_URL: '',         // видео урока 1 (Telegram-пост, Kinescope или VK Видео)
+  LESSON_2_URL: '',         // видео урока 2
+  LESSON_1_AT: '',          // когда откроется урок 1, время Берлина, например '2026-11-30T10:00'
+  LESSON_2_AT: '',          // когда откроется урок 2, например '2026-12-01T10:00'
+  LIVE_URL: '',             // ссылка на эфир
+  LIVE_DATE: '2026-12-03',
+  LIVE_TIME_MSK: '18:00',        // время эфира по Москве, например '21:00'
+  LIVE_TIME_BER: '16:00',        // время эфира по Берлину, например '19:00'
+  LIVE_DURATION: '',        // длительность эфира, например '60–90 минут'
+  LIVE_RECORDING: null,     // будет ли запись эфира: true / false (null = пока неизвестно, не показываем)
+  SUBMIT_URL: '',           // куда отправлять ролик: бот или чат (https://t.me/...)
+  DAY3_URL: '',             // короткий разбор на день 3 (необязательно)
+  EXP_URL: 'https://solopovafilmyourstory.com/home#rec826934466',
+  EXP_START: '15 декабря',  // старт курса
+  BOT_URL: 'https://t.me/alinasolopova_fys_bot',  // бот регистрации на мастер-класс
+  CHECK_URL: 'https://wrhkgedbwgdjzcjtctcy.supabase.co/functions/v1/bot?check',  // проверка, зарегистрирована ли участница
+  EXP_PRICE: '',            // цена или «спеццена для участников похода»
+  EXP_DEADLINE: '',         // до какой даты действует спеццена
+  LESSON_1_MIN: null, LESSON_2_MIN: null  // длительность уроков в минутах
+};
+const LESSON_1=CFG.LESSON_1_URL, LESSON_2=CFG.LESSON_2_URL, LIVE_URL=CFG.LIVE_URL, CHANNEL_URL=CFG.CHANNEL_URL;
+const MONTHS=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+/* «30 ноября в 10:00» из '2026-11-30T10:00'; без времени — дата дня похода */
+function atText(at,fallbackDay){ const m=/^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2}:\d{2}))?/.exec(at||''); if(m) return Number(m[3])+' '+MONTHS[Number(m[2])-1]+(m[4]?' в '+m[4]:''); const d=DATES[fallbackDay]; return d.d+' '+MONTHS[d.m]; }
+/* время эфира в двух поясах: «21:00 МСК / 19:00 Берлин» или '' */
+function liveTime(){ return [CFG.LIVE_TIME_MSK?CFG.LIVE_TIME_MSK+' МСК':'',CFG.LIVE_TIME_BER?CFG.LIVE_TIME_BER+' Берлин':''].filter(Boolean).join(' / '); }
+function liveDateText(){ const m=/^(\d{4})-(\d{2})-(\d{2})/.exec(CFG.LIVE_DATE||''); return m?Number(m[3])+' '+MONTHS[Number(m[2])-1]:'3 декабря'; }
+const LIVE_ABOUT='Разберём ролики участников и ответим на вопросы. Показывать свой ролик не обязательно — можно просто смотреть.';
 
 const STORE='creator-room-hike-v1', APP='creator-room-hike';
 const $=s=>document.querySelector(s);
@@ -557,6 +677,7 @@ const I={
   heart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7.5-4.5-9.3-9C1.4 7.6 3.6 4.5 7 4.5c2 0 3.6 1.1 5 2.8 1.4-1.7 3-2.8 5-2.8 3.4 0 5.6 3.1 4.3 6.5-1.8 4.5-9.3 9-9.3 9z"/></svg>',
   pen:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>',
   cam:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="13" height="11" rx="2"/><path d="M16 11l5-3v9l-5-3"/></svg>',
+  clock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
   star:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z"/></svg>'
 };
 
@@ -577,14 +698,20 @@ const DAYS=[
 ];
 
 const blank=()=>({me:{name:'',about:'',facts:[],f1:'',f2:'',f3:'',music:[],images:[],cover:''},dna:{colors:[],words:[],style:'',inspire:[],dreams:[]},
-  d0:{expect:'',hard:'',pack:{}},d1:{idea:'',show:'',shots:[],refs:[],notes:''},
-  d2:{start:'',middle:'',end:'',music:'',check:{},notes:''},d3:{reshoot:[],change:[],check:{},final:'',letter:'',letterTo:'',sealed:''},
-  d4:{questions:[],takeaway:''},exp:{claimed:false,no:''},done:{},tasks:{0:{},1:{},2:{},3:{},4:{}}});
+  d0:{expect:'',hard:'',pack:{},remind:false},d1:{idea:'',show:'',shots:[],refs:[],notes:''},
+  d2:{start:'',middle:'',end:'',music:'',check:{},notes:'',device:'phone'},d3:{reshoot:[],change:[],check:{},final:'',letter:'',letterTo:'',sealed:''},
+  d4:{questions:[],takeaway:'',reviewOk:false},exp:{claimed:false,no:''},done:{},tasks:{0:{},1:{},2:{},3:{},4:{}},updatedAt:0});
 let D=blank();
-const S={day:0,storeErr:''};
+const S={day:0,storeErr:'',open:{}};
+let ACCESS=null;   /* null — проверяем, true — пускаем, false — экран регистрации */
 
 /* ---------- storage ---------- */
-function merge(src){ const b=blank(); Object.keys(b).forEach(k=>{ if(src&&src[k]&&typeof src[k]==='object'&&!Array.isArray(src[k])) b[k]=Object.assign(b[k],src[k]); }); [0,1,2,3,4].forEach(i=>{ if(!b.tasks[i]||typeof b.tasks[i]!=='object') b.tasks[i]={}; }); return b; }
+/* старые отметки задач хранились по номеру строки — переносим их на новые ключи, старые не трогаем */
+const OLD_TASK_IDS=[['channel','name',null,'pack',null,'remind'],['lesson','idea','shots','refs','shoot5'],['lesson',null,'struct',null,'draft'],['review','reshoot','polish','link','evening','letter'],[null,'questions','live','takeaway']];
+function merge(src){ const b=blank(); Object.keys(b).forEach(k=>{ if(src&&src[k]&&typeof src[k]==='object'&&!Array.isArray(src[k])) b[k]=Object.assign(b[k],src[k]); }); [0,1,2,3,4].forEach(i=>{ if(!b.tasks[i]||typeof b.tasks[i]!=='object') b.tasks[i]={}; });
+  b.updatedAt=Number(src&&src.updatedAt)||0;
+  [0,1,2,3,4].forEach(n=>{ const t=b.tasks[n]; OLD_TASK_IDS[n].forEach((id,i)=>{ if(id&&t[i]===true&&t[id]===undefined) t[id]=true; }); });
+  return b; }
 function load(){
   let raw=null;
   try{ raw=localStorage.getItem(STORE); localStorage.setItem(STORE+'-p','1'); localStorage.removeItem(STORE+'-p'); }catch(e){ S.storeErr='blocked'; }
@@ -592,6 +719,7 @@ function load(){
   try{ const d=Number(localStorage.getItem(STORE+'-day')); if(d>=0&&d<=5) S.day=d; }catch(e){}
 }
 function persist(){
+  syncDone(); D.updatedAt=Date.now(); cloudSoon();
   try{ localStorage.setItem(STORE,JSON.stringify({app:APP,v:1,data:D})); return true; }
   catch(e){ if(S.storeErr!=='blocked') toast('В браузере закончилось место. Убери пару картинок.'); return false; }
 }
@@ -632,24 +760,29 @@ function landscape(mi){
     +'<linearGradient id="tSunrise" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a3f7a" stop-opacity=".2"/><stop offset=".55" stop-color="#d98aa6"/><stop offset="1" stop-color="#ffc59a"/></linearGradient>'
     +'<linearGradient id="tSunset" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a1f55" stop-opacity=".2"/><stop offset=".5" stop-color="#b44a6e"/><stop offset="1" stop-color="#ff9a4a"/></linearGradient>'
     +'<radialGradient id="tFire" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ffa646" stop-opacity=".6"/><stop offset="1" stop-color="#ffa646" stop-opacity="0"/></radialGradient></defs>'
-    +'<image id="landImg" href="img/hero.jpg" x="0" y="0" width="'+W+'" height="'+H+'" preserveAspectRatio="xMidYMid slice"/>'
+    +'<image id="landImg" href="img/hero'+(WEBP?'.webp':'.jpg')+'" x="0" y="0" width="'+W+'" height="'+H+'" preserveAspectRatio="xMidYMid slice"/>'
     +TINTS[d]
     +'<path d="'+path+'" fill="none" stroke="#efdb55" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="1 0" opacity=".95"/>'
     +pin(pts[0][0],pts[0][1])+pin(pts[pts.length-1][0],pts[pts.length-1][1]);
   fitLand();
 }
-function fitLand(){ const el=$('#land'); if(!el) return; const narrow=window.matchMedia&&matchMedia('(max-width:700px)').matches; el.setAttribute('viewBox',narrow?'860 0 1140 667':'0 0 2000 667'); const im=document.getElementById('landImg'); if(im) im.setAttribute('href',narrow?'img/hero-m.jpg':'img/hero.jpg'); }
+function fitLand(){ const el=$('#land'); if(!el) return; const narrow=window.matchMedia&&matchMedia('(max-width:700px)').matches; el.setAttribute('viewBox',narrow?'860 0 1140 667':'0 0 2000 667'); const im=document.getElementById('landImg'); if(im) im.setAttribute('href','img/'+(narrow?'hero-m':'hero')+(WEBP?'.webp':'.jpg')); }
+/* WebP, если браузер умеет; иначе JPG */
+let WEBP=false;
+(function(){ const t=new Image(); t.onload=()=>{ if(t.width>0){ WEBP=true; fitLand(); } }; t.src='data:image/webp;base64,UklGRhoAAABXRUJQVlA4TA0AAAAvAAAAEAcQERGIiP4HAA=='; })();
 window.addEventListener('resize',fitLand);
 function snowfall(){
   const c=$('#snow'), x=c.getContext&&c.getContext('2d'); if(!x) return;
   const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  /* слабые устройства: снег стоит на месте, без анимации */
+  const weak=(navigator.hardwareConcurrency&&navigator.hardwareConcurrency<=4)||(TG&&TG.platform==='android'&&reduce);
   let w=0,h=0,fl=[];
   function size(){ const r=c.getBoundingClientRect(), dpr=Math.min(2,window.devicePixelRatio||1); w=r.width; h=r.height; c.width=w*dpr; c.height=h*dpr; x.setTransform(dpr,0,0,dpr,0,0);
     const n=Math.round(w*h/9000); fl=Array.from({length:n},()=>({x:Math.random()*w,y:Math.random()*h,r:.6+Math.random()*1.8,s:.25+Math.random()*.7,d:Math.random()*6.28})); }
   function draw(){ x.clearRect(0,0,w,h); x.fillStyle='rgba(255,255,255,.85)'; fl.forEach(f=>{ x.globalAlpha=.35+f.r/4; x.beginPath(); x.arc(f.x,f.y,f.r,0,6.29); x.fill(); }); x.globalAlpha=1; }
   function tick(){ fl.forEach(f=>{ f.y+=f.s; f.d+=.01; f.x+=Math.sin(f.d)*.3; if(f.y>h+4){ f.y=-4; f.x=Math.random()*w; } }); draw(); if(!document.hidden) raf=requestAnimationFrame(tick); else raf=0; }
   let raf=0; size(); window.addEventListener('resize',size);
-  if(reduce){ draw(); return; }
+  if(reduce||weak){ draw(); return; }
   document.addEventListener('visibilitychange',()=>{ if(!document.hidden&&!raf) raf=requestAnimationFrame(tick); });
   raf=requestAnimationFrame(tick);
 }
@@ -658,35 +791,40 @@ function snowfall(){
 const field=(path,label,ph,area)=>'<div class="f"><label for="b-'+path+'">'+label+'</label>'+(area||(ph&&ph.length>12)?'<textarea id="b-'+path+'" data-b="'+path+'" rows="1" class="'+(area?'':'one')+'" placeholder="'+esc(ph||'')+'">'+esc(getP(path)||'')+'</textarea>':'<input id="b-'+path+'" data-b="'+path+'" value="'+esc(getP(path)||'')+'" placeholder="'+esc(ph||'')+'">')+'</div>';
 const list=(path,ph)=>{ const L=getP(path)||[]; return (L.length?'<ul class="lines">'+L.map((v,i)=>'<li><span>'+esc(v)+'</span><button type="button" data-dellist="'+path+'" data-i="'+i+'" aria-label="Убрать">×</button></li>').join('')+'</ul>':'')+'<form class="addrow" data-addlist="'+path+'"><input class="inp" placeholder="'+esc(ph)+'" aria-label="'+esc(ph)+'"><button class="btn sm" type="submit">Добавить</button></form>'; };
 const checks=(path,items)=>{ const st=getP(path)||{}, n=items.filter((_,i)=>st[i]).length; return '<div class="checks">'+items.map((t,i)=>'<label class="'+(st[i]?'on':'')+'"><input type="checkbox" data-check="'+path+'" data-i="'+i+'"'+(st[i]?' checked':'')+'><span>'+esc(t)+'</span></label>').join('')+'</div><span class="prog">'+n+' из '+items.length+'</span>'; };
-const SID={'Кто я':'s-kto','Моя творческая ДНК':'s-dna','С чем я выхожу в путь':'s-put','Моя идея':'s-idea','Кадры, которые я сниму':'s-kadry','Референсы':'s-refs','Мысли по дороге':'s-mysli','Структура истории':'s-struct','Чек-лист монтажа':'s-mont','Что хочу доснять':'s-dosn','Что поменять в монтаже':'s-pomen','Утро: ролик готов':'s-final','Мой ролик':'s-rolik','Вопросы к эфиру':'s-vopr','Что я забираю с собой':'s-zab'};
+const SID={'Кто я':'s-kto','Моя творческая ДНК':'s-dna','Как собрать черновик':'s-draft','С чем я выхожу в путь':'s-put','Моя идея':'s-idea','Кадры, которые я сниму':'s-kadry','Референсы':'s-refs','Мысли по дороге':'s-mysli','Структура истории':'s-struct','Чек-лист монтажа':'s-mont','Что хочу доснять':'s-dosn','Что поменять в монтаже':'s-pomen','Утро: ролик готов':'s-final','Мой ролик':'s-rolik','Вопросы к эфиру':'s-vopr','Что я забираю с собой':'s-zab'};
+/* Задачи: id — ключ отметки, m — сколько времени, opt:1 — «Для смелых» (не входит в счётчик) */
+const minTxt=v=>v?v+' мин':'';
 const TASKS=[
- [{t:'Присоединиться к каналу похода',s:'Там будут ссылки на уроки, эфир и общение с другими участниками.',link:'channel'},
-  {t:'Понять, кто я',s:'Имя и три неочевидных факта о себе, которые отражают тебя больше всего.',go:'s-kto'},
-  {t:'Собрать свою творческую ДНК',s:'Картинки и музыка, в которых узнаёшь себя: места, где тебе хорошо, любимый свет и цвета, вещи с историей, близкие люди, кадры из фильмов. Плюс свои цвета, стиль и видео, которые мечтаешь снимать.',go:'s-dna'},
-  {t:'Собрать рюкзак',s:'Зарядить телефон, освободить память, найти наушники или микрофон.'},
-  {t:'Подготовиться к первому уроку',s:'Выбери на завтра время, когда тебя никто не отвлечёт, и найди тихое место.'},
-  {t:'Поставить напоминание об эфире у костра',s:'3 декабря, четверг'+(LIVE_TIME?', '+LIVE_TIME:'')+'. Здесь мы вместе посмотрим ваши ролики.',live:1}],
- [{t:'Посмотреть урок 1',s:'Про идею и поиск своей интонации.',link:'l1'},
-  {t:'Записать идею своего ролика',s:'О чём он и что ты хочешь показать о себе.',go:'s-idea'},
-  {t:'Составить список кадров',s:'Что хочется поймать в кадр.',go:'s-kadry'},
-  {t:'Собрать 3–5 референсов',s:'Ролики, кадры, свет и музыка для настроения.',go:'s-refs'},
-  {t:'Снять первые кадры',s:'Не жди идеального момента: начни с того, что рядом.'}],
- [{t:'Посмотреть урок 2',s:'Про монтаж.',link:'l2'},
-  {t:'Отобрать лучшие кадры',s:'Оставь только то, что работает на историю.',go:'s-mont'},
-  {t:'Продумать структуру',s:'Начало, середина и финал.',go:'s-struct'},
-  {t:'Выбрать музыку',s:'Трек, который передаёт твоё настроение.',go:'s-mont'},
-  {t:'Собрать черновой монтаж',s:'Пусть неидеально, главное — целиком.',go:'s-mont'}],
- [{t:'Пересмотреть черновик свежим взглядом',s:'Лучше утром или после перерыва.'},
-  {t:'Доснять недостающие кадры',s:'Всё, чего не хватило истории.',go:'s-dosn'},
-  {t:'Доработать монтаж',s:'Звук, цвет, титры, ритм.',go:'s-pomen'},
-  {t:'Сохранить финальную версию и вставить ссылку',s:'Чтобы показать ролик у костра.',go:'s-final'},
-  {t:'Завтра эфир у костра — освободить вечер',s:'3 декабря'+(LIVE_TIME?', '+LIVE_TIME:'')+'. Приходи с готовым роликом.',live:1},
-  {t:'Написать письмо себе в будущее',s:'Запечатай его — оно откроется 25 февраля.',go:'s-letter'}],
- [{t:'Подготовить ссылку на свой ролик',go:'s-rolik'},
-  {t:'Записать вопросы к эфиру',s:'Что хочется спросить или обсудить.',go:'s-vopr'},
-  {t:'Прийти на эфир у костра',link:'live'},
-  {t:'Записать, что забираю с собой из похода',go:'s-zab'}]
+ [{id:'channel',t:'Присоединиться к каналу похода',s:'Там будут ссылки на уроки, эфир и общение с другими участниками.',link:'channel',m:'1 мин'},
+  {id:'name',t:'Написать имя и один факт о себе',s:'Что о тебе знают немногие?',go:'s-kto',m:'2 мин'},
+  {id:'pack',t:'Собрать рюкзак',s:'Зарядить телефон и освободить память. И выбери на завтра время, когда тебя никто не отвлечёт, и найди тихое место.',m:'1 мин'},
+  {id:'remind',t:'Поставить напоминание об эфире у костра',s:liveDateText()+', четверг'+(liveTime()?', '+liveTime():'')+'. Здесь мы вместе посмотрим ваши ролики.',live:1,remind:1,m:'1 мин'}],
+ [{id:'lesson',t:'Посмотреть урок 1',s:'Про идею и поиск своей интонации.',link:'l1',m:minTxt(CFG.LESSON_1_MIN)},
+  {id:'idea',t:'Записать идею в одном предложении',s:'О чём ролик и что ты хочешь показать о себе.',go:'s-idea',m:'5 мин'},
+  {id:'shoot5',t:'Снять 5 кадров',s:'Не жди идеального момента: начни с того, что рядом.',m:'10 мин'},
+  {id:'shots',t:'Составить список кадров',s:'Что хочется поймать в кадр.',go:'s-kadry',opt:1},
+  {id:'refs',t:'Собрать 3–5 референсов',s:'Ролики, кадры, свет и музыка для настроения.',go:'s-refs',opt:1},
+  {id:'notes',t:'Мысли по дороге',s:'Всё, что приходит в голову после урока.',go:'s-mysli',opt:1},
+  {id:'dna',t:'Собрать свою творческую ДНК',s:'Картинки и музыка, в которых узнаёшь себя, свои цвета, стиль и видео, которые мечтаешь снимать.',go:'s-dna',opt:1},
+  {id:'three',t:'Сними одну сцену тремя планами: общий, средний, крупный',s:'Челлендж для тех, кто уже снимает.',opt:1}],
+ [{id:'lesson',t:'Посмотреть урок 2',s:'Про монтаж.',link:'l2',m:minTxt(CFG.LESSON_2_MIN)},
+  {id:'draft',t:'Собрать черновик из 5–7 кадров под одну музыку',s:'Пусть неидеально, главное — целиком.',go:'s-draft',m:'20 мин'},
+  {id:'struct',t:'Продумать структуру',s:'Начало, середина и финал.',go:'s-struct',opt:1},
+  {id:'check',t:'Пройти полный чек-лист монтажа',s:'Звук, титры, цвет.',go:'s-mont',opt:1},
+  {id:'nomusic',t:'Смонтируй версию без музыки, только на живом звуке',s:'Челлендж для тех, кто уже монтирует.',opt:1}],
+ [{id:'review',t:'Пересмотреть черновик свежим взглядом',s:'Лучше утром или после перерыва.',go:'s-razbor',m:'5 мин'},
+  {id:'reshoot',t:'При желании доснять один кадр',s:'Тот, которого не хватило истории.',go:'s-dosn',m:'5 мин'},
+  {id:'send',t:'Отправить ролик',s:'Видеофайлом, прямо из галереи.',go:'s-final',m:'5 мин'},
+  {id:'polish',t:'Доработать монтаж',s:'Звук, цвет, титры, ритм.',go:'s-pomen',opt:1},
+  {id:'letter',t:'Написать письмо себе в будущее',s:'Запечатай его — оно откроется 25 февраля.',go:'s-letter',opt:1},
+  {id:'link',t:'Дать ссылку на ролик',s:'Если хочешь показать его ссылкой.',go:'s-final',opt:1},
+  {id:'evening',t:'Завтра эфир у костра — освободить вечер',s:liveDateText()+(liveTime()?', '+liveTime():'')+'. Приходи с готовым роликом.',live:1,opt:1}],
+ [{id:'live',t:'Прийти на эфир у костра',link:'live',m:CFG.LIVE_DURATION||''},
+  {id:'questions',t:'Записать вопросы к эфиру',s:'Что хочется спросить или обсудить.',go:'s-vopr',m:'5 мин'},
+  {id:'takeaway',t:'Записать, что забираю с собой из похода',go:'s-zab',opt:1}]
 ];
+const MAIN=n=>TASKS[n].filter(k=>!k.opt);
+const OPT=n=>TASKS[n].filter(k=>k.opt);
 const NOTES={
   1:{title:'Как найти свою идею',tips:[
     ['Начни с себя','Вспомни три момента, когда тебе было по-настоящему хорошо. В них уже есть твоя история.'],
@@ -701,17 +839,14 @@ const NOTES={
 };
 const LINKS={channel:()=>CHANNEL_URL,l1:()=>LESSON_1,l2:()=>LESSON_2,live:()=>LIVE_URL};
 const LINK_TXT={channel:'Открыть канал ↗',l1:'Смотреть урок ↗',l2:'Смотреть урок ↗',live:'Перейти в эфир ↗'};
-const LINK_WAIT={channel:'ссылка появится скоро',l1:'урок появится в день урока',l2:'урок появится в день урока',live:'ссылка появится в день эфира'};
-const tasksDone=n=>TASKS[n].filter((_,i)=>D.tasks[n]&&D.tasks[n][i]).length;
-function tasksBlock(n){
-  const st=D.tasks[n]||{};
-  const rows=TASKS[n].map((k,i)=>{ const on=!!st[i]; let act='';
-    if(k.link){ const u=okUrl(LINKS[k.link]()); act=u?'<a class="go" href="'+esc(u)+'" target="_blank" rel="noopener noreferrer">'+LINK_TXT[k.link]+'</a>':'<span class="wait">'+LINK_WAIT[k.link]+'</span>'; }
-    else if(k.go) act='<button class="go" type="button" data-go="'+k.go+'">перейти ↓</button>';
-    return '<div class="task'+(on?' on':'')+'"><input type="checkbox" id="t'+n+'-'+i+'" data-check="tasks.'+n+'" data-i="'+i+'"'+(on?' checked':'')+'><label for="t'+n+'-'+i+'"><span class="tt">'+esc(k.t)+'</span>'+(k.s?'<span class="ts">'+esc(k.s)+'</span>':'')+'</label>'+act+'</div>'; }).join('');
-  const d=tasksDone(n), all=TASKS[n].length;
-  return '<section class="sec tasks-sec ph ph-sunset"><div class="sec-h"><span class="ico">'+I.list+'</span><h3>Задачи дня</h3><p>'+(d===all?'Всё сделано. Можно отмечать день пройденным.':'Сделано '+d+' из '+all+'. Отмечай по ходу дня.')+'</p></div><div class="sec-b"><div class="tasks">'+rows+'</div></div></section>';
-}
+const LINK_WAIT={channel:()=>'ссылка на канал будет здесь',l1:()=>'урок откроется здесь '+atText(CFG.LESSON_1_AT,1),l2:()=>'урок откроется здесь '+atText(CFG.LESSON_2_AT,2),live:()=>'ссылка будет здесь '+liveDateText()+(liveTime()?', '+liveTime():'')};
+const tasksDone=n=>MAIN(n).filter(k=>D.tasks[n]&&D.tasks[n][k.id]).length;
+const dayDone=n=>MAIN(n).every(k=>D.tasks[n]&&D.tasks[n][k.id]);
+/* «День пройден» больше не отмечается вручную: день пройден, когда сделано всё главное */
+function syncDone(){ if(!D.done||typeof D.done!=='object') D.done={}; [0,1,2,3,4].forEach(n=>{ D.done[n]=dayDone(n); }); }
+const EXP_OPEN=new Date('2026-12-03T18:00:00+01:00');
+const PREVIEW=/[?&]preview=1/.test(location.search);
+const expOpen=()=>PREVIEW||Date.now()>=EXP_OPEN.getTime()||dayDone(4);
 const CAL_VIEW=[
   {img:'img/dna.jpg',cap:'сборы',what:'сборы',sub:'собираем рюкзак перед дорогой'},
   {img:'img/night.jpg',cap:'в путь',what:'съёмка',sub:'отправляемся в путь'},
@@ -719,24 +854,40 @@ const CAL_VIEW=[
   {img:'img/night.jpg',cap:'ночёвка',what:'доработка',sub:'остаёмся на ночёвку и доделываем ролик'},
   {img:'img/sunset.jpg',cap:'у костра',what:'эфир',sub:'встречаемся у костра'}
 ];
+/* свёрнутый блок; открытость помним, чтобы он не закрывался после каждой отметки */
+const fold=(key,cls,summary,body,openDef)=>{ const o=S.open[key]!=null?S.open[key]:!!openDef; return '<details class="fold '+cls+'" data-fold="'+key+'"'+(o?' open':'')+'><summary>'+summary+'</summary><div class="in">'+body+'</div></details>'; };
+/* напоминание об эфире: бот (через разрешение Telegram) + файл для календаря */
+const canRemind=()=>!!(inTG&&TG.requestWriteAccess&&TG.isVersionAtLeast&&TG.isVersionAtLeast('6.9'));
+function liveStartUTC(){ const m=/^(\d{4})-(\d{2})-(\d{2})/.exec(CFG.LIVE_DATE||''); if(!m) return null; const t=CFG.LIVE_TIME_BER||CFG.LIVE_TIME_MSK; if(!t) return {date:m[1]+m[2]+m[3]}; const off=CFG.LIVE_TIME_BER?'+01:00':'+03:00'; const d=new Date(m[1]+'-'+m[2]+'-'+m[3]+'T'+t+':00'+off); if(isNaN(d)) return {date:m[1]+m[2]+m[3]}; const z=d.toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,''); return {utc:z}; }
+function icsHref(){ const st=liveStartUTC(); if(!st) return ''; const L=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Film Your Story//Zimniy pohod//RU','BEGIN:VEVENT','UID:koster-'+(st.utc||st.date)+'@filmyourstory','DTSTAMP:'+new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,''),
+    st.utc?'DTSTART:'+st.utc:'DTSTART;VALUE=DATE:'+st.date,'SUMMARY:Эфир у костра · Зимний поход','DESCRIPTION:'+LIVE_ABOUT+(okUrl(LIVE_URL)?' '+LIVE_URL:'')];
+  if(st.utc) L.push('BEGIN:VALARM','ACTION:DISPLAY','DESCRIPTION:Эфир у костра','TRIGGER:-P1D','END:VALARM','BEGIN:VALARM','ACTION:DISPLAY','DESCRIPTION:Эфир у костра','TRIGGER:-PT1H','END:VALARM');
+  L.push('END:VEVENT','END:VCALENDAR'); return 'data:text/calendar;charset=utf-8,'+encodeURIComponent(L.join('\r\n')); }
+function gcalHref(){ const st=liveStartUTC(); if(!st) return ''; const d=st.utc?st.utc+'/'+st.utc:st.date+'/'+st.date; return 'https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent('Эфир у костра · Зимний поход')+'&dates='+d+'&details='+encodeURIComponent(LIVE_ABOUT); }
+function remindCtl(cls){ const ics=icsHref(), cal=ics?'<a class="'+cls+'" href="'+ics+'" download="koster.ics" data-ics="1">Добавить в календарь</a>':'';
+  if(D.d0.remind) return '<span class="cv-ok">Напомним за сутки и за час до эфира</span>'+cal;
+  return (canRemind()?'<button class="'+cls+'" type="button" data-remind="1">Напомнить об эфире</button>':'')+cal; }
+function evRow(c,k,i){ const st=D.tasks[c]||{}; let act='';
+  if(k.remind) act='<span class="cv-acts">'+remindCtl('cv-act')+'</span>';
+  else if(k.link){ const u=okUrl(LINKS[k.link]()); act=u?'<a class="cv-act" href="'+esc(u)+'" target="_blank" rel="noopener noreferrer">'+LINK_TXT[k.link]+'</a>':'<span class="cv-wait">'+esc(LINK_WAIT[k.link]())+'</span>'; }
+  else if(k.go&&c===S.day) act='<button class="cv-act" type="button" data-go="'+k.go+'">перейти ↓</button>';
+  if(k.live&&!act) act='<span class="cv-fire">🔥 3.12</span>';
+  return '<div class="cv-ev'+(i===0&&!k.opt?' pink':'')+(k.live?' fire':'')+(st[k.id]?' ok':'')+'"><input type="checkbox" id="cv'+c+'-'+k.id+'" data-check="tasks.'+c+'" data-i="'+k.id+'"'+(st[k.id]?' checked':'')+' aria-label="Готово: '+esc(k.t)+'"><div class="b"><label for="cv'+c+'-'+k.id+'"><b>'+esc(k.t)+(k.m?' <em>· '+esc(k.m)+'</em>':'')+'</b>'+(k.s?'<span>'+esc(k.s)+'</span>':'')+'</label>'+act+'</div></div>'; }
 function routeBlock(){
   if(S.calSel==null) S.calSel=S.day;
   const c=S.calSel, today=realToday(), nums=[29,30,1,2,3,4,5], wd=['вс','пн','вт','ср','чт','пт','сб'];
   const week=wd.map(w=>'<div class="cv-wd">'+w+'</div>').join('')+nums.map((n,i)=>i<5
-    ?'<button class="cv-day'+(c===i?' on':'')+(today===i?' today':'')+(D.done[i]?' done':'')+'" type="button" data-cal="'+i+'" aria-label="День '+i+', '+CAL_VIEW[i].what+'"><span class="dn">'+n+'</span><span class="lb">'+CAL_VIEW[i].what+'</span></button>'
+    ?'<button class="cv-day'+(c===i?' on':'')+(today===i?' today':'')+(dayDone(i)?' done':'')+'" type="button" data-cal="'+i+'" aria-label="День '+i+', '+CAL_VIEW[i].what+'"><span class="dn">'+n+'</span><span class="lb">'+CAL_VIEW[i].what+'</span></button>'
     :'<div class="cv-day off" aria-hidden="true"><span class="dn">'+n+'</span><span class="lb">&nbsp;</span></div>').join('');
-  const st=D.tasks[c]||{}, v=CAL_VIEW[c], d=DAYS[c];
-  const evs=TASKS[c].map((k,i)=>{ let act='';
-    if(k.link){ const u=okUrl(LINKS[k.link]()); act=u?'<a class="cv-act" href="'+esc(u)+'" target="_blank" rel="noopener noreferrer">'+LINK_TXT[k.link]+'</a>':'<span class="cv-wait">'+LINK_WAIT[k.link]+'</span>'; }
-    else if(k.go&&c===S.day) act='<button class="cv-act" type="button" data-go="'+k.go+'">перейти ↓</button>';
-    if(k.live&&!act) act='<span class="cv-fire">🔥 3.12</span>';
-    return '<div class="cv-ev'+(i===0?' pink':'')+(k.live?' fire':'')+(st[i]?' ok':'')+'"><input type="checkbox" id="cv'+c+'-'+i+'" data-check="tasks.'+c+'" data-i="'+i+'"'+(st[i]?' checked':'')+' aria-label="Готово: '+esc(k.t)+'"><div class="b"><label for="cv'+c+'-'+i+'"><b>'+esc(k.t)+'</b>'+(k.s?'<span>'+esc(k.s)+'</span>':'')+'</label>'+act+'</div></div>'; }).join('');
+  const v=CAL_VIEW[c], main=MAIN(c), opt=OPT(c), lt=liveTime();
+  const evs='<div class="cv-grp">Главное</div>'+main.map((k,i)=>evRow(c,k,i)).join('')
+    +(opt.length?fold('opt'+c,'cv-brave','Для смелых ↓',opt.map((k,i)=>evRow(c,k,i)).join('')):'');
   return '<section class="cv-sec"><h3 class="cv-title">Что нас ждёт</h3>'
     +'<div class="cv-app"><div class="cv-top"><b>Ноябрь <i>·</i> Декабрь</b></div>'
     +'<div class="cv-week">'+week+'</div>'
-    +'<div class="cv-head">День '+c+' · '+v.what+'<small>'+v.sub+(today===c?' · сегодня':'')+'</small><span class="cv-prog">'+tasksDone(c)+' из '+TASKS[c].length+' задач готово</span></div>'
+    +'<div class="cv-head">День '+c+' · '+v.what+'<small>'+v.sub+(today===c?' · сегодня':'')+'</small><span class="cv-prog">'+tasksDone(c)+' из '+main.length+' главных готово</span></div>'
     +'<div class="cv-view">'+evs
-    +(c===1||c===2?'<div class="cv-rem"><span class="bell" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg></span><div><span class="k">напоминание</span><b>Эфир у костра · 3 декабря, чт'+(LIVE_TIME?' · '+esc(LIVE_TIME):'')+'</b><span>'+(c===1?'через 3 дня':'через 2 дня')+' смотрим ваши ролики вместе</span></div></div>':'')
+    +(c===1||c===2?'<div class="cv-rem"><span class="bell" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg></span><div><span class="k">напоминание</span><b>Эфир у костра · '+liveDateText()+', чт'+(lt?' · '+esc(lt):'')+'</b><span>'+(c===1?'через 3 дня':'через 2 дня')+' разбираем ролики и отвечаем на вопросы'+(CFG.LIVE_DURATION?' · '+esc(CFG.LIVE_DURATION):'')+(CFG.LIVE_RECORDING===true?' · будет запись':'')+(lt?'':' · время сообщим в канале')+'</span></div></div>':'')
     +'</div>'
     +(c===S.day?'':'<div class="cv-foot"><button class="cv-go" type="button" data-day="'+c+'">Открыть день '+c+' →</button></div>')
     +'</div></section>';
@@ -745,50 +896,107 @@ const NIGHT=['s-kto','s-idea','s-struct','s-dosn','s-rolik'];
 const PHOTO={};
 const SUNSET=['s-dna'];
 const card=(icon,title,lead,body)=>'<section class="talk" id="'+(SID[title]||'')+'"><span class="t-part">'+esc(title)+'</span>'+(lead?'<p class="t-lead">'+esc(lead)+'</p>':'')+'<div class="t-plain">'+body+'</div></section>';
-function lessonCard(url,title,note,fire){
+function lessonCard(url,title,note,fire,wait){
   const u=okUrl(url);
-  return '<div class="lesson'+(fire?' fire':'')+'" id="lesson"><span class="play">'+(fire?I.fire:I.play)+'</span><div><b>'+esc(title)+'</b><span>'+esc(u?note:(fire?'Ссылка появится здесь в день эфира':'Ссылка появится здесь в день урока'))+'</span></div>'+(u?'<a class="btn '+(fire?'fire':'snow')+'" href="'+esc(u)+'" target="_blank" rel="noopener noreferrer">'+(fire?'Перейти в эфир ↗':'Смотреть урок ↗')+'</a>':'<span class="btn off">Скоро</span>')+'</div>';
+  return '<div class="lesson'+(fire?' fire':'')+'" id="lesson"><span class="play">'+(fire?I.fire:I.play)+'</span><div><b>'+esc(title)+'</b><span>'+esc(u?note:wait)+'</span></div>'+(u?'<a class="btn '+(fire?'fire':'snow')+'" href="'+esc(u)+'" target="_blank" rel="noopener noreferrer">'+(fire?'Перейти в эфир ↗':'Смотреть урок ↗')+'</a>':'')+'</div>';
 }
-function refsBlock(){
+const FINE=!!(window.matchMedia&&matchMedia('(pointer:fine)').matches);function refsBlock(){
   const R=D.d1.refs;
   return '<form class="addrow" id="refForm" autocomplete="off"><input class="inp" id="refIn" placeholder="Вставь ссылку или опиши кадр" aria-label="Новый референс"><button class="btn sm" type="submit">Добавить</button><label class="btn sm ghost" for="filePick" data-pick="refs">Картинка</label></form>'
-    +'<p class="hint">Скриншот можно просто вставить на этой странице: Cmd+V или Ctrl+V.</p>'
+    +(FINE?'<p class="hint">Скриншот можно просто вставить на этой странице: Cmd+V или Ctrl+V.</p>':'')
     +(R.length?'<div class="refs">'+R.map(r=>{ const u=okUrl(r.url); return '<div class="ref"><div class="img">'+(r.img?'<img src="'+esc(r.img)+'" alt="">':'<span style="padding:8px">'+esc(u?host(u):'без картинки')+'</span>')+'</div><div class="b"><input value="'+esc(r.title||'')+'" placeholder="Что здесь нравится?" data-rt="'+esc(r.id)+'" aria-label="Подпись"><div class="row">'+(u?'<a href="'+esc(u)+'" target="_blank" rel="noopener noreferrer">открыть ↗</a>':'<span></span>')+'<button class="x" type="button" data-delref="'+esc(r.id)+'">убрать</button></div></div></div>'; }).join('')+'</div>':'');
 }
 
 /* ---------- days ---------- */
 const stp=(no,q,hint,body)=>'<div class="t-st"><span class="t-no">'+no+'</span><div class="t-b"><h4>'+q+'</h4>'+(hint?'<p class="t-hint">'+hint+'</p>':'')+body+'</div></div>';
-function day0(){
+function dnaBlock(){
   const m=D.me, dn=D.dna;
-  const facts=[['me.f1','пишу письма себе в будущее'],['me.f2','собираю звуки городов на диктофон'],['me.f3','плачу на финальных титрах любых фильмов']].map(([k,ph],i)=>'<textarea class="one" rows="1" data-b="'+k+'" placeholder="'+(i+1)+'. '+esc(ph)+'" aria-label="Факт '+(i+1)+'">'+esc(getP(k)||'')+'</textarea>').join('');
   const mood='<div class="mood"><label class="drop" id="drop" for="filePick" data-pick="me"><b>+ добавить картинки</b><span>можно несколько сразу</span></label>'
-      +m.images.slice().reverse().map(p=>'<figure class="pic">'+(p.id===m.cover?'<span class="badge">обложка</span>':'')+'<img src="'+esc(p.img)+'" alt=""><div class="ops">'+(p.id===m.cover?'<button type="button" data-uncover="1">убрать с обложки</button>':'<button type="button" data-cover="'+esc(p.id)+'">на обложку</button>')+'<button type="button" data-delpic="'+esc(p.id)+'">убрать</button></div></figure>').join('')+'</div>';
+      +m.images.slice().reverse().map(p=>'<figure class="pic">'+(p.id===m.cover?'<span class="badge">обложка</span>':'')+'<img src="'+esc(p.img)+'" alt=""><div class="ops">'+(p.id===m.cover?'<button type="button" data-uncover="1">убрать с обложки</button>':'<button type="button" data-cover="'+esc(p.id)+'">на обложку</button>')+'<button type="button" data-delpic="'+esc(p.id)+'">убрать</button></div></figure>').join('')+'</div>'
+      +'<p class="hint">Картинки хранятся только на этом устройстве.</p>';
   const colors=(dn.colors.length?'<div class="swatches">'+dn.colors.map((c,i)=>'<div class="sw"><button class="c" type="button" style="background:'+esc(c.hex)+'" data-copy="'+esc(c.hex)+'" aria-label="Скопировать '+esc(c.hex)+'"></button><b>'+esc(c.name||c.hex.toUpperCase())+'</b><button class="x" type="button" data-delcolor="'+i+'">убрать</button></div>').join('')+'</div>':'')
       +'<form class="coloradd" id="colorForm"><input type="color" id="colorIn" value="#9fc3ea" aria-label="Цвет"><input class="inp" id="colorName" placeholder="зимнее небо, тёплый свет" aria-label="Название цвета"><button class="btn sm" type="submit">Добавить</button></form>';
-  return '<div class="grid">'+routeBlock()
-    +'<section class="talk" id="s-kto"><span class="t-part">кто я</span><p class="t-lead">Мы начинаем создавать гениальные вещи, когда познаём свою внутреннюю глубину.</p>'
+  const fs=(no,key,q,body)=>'<div class="t-st"><span class="t-no">'+no+'</span><div class="t-b">'+fold('dna-'+key,'',' <h4>'+q+'</h4>',body)+'</div></div>';
+  return '<section class="talk" id="s-dna"><span class="t-part">творческая ДНК · по желанию</span><p class="t-lead">Всё, в чём узнаёшь себя и по чему тебя можно узнать с первого кадра.</p>'
+      +stp('01','Что тебя отображает?','Места, где тебе хорошо, любимый свет, вещи с историей, близкие люди, кадры из фильмов.',mood)
+      +fs('02','music','Какая музыка про тебя?',list('me.music','название трека или ссылка'))
+      +fs('03','colors','Какие у тебя цвета?',colors)
+      +fs('04','style','Твой стиль в двух словах?',field('dna.style','','тёплые, медленные истории с живым звуком'))
+      +fs('05','dreams','Какие видео ты мечтаешь снимать?',list('dna.dreams','документалку о своей семье'))
+      +fs('06','inspire','Кто тебя вдохновляет?',list('dna.inspire','режиссёры, авторы, музыка'))
+    +'</section>';
+}
+const PROMISE='Снять короткий ролик 30–60 секунд о себе — из того, что уже есть в телефоне, или из 5–7 новых кадров.';
+function day0(){
+  /* один факт вместо трёх; второй и третий показываем, только если они уже были заполнены раньше */
+  const facts=[['me.f1','пишу письма себе в будущее'],['me.f2','собираю звуки городов на диктофон'],['me.f3','плачу на финальных титрах любых фильмов']].filter(([k],i)=>i===0||(getP(k)||'').trim()).map(([k,ph],i)=>'<textarea class="one" rows="1" data-b="'+k+'" placeholder="'+esc(ph)+'" aria-label="Факт '+(i+1)+'">'+esc(getP(k)||'')+'</textarea>').join('');
+  return '<p class="promise-d"><b>Цель похода:</b> '+esc(PROMISE)+'</p>'
+    +'<div class="grid">'+routeBlock()
+    +'<section class="talk" id="s-kto"><span class="t-part">кто я</span><span class="t-time">займёт 5 минут</span><p class="t-lead">Мы начинаем создавать гениальные вещи, когда познаём свою внутреннюю глубину.</p>'
       +stp('01','Как тебя зовут?','',field('me.name','','имя'))
-      +stp('02','Что о тебе знают немногие?','Три неочевидных факта, которые отражают тебя больше всего.','<div class="f">'+facts+'</div>')
-    +'</section>'
-    +'<section class="talk" id="s-dna"><span class="t-part">моя творческая ДНК</span><p class="t-lead">Всё, в чём узнаёшь себя и по чему тебя можно узнать с первого кадра.</p>'
-      +stp('03','Что тебя отображает?','Места, где тебе хорошо, любимый свет, вещи с историей, близкие люди, кадры из фильмов.',mood)
-      +stp('04','Какая музыка про тебя?','',list('me.music','название трека или ссылка'))
-      +stp('05','Какие у тебя цвета?','',colors)
-      +stp('06','Твой стиль в двух словах?','',field('dna.style','','тёплые, медленные истории с живым звуком'))
-      +stp('07','Какие видео ты мечтаешь снимать?','',list('dna.dreams','документалку о своей семье'))
-      +stp('08','Кто тебя вдохновляет?','',list('dna.inspire','режиссёры, авторы, музыка'))
+      +stp('02','Что о тебе знают немногие?','Один неочевидный факт, который отражает тебя больше всего.','<div class="f">'+facts+'</div>')
     +'</section>'
     +'</div>';
 }
+const IDEA_CHIPS=['Один обычный день моей семьи…','Место, где мне спокойно…','Вещь, у которой есть история…','То, что я замечаю, когда никто не смотрит…'];
+function day1(){
+  return lessonCard(LESSON_1,'Урок 1. Идея','Видео урока'+(CFG.LESSON_1_MIN?' · '+CFG.LESSON_1_MIN+' мин':''),false,'Урок откроется здесь '+atText(CFG.LESSON_1_AT,1))
+    +'<div class="grid">'+routeBlock()+notesBlock(1)
+    +dnaBlock()
+    +card('pen','Моя идея','Ролик о том, что отражает тебя изнутри.',field('d1.idea','Идея моего ролика','О чём он, в одном-двух предложениях',true)
+      +'<div class="ichips" aria-label="Подсказки для идеи">'+IDEA_CHIPS.map(t=>'<button class="ichip" type="button" data-ideachip="'+esc(t)+'">'+esc(t)+'</button>').join('')+'</div>'
+      +field('d1.show','Что я хочу показать о себе','Черта, чувство, взгляд на мир',true))
+    +card('cam','Кадры, которые я сниму','Список того, что хочется поймать в кадр.',list('d1.shots','руки с кружкой, следы на снегу'))
+    +card('star','Референсы','Ссылки и скриншоты для настроения.',refsBlock(),true)
+    +card('flag','Мысли по дороге','Всё, что приходит в голову после урока.',field('d1.notes','Заметки','',true))
+    +'</div>';
+}
+const HOWTO={
+  phone:{lead:'В CapCut (или InShot — там всё похоже):',steps:['Создай проект и выбери кадры по порядку.','Обрежь каждый кадр до 2–4 секунд.','Добавь музыку и режь кадры под сильные доли.','Добавь одну подпись.','Сохрани видео в 1080p и отправь.']},
+  pc:{lead:'В DaVinci Resolve, iMovie или Premiere:',steps:['Создай проект и перетащи кадры вниз, на дорожку, по порядку.','Обрежь каждый кадр до 2–4 секунд.','Положи музыку под кадры и режь их под сильные доли.','Добавь одну подпись.','Сохрани видео в 1080p и отправь.']}
+};
+function day2(){
+  const dev=D.d2.device==='pc'?'pc':'phone', h=HOWTO[dev];
+  return lessonCard(LESSON_2,'Урок 2. Монтаж','Видео урока'+(CFG.LESSON_2_MIN?' · '+CFG.LESSON_2_MIN+' мин':''),false,'Урок откроется здесь '+atText(CFG.LESSON_2_AT,2))
+    +'<div class="grid">'+routeBlock()+notesBlock(2)
+    +card('mug','Как собрать черновик','5–7 кадров под одну музыку. Пусть неидеально, главное — целиком.',
+      '<div class="lbl">Монтирую на:</div><div class="seg" role="group" aria-label="Монтирую на"><button type="button" data-device="phone" aria-pressed="'+(dev==='phone')+'">Телефоне</button><button type="button" data-device="pc" aria-pressed="'+(dev==='pc')+'">Компьютере</button></div>'
+      +'<p class="hint">'+esc(h.lead)+'</p><ol class="howto">'+h.steps.map(t=>'<li><span>'+esc(t)+'</span></li>').join('')+'</ol>')
+    +card('pen','Структура истории','Три части, из которых складывается ролик.',field('d2.start','Начало','Чем зацеплю с первых секунд',true)+field('d2.middle','Середина','Что происходит, как раскрывается история',true)+field('d2.end','Финал','Какое чувство или мысль останется',true))
+    +card('mug','Чек-лист монтажа','Отмечай по шагам.',checks('d2.check',['Отобрать лучшие кадры','Выбрать музыку','Собрать черновую версию','Добавить звук и титры','Поработать с цветом'])
+      +field('d2.music','Музыка','Название трека или ссылка')+field('d2.notes','Заметки к монтажу','',true))
+    +'</div>';
+}
+/* отправка ролика: кнопка + отметка; без ссылки на бота — где узнать */
+function sendBox(){
+  const u=okUrl(CFG.SUBMIT_URL), sent=!!(D.tasks[3]&&D.tasks[3].send), ch=okUrl(CHANNEL_URL);
+  return '<div class="sendbox">'
+    +(u?'<a class="btn fire" href="'+esc(u)+'" target="_blank" rel="noopener noreferrer">Отправить ролик ↗</a><p class="hint">Отправь видеофайл боту прямо из галереи — до 2 ГБ, без ссылок.</p>'
+       :'<p class="hint">Куда отправить ролик, напишем в канале похода. Отправлять нужно будет видеофайл прямо из галереи — до 2 ГБ, без ссылок.</p>'+(ch?'<a class="btn snow" href="'+esc(ch)+'" target="_blank" rel="noopener noreferrer">Открыть канал ↗</a>':''))
+    +'<label class="boolrow"><input type="checkbox" data-check="tasks.3" data-i="send"'+(sent?' checked':'')+'><span>Ролик отправлен</span></label>'
+    +'<label class="boolrow"><input type="checkbox" data-bool="d4.reviewOk"'+(D.d4.reviewOk?' checked':'')+'><span>Можно разобрать мой ролик на эфире</span></label>'
+    +'</div>';
+}
+function day3(){
+  const u=okUrl(CFG.DAY3_URL);
+  return '<div class="lesson razbor" id="s-razbor"><span class="play">'+(u?I.play:I.clock)+'</span><div><b>Короткий разбор · 5 минут</b>'+(u?'<span>Посмотри перед тем, как доделывать ролик.</span>':'<span class="lt-hint">Посмотри свой черновик один раз целиком, без остановок, и ответь себе: какое одно чувство остаётся в конце?</span>')+'</div>'+(u?'<a class="btn snow" href="'+esc(u)+'" target="_blank" rel="noopener noreferrer">Смотреть ↗</a>':'')+'</div>'
+    +'<div class="grid">'+routeBlock()
+    +card('cam','Что хочу доснять','Кадры, которых не хватило.',list('d3.reshoot','общий план утром'))
+    +card('pen','Что поменять в монтаже','Смотри черновик свежим взглядом.',list('d3.change','убрать паузу в начале'))
+    +letterBlock()
+    +card('tent','Утро: ролик готов','Последние шаги перед костром.',checks('d3.check',['Посмотреть ролик целиком, без остановок','Показать близкому человеку','Финальная версия готова'])
+      +sendBox()+fold('link3','mini','Для смелых: дать ссылку на ролик ↓',field('d3.final','Ссылка на мой ролик','ссылка на ролик')),true)
+    +'</div>';
+}
 const EXP={key:'ekspediciya',name:'Экспедиция'};
-const EXP_URL='https://solopovafilmyourstory.com/home#rec826934466'; // ссылка «узнать про экспедицию»
+const EXP_URL=CFG.EXP_URL; // ссылка «узнать про экспедицию»
 function expedition(){
   if(!D.exp) D.exp={claimed:false,no:''};
   if(!D.exp.no){ D.exp.no=String(1000+Math.floor(Math.random()*9000)); persist(); }
   const nm=(D.me.name||'').trim(), idea=(D.d1.idea||'').trim().replace(/\s+/g,' '), ideaShort=idea.length>70?idea.slice(0,68)+'…':idea;
   const head='<div class="day-head"><span class="k">film your story · что дальше</span><h2>Экспедиция</h2><p class="intro">Поход заканчивается, а путь только начинается. Дальше нас ждёт экспедиция: большое путешествие, в котором твоя идея вырастает в настоящий фильм.</p></div>';
   const ticket='<div class="xp-ticket"><div class="xp-main"><span class="xp-k">film your story · экспедиция</span><h3>Пропуск<br>в экспедицию</h3>'
-    +'<dl><dt>творец</dt><dd>'+esc(nm||'—')+'</dd><dt>идея</dt><dd>'+esc(ideaShort||'твоя история')+'</dd><dt>маршрут</dt><dd>от идеи до фильма</dd><dt>старт</dt><dd>скоро</dd></dl></div>'
+    +'<dl><dt>творец</dt><dd>'+esc(nm||'—')+'</dd><dt>идея</dt><dd>'+esc(ideaShort||'твоя история')+'</dd><dt>маршрут</dt><dd>от идеи до фильма</dd>'+(CFG.EXP_START?'<dt>старт</dt><dd>'+esc(CFG.EXP_START)+'</dd>':'')+(CFG.EXP_PRICE?'<dt>цена</dt><dd>'+esc(CFG.EXP_PRICE)+'</dd>':'')+(CFG.EXP_DEADLINE?'<dt>спеццена до</dt><dd>'+esc(CFG.EXP_DEADLINE)+'</dd>':'')+'</dl></div>'
     +'<div class="xp-stub" aria-hidden="true"><span class="xp-bar"></span><span class="xp-no">№ '+D.exp.no+'</span></div></div>';
   if(!D.exp.claimed){
     return head+'<section class="xp">'+ticket+'<button class="xp-btn" type="button" data-exp="claim">Забрать билет</button><p class="xp-hint">Внутри приглашение лично для тебя</p></section>';
@@ -802,38 +1010,14 @@ function expedition(){
   return head+'<section class="xp">'+ticket.replace('xp-ticket','xp-ticket torn')+letter+'</section>';
 }
 function liveBanner(){
-  const left=4-S.day, u=okUrl(LIVE_URL);
-  return '<section class="live"><div class="live-ic">'+I.fire+'</div><div class="live-t"><span class="live-k">эфир у костра</span><b>3 декабря, четверг'+(LIVE_TIME?' · '+esc(LIVE_TIME):'')+'</b><span>'+(left===1?'Уже завтра!':'Через '+left+' '+(left<5?'дня':'дней'))+' встречаемся у костра: смотрим ваши ролики и обсуждаем всё, что получилось.'+(LIVE_TIME?'':' Время сообщим в канале.')+'</span></div>'
-    +(u?'<a class="live-go" href="'+esc(u)+'" target="_blank" rel="noopener noreferrer">Ссылка на эфир ↗</a>':'<button class="live-go" type="button" data-day="4">Подробнее →</button>')+'</section>';
-}
-function notesBlock(n){
+  const left=4-S.day, u=okUrl(LIVE_URL), lt=liveTime(), ch=okUrl(CHANNEL_URL);
+  const meta=[CFG.LIVE_DURATION?'Длительность: '+CFG.LIVE_DURATION:'',CFG.LIVE_RECORDING===true?'Будет запись':''].filter(Boolean).join(' · ');
+  const rc=remindCtl('lk');
+  return '<section class="live"><div class="live-ic">'+I.fire+'</div><div class="live-t"><span class="live-k">эфир у костра</span><b>'+liveDateText()+', четверг'+(lt?' · '+esc(lt):'')+'</b><span>'+(left===1?'Уже завтра':'Через '+left+' '+(left<5?'дня':'дней'))+' встречаемся у костра. '+esc(LIVE_ABOUT)+(lt?'':' Время сообщим в канале.')+'</span>'+(meta?'<span class="live-meta">'+esc(meta)+'</span>':'')+'</div>'
+    +'<div class="live-acts">'+(u?'<a class="live-go" href="'+esc(u)+'" target="_blank" rel="noopener noreferrer">Ссылка на эфир ↗</a>':'<button class="live-go" type="button" data-day="4">Подробнее →</button>')+(!lt&&ch?'<a href="'+esc(ch)+'" target="_blank" rel="noopener noreferrer">Канал похода ↗</a>':'')+rc+'</div></section>';
+}function notesBlock(n){
   const L=NOTES[n]; if(!L) return '';
   return '<section class="tips"><div class="tips-h"><span class="tips-k">конспект урока '+n+'</span><h3>'+esc(L.title)+'</h3></div><ol>'+L.tips.map(t=>'<li><b>'+esc(t[0])+'</b><span>'+esc(t[1])+'</span></li>').join('')+'</ol></section>';
-}
-function day1(){
-  return lessonCard(LESSON_1,'Урок 1. Идея','Смотри на YouTube')
-    +'<div class="grid">'+routeBlock()+notesBlock(1)
-    +card('pen','Моя идея','Ролик о том, что отражает тебя изнутри.',field('d1.idea','Идея моего ролика','О чём он, в одном-двух предложениях',true)+field('d1.show','Что я хочу показать о себе','Черта, чувство, взгляд на мир',true))
-    +card('cam','Кадры, которые я сниму','Список того, что хочется поймать в кадр.',list('d1.shots','руки с кружкой, следы на снегу'))
-    +card('star','Референсы','Ссылки и скриншоты для настроения.',refsBlock(),true)
-    +card('flag','Мысли по дороге','Всё, что приходит в голову после урока.',field('d1.notes','Заметки','',true))
-    +'</div>';
-}
-function day2(){
-  return lessonCard(LESSON_2,'Урок 2. Монтаж','Смотри на YouTube')
-    +'<div class="grid">'+routeBlock()+notesBlock(2)
-    +card('pen','Структура истории','Три части, из которых складывается ролик.',field('d2.start','Начало','Чем зацеплю с первых секунд',true)+field('d2.middle','Середина','Что происходит, как раскрывается история',true)+field('d2.end','Финал','Какое чувство или мысль останется',true))
-    +card('mug','Чек-лист монтажа','Отмечай по шагам.',checks('d2.check',['Отобрать лучшие кадры','Выбрать музыку','Собрать черновую версию','Добавить звук и титры','Поработать с цветом'])
-      +field('d2.music','Музыка','Название трека или ссылка')+field('d2.notes','Заметки к монтажу','',true))
-    +'</div>';
-}
-function day3(){
-  return '<div class="grid">'+routeBlock()
-    +card('cam','Что хочу доснять','Кадры, которых не хватило.',list('d3.reshoot','общий план утром'))
-    +card('pen','Что поменять в монтаже','Смотри черновик свежим взглядом.',list('d3.change','убрать паузу в начале'))
-    +letterBlock()
-    +card('tent','Утро: ролик готов','Последние шаги перед костром.',checks('d3.check',['Посмотреть ролик целиком, без остановок','Показать близкому человеку','Финальная версия готова'])+field('d3.final','Ссылка на мой ролик','YouTube, Google Диск или Instagram'),true)
-    +'</div>';
 }
 const LETTER_OPEN='2027-02-25', LETTER_OPEN_TXT='25 февраля';
 const STAMP='<svg class="lt-stamp" viewBox="0 0 64 74" aria-hidden="true"><path d="M2 2h60v70H2z" fill="#fbf6ec" stroke="#c9bda4" stroke-width="1.5" stroke-dasharray="3 2.4"/><rect x="8" y="8" width="48" height="44" fill="#a8447a"/><path d="M8 52 L22 30 L30 40 L40 22 L56 46 V52 Z" fill="#efdb55"/><path d="M36 28l4-6 4 6" fill="#fbf6ec"/><circle cx="46" cy="17" r="4" fill="#f4b5d4"/><text x="32" y="65" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="7" fill="#5a5244">FYS · 2026</text></svg>';
@@ -847,7 +1031,7 @@ function letterBlock(){
       +'<p class="t-hint" style="margin-top:14px">Письмо запечатано '+esc(fmtRu(L.sealed))+'. Оно откроется здесь '+LETTER_OPEN_TXT+'.</p>'
       +'<button class="lt-open" type="button" data-letter="early">распечатать раньше</button>';
   } else {
-    body=(opened?'<p class="lt-note">Письмо из прошлого открылось. Вот что ты писал'+'(а) себе '+esc(fmtRu(L.sealed))+':</p>':'')
+    body=(opened?'<p class="lt-note">Письмо из прошлого открылось. Вот что было в письме себе '+esc(fmtRu(L.sealed))+':</p>':'')
       +'<div class="lt-paper">'+STAMP+POSTMARK
       +'<input class="lt-to" data-b="d3.letterTo" value="'+esc(L.letterTo||'')+'" placeholder="Аня из будущего," aria-label="Кому">'
       +'<textarea class="lt-text" data-b="d3.letter" aria-label="Письмо" placeholder="Привет! Если ты читаешь это, значит поход уже позади. Надеюсь, ролик снят и его увидели те, ради кого он снимался. Не бойся показывать свои истории…"'+(opened?' readonly':'')+'>'+esc(L.letter||'')+'</textarea>'
@@ -859,58 +1043,86 @@ function letterBlock(){
 function ymdNow(){ const t=new Date(); return t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0'); }
 function fmtRu(ymd){ const M=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря']; const p=String(ymd).split('-').map(Number); return p.length===3?p[2]+' '+M[p[1]-1]:''; }
 function day4(){
-  const allDone=[0,1,2,3].every(i=>D.done[i]);
-  return lessonCard(LIVE_URL,'Прямой эфир у костра',LIVE_WHEN||'Присоединяйся по ссылке',true)
-    +(LIVE_WHEN&&!okUrl(LIVE_URL)?'<p class="hint" style="color:var(--snow-dim);margin:-12px 0 20px">'+esc(LIVE_WHEN)+'</p>':'')
+  const lt=liveTime(), sent=!!(D.tasks[3]&&D.tasks[3].send), su=okUrl(CFG.SUBMIT_URL);
+  const meta=[CFG.LIVE_DURATION?'Длительность: '+CFG.LIVE_DURATION:'',CFG.LIVE_RECORDING===true?'Будет запись':''].filter(Boolean).join(' · ');
+  const when=liveDateText()+', четверг'+(lt?', '+lt:'');
+  return lessonCard(LIVE_URL,'Прямой эфир у костра',when,true,'Ссылка появится здесь '+liveDateText()+(lt?'. Время эфира: '+lt:'. Время сообщим в канале'))
+    +'<p class="hint" style="margin:-12px 0 20px">'+esc(LIVE_ABOUT)+(meta?' '+esc(meta)+'.':'')+'</p>'
     +'<div class="grid">'+routeBlock()
-    +card('cam','Мой ролик','Его увидят у костра.',field('d3.final','Ссылка на мой ролик','YouTube, Google Диск или Instagram')+(okUrl(D.d3.final)?'<a class="btn sm ghost" href="'+esc(okUrl(D.d3.final))+'" target="_blank" rel="noopener noreferrer">Открыть ролик ↗</a>':''))
+    +card('cam','Мой ролик','Показывать свой ролик не обязательно — можно просто смотреть.',
+      '<div class="sendbox">'+(sent?'<p class="hint">Ролик отправлен.</p>':(su?'<a class="btn fire" href="'+esc(su)+'" target="_blank" rel="noopener noreferrer">Отправить ролик ↗</a><p class="hint">Отправь видеофайл боту прямо из галереи — до 2 ГБ, без ссылок.</p>':'<p class="hint">Куда отправить ролик, напишем в канале похода.</p>'))
+      +'<label class="boolrow"><input type="checkbox" data-bool="d4.reviewOk"'+(D.d4.reviewOk?' checked':'')+'><span>Можно разобрать мой ролик на эфире</span></label></div>'
+      +(okUrl(D.d3.final)?'<a class="btn sm ghost" href="'+esc(okUrl(D.d3.final))+'" target="_blank" rel="noopener noreferrer">Открыть ролик ↗</a>':''))
     +card('fire','Вопросы к эфиру','Что хочется спросить или обсудить.',list('d4.questions','Мой вопрос'))
     +card('heart','Что я забираю с собой','Пара строк о том, что открылось в пути.',field('d4.takeaway','Мои выводы в конце пути','',true),true)
     +'</div>'
-    +(allDone&&D.done[4]?'<div class="final"><b>Поход пройден</b>Спасибо, что дошли до костра. Твоя история уже снята, и это только начало.</div>':'');
+    +([0,1,2,3,4].every(dayDone)?'<div class="final"><b>Поход пройден</b>Спасибо, что дошли до костра. Твоя история уже снята, и это только начало.</div>':'');
 }
-
 /* ---------- render ---------- */
+const STOP_SUB=['знакомство','идея','монтаж','доделать','эфир'];
 function renderStops(){
-  $('#stops').innerHTML=DAYS.map(d=>'<li><button class="stop" type="button" data-day="'+d.n+'"'+(S.day===d.n?' aria-current="step"':'')+'><span class="ic">'+I[d.icon]+(D.done[d.n]?'<span class="ok" aria-label="пройден">✓</span>':'')+'</span><span class="d">'+String(DATES[d.n].d).padStart(2,'0')+'.'+String(DATES[d.n].m+1).padStart(2,'0')+'</span><span class="n">'+esc(d.name)+'</span><span class="pr">'+tasksDone(d.n)+' / '+TASKS[d.n].length+'</span></button></li>').join('')+'<li><button class="stop exp" type="button" data-day="5"'+(S.day===5?' aria-current="step"':'')+'><span class="ic">'+I.compass+'</span><span class="d">дальше</span><span class="n">'+EXP.name+'</span><span class="pr">✦</span></button></li>';
-}
-let moodNow=-1;
+  const xo=expOpen(), el=$('#stops');
+  el.style.setProperty('--n',xo?6:5); el.classList.toggle('six',xo);
+  el.innerHTML=DAYS.map(d=>'<li><button class="stop" type="button" data-day="'+d.n+'"'+(S.day===d.n?' aria-current="step"':'')+'><span class="ic">'+I[d.icon]+(dayDone(d.n)?'<span class="ok" aria-label="пройден">✓</span>':'')+'</span><span class="d">'+String(DATES[d.n].d).padStart(2,'0')+'.'+String(DATES[d.n].m+1).padStart(2,'0')+'</span><span class="n">'+esc(d.name)+'</span><span class="pr">'+STOP_SUB[d.n]+'</span></button></li>').join('')
+    +(xo?'<li><button class="stop exp" type="button" data-day="5"'+(S.day===5?' aria-current="step"':'')+'><span class="ic">'+I.compass+'</span><span class="d">дальше</span><span class="n">'+EXP.name+'</span><span class="pr">✦</span></button></li>':'');
+}let moodNow=-1;
 function renderCover(){
   if(moodNow!==S.day){ moodNow=S.day; landscape(S.day); const L=$('#land'); L.classList.remove('fade'); void L.getBoundingClientRect(); L.classList.add('fade'); }
   const m=D.me, ph=m.images.find(i=>i.id===m.cover);
   $('#coverPhoto').hidden=!ph; if(ph) $('#coverPhoto').style.backgroundImage='url("'+ph.img+'")';
   $('#land').style.display=ph?'none':'';
-  const done=Object.keys(D.done).filter(k=>D.done[k]).length;
+  const sb=$('#startBtn'); if(sb){ const started=S.day>0||!!(D.me.name||'').trim()||TASKS[0].some(k=>D.tasks[0]&&D.tasks[0][k.id]); sb.textContent=started?(S.day===5?'Продолжить: экспедиция':'Продолжить: день '+S.day):'Начать · 5 минут'; }
 }
+const DAY_TIME=()=>['Знакомство · 5 минут',
+  'Урок про идею · '+(CFG.LESSON_1_MIN?CFG.LESSON_1_MIN+' мин видео':'видео')+' + 15 мин задание',
+  'Урок про монтаж · '+(CFG.LESSON_2_MIN?CFG.LESSON_2_MIN+' мин видео':'видео')+' + 20 мин монтаж на телефоне',
+  'Доделать и отправить ролик · 15 минут',
+  'Эфир у костра'+[CFG.LIVE_DURATION,CFG.LIVE_RECORDING===true?'запись будет':''].filter(Boolean).map((x,i)=>(i?', ':' · ')+x).join('')];
+function nextOf(n){ return n<4?DAYS[n+1]:(n===4&&expOpen()?{n:5,name:EXP.name}:null); }
 function render(){
+  if(ACCESS!==true) return;   /* пока доступ не подтверждён, дни не показываем */
+  if(S.day===5&&!expOpen()) S.day=4;
   renderCover(); renderStops();
-  if(S.day===5){ $('#day').innerHTML=expedition(); return; }
-  const d=DAYS[S.day], next=S.day===4?{n:5,name:EXP.name}:DAYS[S.day+1];
+  if(S.day===5){ $('#day').innerHTML=expedition(); tgButtons(); return; }
+  const d=DAYS[S.day], next=nextOf(S.day);
   const dd=DATES[d.n], dstr=String(dd.d).padStart(2,'0')+'.'+String(dd.m+1).padStart(2,'0')+'.26';
   const DH_BG={};
-  $('#day').innerHTML='<div class="day-head'+(DH_BG[d.n]?' bg" style="--dh-img:url(\''+DH_BG[d.n]+'\')':'')+'"><span class="k">день '+d.n+' · '+dstr.slice(0,5)+'</span><h2>'+esc(d.name)+'</h2><p class="intro">'+esc(d.intro)+'</p></div>'
+  $('#day').innerHTML='<div class="day-head'+(DH_BG[d.n]?' bg" style="--dh-img:url(\''+DH_BG[d.n]+'\')':'')+'"><span class="k">день '+d.n+' · '+dstr.slice(0,5)+'</span><h2>'+esc(d.name)+'</h2><p class="dh-time">'+I.clock+'<span>'+esc(DAY_TIME()[d.n])+'</span></p><p class="intro">'+esc(d.intro)+'</p></div>'
     +[day0,day1,day2,day3,day4][S.day]()
     +(S.day<4?liveBanner():'')
-    +'<div class="day-end"><label class="toggle"><input type="checkbox" id="dayDone"'+(D.done[S.day]?' checked':'')+'>'+(S.day===4?'Я у костра':'День пройден')+'</label>'+(next?'<button class="btn snow" type="button" data-day="'+next.n+'">Дальше: '+esc(next.name.toLowerCase())+' →</button>':'')+'</div>';
-}
-function go(n,scroll){ S.calSel=null; S.day=Math.max(0,Math.min(5,n)); try{ localStorage.setItem(STORE+'-day',String(S.day)); history.replaceState(null,'','#'+(S.day===5?EXP.key:DAYS[S.day].key)); }catch(e){} render(); if(scroll) $('#stops').scrollIntoView({behavior:'smooth',block:'start'}); }
-function fromHash(){ const h=location.hash.replace('#',''); const d=DAYS.find(x=>x.key===h); if(d) S.day=d.n; if(h===EXP.key) S.day=5; S.calSel=null; render(); }
+    +(next?'<div class="day-end"><button class="btn snow" type="button" data-day="'+next.n+'">Дальше: '+esc(next.name.toLowerCase())+' →</button></div>':'');
+  tgButtons();
+}function go(n,scroll){ S.calSel=null; S.day=Math.max(0,Math.min(expOpen()?5:4,n)); try{ localStorage.setItem(STORE+'-day',String(S.day)); history.replaceState(null,'','#'+(S.day===5?EXP.key:DAYS[S.day].key)); }catch(e){} render(); if(scroll) $('#stops').scrollIntoView({behavior:'smooth',block:'start'}); }
+function fromHash(){ if(ACCESS!==true) return; const h=location.hash.replace('#',''); const d=DAYS.find(x=>x.key===h); if(d) S.day=d.n; if(h===EXP.key) S.day=expOpen()?5:4; S.calSel=null; render(); }
 window.addEventListener('hashchange',fromHash);
 
 /* ---------- images ---------- */
 function shrink(file,max){ return new Promise((res,rej)=>{ const u=URL.createObjectURL(file), im=new Image();
-  im.onload=()=>{ const sc=Math.min(1,max/Math.max(im.naturalWidth,im.naturalHeight)), c=document.createElement('canvas'); c.width=Math.round(im.naturalWidth*sc)||1; c.height=Math.round(im.naturalHeight*sc)||1; const x=c.getContext('2d'); x.fillStyle='#fff'; x.fillRect(0,0,c.width,c.height); x.drawImage(im,0,0,c.width,c.height); URL.revokeObjectURL(u); res(c.toDataURL('image/jpeg',.82)); };
+  im.onload=()=>{ const sc=Math.min(1,max/Math.max(im.naturalWidth,im.naturalHeight)), c=document.createElement('canvas'); c.width=Math.round(im.naturalWidth*sc)||1; c.height=Math.round(im.naturalHeight*sc)||1; const x=c.getContext('2d'); x.fillStyle='#fff'; x.fillRect(0,0,c.width,c.height); x.drawImage(im,0,0,c.width,c.height); URL.revokeObjectURL(u); res(c.toDataURL('image/jpeg',.75)); };
   im.onerror=()=>{ URL.revokeObjectURL(u); rej(new Error('img')); }; im.src=u; }); }
 let pickFor='me';
 async function addImages(files,target){
   files=[...files].filter(f=>f&&/^image\//.test(f.type)); if(!files.length) return; let n=0;
-  for(const f of files){ try{ if(target==='me') D.me.images.push({id:uid('p'),img:await shrink(f,1400)}); else D.d1.refs.unshift({id:uid('r'),img:await shrink(f,800),title:'',url:''}); n++; }catch(e){ toast('Не получилось открыть одну из картинок'); } }
+  for(const f of files){ try{ if(target==='me') D.me.images.push({id:uid('p'),img:await shrink(f,800)}); else D.d1.refs.unshift({id:uid('r'),img:await shrink(f,800),title:'',url:''}); n++; }catch(e){ toast('Не получилось открыть одну из картинок'); } }
   if(!persist()) return; render(); if(n) toast(n===1?'Картинка добавлена':'Добавлено картинок: '+n);
 }
 
 /* ---------- events ---------- */
+function openExt(u){ try{ if(/^https:\/\/t\.me\//i.test(u)&&TG.openTelegramLink) TG.openTelegramLink(u); else TG.openLink(u); }catch(err){ window.open(u,'_blank','noopener'); } }
+function askRemind(){
+  const ok=()=>{ D.d0.remind=true; D.tasks[0].remind=true; persist(); render(); toast('Напомним за сутки и за час до эфира'); };
+  try{ TG.requestWriteAccess(g=>{ if(g) ok(); else toast('Без разрешения бот не сможет написать. Добавь эфир в календарь'); }); }catch(err){ toast('Не получилось. Добавь эфир в календарь'); }
+}
 document.addEventListener('click',e=>{
   const t=e.target;
+  /* календарь: в Telegram файл .ics пробуем открыть через openLink, если нельзя — Google Календарь */
+  const ic=t.closest('[data-ics]'); if(ic){ if(inTG){ e.preventDefault(); try{ TG.openLink(ic.getAttribute('href')); }catch(err){ const g=gcalHref(); if(g) openExt(g); } } return; }
+  /* внешние ссылки: в Telegram открываем средствами Telegram */
+  const ln=t.closest('a[href]'); if(ln&&inTG&&ln.target==='_blank'&&/^https?:/i.test(ln.href)){ e.preventDefault(); openExt(ln.href); return; }
+  if(t.closest('[data-start]')){ go(S.day,true); return; }
+  if(t.closest('[data-remind]')){ askRemind(); return; }
+  const ich=t.closest('[data-ideachip]'); if(ich){ const v=ich.dataset.ideachip, cur=(D.d1.idea||'').trim(); D.d1.idea=cur?cur+' '+v:v; persist(); render(); const ta=document.querySelector('[data-b="d1.idea"]'); if(ta){ ta.focus(); ta.setSelectionRange(ta.value.length,ta.value.length); } return; }
+  const dv=t.closest('[data-device]'); if(dv){ D.d2.device=dv.dataset.device; persist(); render(); return; }
   const cl=t.closest('[data-cal]'); if(cl){ S.calSel=Number(cl.dataset.cal); render(); return; }
   const dy=t.closest('[data-day]'); if(dy){ S.calSel=null; go(Number(dy.dataset.day),true); return; }
   const gt=t.closest('[data-go]'); if(gt){ const el=document.getElementById(gt.dataset.go); if(el) el.scrollIntoView({behavior:'smooth',block:'start'}); return; }
@@ -944,8 +1156,11 @@ document.addEventListener('input',e=>{
 document.addEventListener('change',e=>{
   const t=e.target;
   if(t.id==='filePick'){ addImages(t.files,pickFor); t.value=''; return; }
-  if(t.dataset.check){ const o=getP(t.dataset.check); o[t.dataset.i]=t.checked; persist(); render(); return; }
-  if(t.id==='dayDone'){ D.done[S.day]=t.checked; persist(); render(); if(t.checked) toast(S.day===4?'Добро пожаловать к костру':'Остановка пройдена. Идём дальше'); return; }
+  if(t.dataset.check){ const o=getP(t.dataset.check); const m=/^tasks\.(\d)$/.exec(t.dataset.check), n=m?Number(m[1]):-1, was=n>=0&&dayDone(n);
+    o[t.dataset.i]=t.checked; persist(); render();
+    if(n>=0&&!was&&dayDone(n)) toast(n===4?'Добро пожаловать к костру':'Остановка пройдена. Идём дальше');
+    return; }
+  if(t.dataset.bool){ setP(t.dataset.bool,t.checked); persist(); render(); return; }
   if(t.dataset.b==='d3.final'){ render(); }
 });
 document.addEventListener('submit',e=>{
@@ -959,12 +1174,13 @@ document.addEventListener('submit',e=>{
 });
 document.addEventListener('paste',e=>{
   const items=[...((e.clipboardData&&e.clipboardData.items)||[])].filter(i=>i.type&&i.type.startsWith('image/')); if(!items.length) return;
-  const target=S.day===0?'me':(S.day===1?'refs':null); if(!target) return;
+  const target=S.day===1?'refs':null; if(!target) return;
   e.preventDefault(); addImages(items.map(i=>i.getAsFile()),target);
 });
-document.addEventListener('dragover',e=>{ const d=e.target.closest&&e.target.closest('#drop'); if(d){ e.preventDefault(); d.classList.add('over'); } });
-document.addEventListener('dragleave',e=>{ const d=e.target.closest&&e.target.closest('#drop'); if(d) d.classList.remove('over'); });
-document.addEventListener('drop',e=>{ const d=e.target.closest&&e.target.closest('#drop'); if(!d) return; e.preventDefault(); d.classList.remove('over'); addImages(e.dataTransfer.files,'me'); });
+document.addEventListener('toggle',e=>{ const f=e.target; if(f&&f.dataset&&f.dataset.fold) S.open[f.dataset.fold]=f.open; },true);
+if(FINE) document.addEventListener('dragover',e=>{ const d=e.target.closest&&e.target.closest('#drop'); if(d){ e.preventDefault(); d.classList.add('over'); } });
+if(FINE) document.addEventListener('dragleave',e=>{ const d=e.target.closest&&e.target.closest('#drop'); if(d) d.classList.remove('over'); });
+if(FINE) document.addEventListener('drop',e=>{ const d=e.target.closest&&e.target.closest('#drop'); if(!d) return; e.preventDefault(); d.classList.remove('over'); addImages(e.dataTransfer.files,'me'); });
 
 async function bkCopy(){
   const txt=JSON.stringify({app:APP,v:1,data:D}), ta=$('#bkCopyText'); $('#bkRestoreBox').hidden=true; let ok=false;
@@ -986,6 +1202,9 @@ new MutationObserver(()=>document.querySelectorAll('#day .f textarea').forEach(a
 window.addEventListener('resize',()=>document.querySelectorAll('#day .f textarea').forEach(autosize));
 /* Telegram: раскрыть на весь экран, цвет шапки под ночное небо, не закрывать при прокрутке */
 const TG=window.Telegram&&window.Telegram.WebApp;
+/* скрипт Telegram есть и в обычном браузере, поэтому «внутри Telegram» = платформа известна */
+const inTG=!!(TG&&TG.platform&&TG.platform!=='unknown');
+const tgv=v=>!!(inTG&&TG.isVersionAtLeast&&TG.isVersionAtLeast(v));
 if(TG){
   try{
     TG.ready();
@@ -998,9 +1217,61 @@ if(TG){
     if(TG.isVersionAtLeast&&TG.isVersionAtLeast('7.7')&&TG.disableVerticalSwipes) TG.disableVerticalSwipes();
   }catch(e){}
 }
+if(inTG){
+  document.body.classList.add('tg');
+  try{ TG.MainButton.onClick(()=>{ if(isLocked()) return; const nx=nextOf(S.day); if(nx) go(nx.n,true); }); }catch(e){}
+  try{ if(tgv('6.1')) TG.BackButton.onClick(()=>{ if(S.day>0) go(S.day===5?4:S.day-1,true); }); }catch(e){}
+}
+/* нижняя кнопка Telegram = «Дальше», кнопка «Назад» = предыдущий день */
+function tgButtons(){
+  if(!inTG) return;
+  try{
+    const nx=(isLocked()||ACCESS!==true)?null:nextOf(S.day);
+    if(nx){ TG.MainButton.setParams({text:S.day===4?'Забрать билет в экспедицию':'Дальше: '+nx.name.toLowerCase(),color:'#efdb55',text_color:'#0f1c33',is_active:true,is_visible:true}); }
+    else TG.MainButton.hide();
+    if(tgv('6.1')){ if(S.day>0&&!isLocked()&&ACCESS===true) TG.BackButton.show(); else TG.BackButton.hide(); }
+  }catch(e){}
+}
+/* ---------- облако Telegram: тексты без картинок, по разделам; свежее побеждает ---------- */
+const CS_SECS=['me','dna','d0','d1','d2','d3','d4','tasks','done','exp'];
+const cs=()=>tgv('6.9')&&TG.CloudStorage?TG.CloudStorage:null;
+const csLast={};
+function secText(k){ let v=D[k];
+  if(k==='me'){ v=Object.assign({},v); delete v.images; delete v.cover; }
+  if(k==='d1'){ v=Object.assign({},v,{refs:(v.refs||[]).map(r=>({id:r.id,title:r.title,url:r.url}))}); }
+  return JSON.stringify(v); }
+let tCloud=null;
+function cloudSoon(){ if(!cs()||!cloudReady) return; clearTimeout(tCloud); tCloud=setTimeout(cloudPush,1000); }
+function cloudPush(){ const C=cs(); if(!C) return; const items={};
+  CS_SECS.forEach(k=>{ const txt=secText(k); if(csLast[k]===txt) return; csLast[k]=txt; const parts=txt.match(/[\s\S]{1,4000}/g)||['']; items[k+'_n']=String(parts.length); parts.forEach((p,i)=>{ items[k+'_'+i]=p; }); });
+  const keys=Object.keys(items); if(!keys.length) return; items.meta=String(D.updatedAt||0);
+  Object.keys(items).forEach(k=>{ try{ C.setItem(k,items[k]); }catch(e){} }); }
+let cloudReady=false;
+function cloudPull(){ const C=cs(); if(!C){ cloudReady=true; return; }
+  const done=()=>{ cloudReady=true; cloudSoon(); };
+  try{ C.getItems(['meta'].concat(CS_SECS.map(k=>k+'_n')),(err,v)=>{
+    if(err||!v){ done(); return; }
+    const cu=Number(v.meta)||0;
+    if(cu<=(D.updatedAt||0)){ done(); return; }   /* на устройстве свежее — отправим в облако */
+    const keys=[]; CS_SECS.forEach(k=>{ const n=Number(v[k+'_n'])||0; for(let i=0;i<n;i++) keys.push(k+'_'+i); });
+    if(!keys.length){ done(); return; }
+    C.getItems(keys,(e2,parts)=>{
+      if(e2||!parts){ done(); return; }
+      const src={};
+      CS_SECS.forEach(k=>{ const n=Number(v[k+'_n'])||0; if(!n) return; let txt=''; for(let i=0;i<n;i++) txt+=parts[k+'_'+i]||''; try{ src[k]=JSON.parse(txt); csLast[k]=txt; }catch(x){} });
+      /* картинки остаются с этого устройства */
+      if(src.me){ src.me.images=D.me.images; src.me.cover=D.me.cover; }
+      if(src.d1&&Array.isArray(src.d1.refs)){ const loc={}; (D.d1.refs||[]).forEach(r=>{ loc[r.id]=r; }); src.d1.refs=src.d1.refs.map(r=>Object.assign({img:(loc[r.id]&&loc[r.id].img)||''},r)); }
+      const cur=JSON.parse(JSON.stringify(D)); CS_SECS.forEach(k=>{ if(src[k]) cur[k]=src[k]; }); cur.updatedAt=cu;
+      D=merge(cur); D.updatedAt=cu;
+      try{ localStorage.setItem(STORE,JSON.stringify({app:APP,v:1,data:D})); }catch(x){}
+      cloudReady=true; if(!isLocked()) render(); else renderCover();
+    });
+  }); }catch(e){ done(); }
+}
 /* Заглушка до старта: до 29.11, 00:00 по Берлину вместо маршрута отсчёт. Для команды: добавить ?preview=1 к адресу */
 const HIKE_START=new Date('2026-11-29T00:00:00+01:00');
-const isLocked=()=>Date.now()<HIKE_START.getTime()&&!/[?&]preview=1/.test(location.search);
+const isLocked=()=>Date.now()<HIKE_START.getTime()&&!PREVIEW;
 function gate(){
   document.body.classList.add('locked');
   $('#day').innerHTML='<section class="gate"><span class="k">старт 29.11 · 00:00 по Берлину</span><h2>До старта похода</h2>'
@@ -1008,6 +1279,7 @@ function gate(){
     +'</section>';
   const p=n=>String(n).padStart(2,'0');
   const t=()=>{
+    if(!$('#gD')) return;
     const ms=HIKE_START.getTime()-Date.now();
     if(ms<=0){ location.reload(); return; }
     const s=Math.floor(ms/1000);
@@ -1018,7 +1290,28 @@ function gate(){
   };
   t(); setInterval(t,1000);
 }
-if(isLocked()){ load(); renderCover(); gate(); snowfall(); } else { load(); fromHash(); snowfall(); }
+/* Доступ только для зарегистрированных в боте. Команде: ?preview=1 пропускает проверку */
+function startApp(){ if(isLocked()){ if(!$('#gD')) gate(); tgButtons(); } else { document.body.classList.remove('locked'); fromHash(); } cloudPull(); }
+function regScreen(){
+  ACCESS=false; document.body.classList.add('locked');
+  $('#day').innerHTML='<section class="gate reg"><h2>зарегистрироваться на мастер-класс по видео можно <a href="'+esc(CFG.BOT_URL)+'" target="_blank" rel="noopener noreferrer">в этом боте</a></h2></section>';
+  tgButtons();
+}
+function checkAccess(){
+  const initData=TG&&TG.initData;
+  if(!initData){ regScreen(); return; }
+  /* пока ждём ответ — то же, что в заглушке: маршрут скрыт */
+  document.body.classList.add('locked');
+  if(isLocked()) gate(); else $('#day').innerHTML='';
+  tgButtons();
+  const ac=window.AbortController?new AbortController():null, tm=setTimeout(()=>{ if(ac) ac.abort(); },6000);
+  fetch(CFG.CHECK_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({initData:initData}),signal:ac?ac.signal:undefined})
+    .then(r=>r.json())
+    .then(j=>{ clearTimeout(tm); if(j&&j.registered===true){ ACCESS=true; startApp(); } else regScreen(); })
+    .catch(()=>{ clearTimeout(tm); regScreen(); });
+}
+load(); renderCover(); snowfall();
+if(PREVIEW){ ACCESS=true; startApp(); } else checkAccess();
 if(S.storeErr==='blocked') toast('Этот браузер не сохраняет записи. Открой ссылку в обычном окне, не в инкогнито');
 })();
 </script>
