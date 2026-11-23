@@ -512,7 +512,7 @@ body::before{height:max(env(safe-area-inset-top,0px),calc(var(--tg-safe-area-ins
 .btn.start{padding:13px 24px;font-size:16px;border-radius:99px;margin-top:4px}
 body.locked .btn.start{display:none}
 @media (max-width:700px){
-  .cover .wrap{padding-block:46px 22vw;gap:8px}
+  .cover .wrap{padding-block:46px calc(58.5vw - 30px);gap:8px}
   .cover h1{font-size:34px}
   .tframe{padding:18px 16px 16px;gap:8px}
   .promise{font-size:15px}
@@ -608,7 +608,6 @@ body.tg .day-end{display:none}
   <div class="paper" aria-hidden="true"></div>
   <div class="wrap">
     <div class="tframe"><h1>зимний поход</h1><div class="sub"><mark>29.11 — 03.12</mark> пять остановок, чтобы найти свою историю и снять о ней ролик</div></div>
-    <button class="btn fire start" type="button" id="startBtn" data-start="1">Начать · 5 минут</button>
   </div>
 </header>
 
