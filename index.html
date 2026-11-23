@@ -846,7 +846,8 @@ const dayDone=n=>MAIN(n).every(k=>D.tasks[n]&&D.tasks[n][k.id]);
 function syncDone(){ if(!D.done||typeof D.done!=='object') D.done={}; [0,1,2,3,4].forEach(n=>{ D.done[n]=dayDone(n); }); }
 const EXP_OPEN=new Date('2026-12-03T18:00:00+01:00');
 const PREVIEW=/[?&]preview=1/.test(location.search);
-const expOpen=()=>PREVIEW||Date.now()>=EXP_OPEN.getTime()||dayDone(4);
+let ADMIN=false;   /* админ (по ответу CHECK_URL) видит всё, как с ?preview=1 */
+const expOpen=()=>PREVIEW||ADMIN||Date.now()>=EXP_OPEN.getTime()||dayDone(4);
 const CAL_VIEW=[
   {img:'img/dna.jpg',cap:'сборы',what:'сборы',sub:'собираем рюкзак перед дорогой'},
   {img:'img/night.jpg',cap:'в путь',what:'съёмка',sub:'отправляемся в путь'},
@@ -1271,7 +1272,7 @@ function cloudPull(){ const C=cs(); if(!C){ cloudReady=true; return; }
 }
 /* Заглушка до старта: до 29.11, 00:00 по Берлину вместо маршрута отсчёт. Для команды: добавить ?preview=1 к адресу */
 const HIKE_START=new Date('2026-11-29T00:00:00+01:00');
-const isLocked=()=>Date.now()<HIKE_START.getTime()&&!PREVIEW;
+const isLocked=()=>Date.now()<HIKE_START.getTime()&&!PREVIEW&&!ADMIN;
 function gate(){
   document.body.classList.add('locked');
   $('#day').innerHTML='<section class="gate"><span class="k">старт 29.11 · 00:00 по Берлину</span><h2>До старта похода</h2>'
@@ -1307,7 +1308,7 @@ function checkAccess(){
   const ac=window.AbortController?new AbortController():null, tm=setTimeout(()=>{ if(ac) ac.abort(); },6000);
   fetch(CFG.CHECK_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({initData:initData}),signal:ac?ac.signal:undefined})
     .then(r=>r.json())
-    .then(j=>{ clearTimeout(tm); if(j&&j.registered===true){ ACCESS=true; startApp(); } else regScreen(); })
+    .then(j=>{ clearTimeout(tm); if(j&&(j.registered===true||j.admin===true)){ ADMIN=j.admin===true; ACCESS=true; startApp(); } else regScreen(); })
     .catch(()=>{ clearTimeout(tm); regScreen(); });
 }
 load(); renderCover(); snowfall();
