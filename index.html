@@ -488,6 +488,21 @@ main.wrap{padding-block:34px 40px}
 }
 html,body{overscroll-behavior-y:none}
 button,a,label{-webkit-tap-highlight-color:transparent}
+/* Заглушка до старта похода: обратный отсчёт */
+body.locked .route{display:none}
+body.locked{min-height:100vh}
+.gate{max-width:560px;margin:34px auto 10px;text-align:center}
+.gate .k{display:inline-block;font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;background:var(--rose);color:var(--ink);padding:4px 10px}
+.gate h2{font-family:var(--mono);font-weight:600;text-transform:uppercase;letter-spacing:-.03em;font-size:30px;line-height:1.1;margin:14px 0 22px;color:var(--snow)}
+.gate-cd{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;background:var(--beige);color:#23262d;border-radius:22px;padding:18px 12px;box-shadow:0 0 0 5px #1a2742,0 22px 36px -20px rgba(0,0,0,.9)}
+.gate-cd div{display:grid;gap:4px}
+.gate-cd b{font-family:var(--mono);font-weight:600;font-size:38px;line-height:1;font-variant-numeric:tabular-nums}
+.gate-cd span{font-family:var(--mono);font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:#8a7f69}
+@media (max-width:380px){
+  .gate h2{font-size:25px}
+  .gate-cd b{font-size:30px}
+  .gate-cd span{font-size:9.5px}
+}
 </style>
 </head>
 <body>
@@ -983,7 +998,27 @@ if(TG){
     if(TG.isVersionAtLeast&&TG.isVersionAtLeast('7.7')&&TG.disableVerticalSwipes) TG.disableVerticalSwipes();
   }catch(e){}
 }
-load(); fromHash(); snowfall();
+/* Заглушка до старта: до 29.11, 00:00 по Берлину вместо маршрута отсчёт. Для команды: добавить ?preview=1 к адресу */
+const HIKE_START=new Date('2026-11-29T00:00:00+01:00');
+const isLocked=()=>Date.now()<HIKE_START.getTime()&&!/[?&]preview=1/.test(location.search);
+function gate(){
+  document.body.classList.add('locked');
+  $('#day').innerHTML='<section class="gate"><span class="k">старт 29.11 · 00:00 по Берлину</span><h2>До старта похода</h2>'
+    +'<div class="gate-cd"><div><b id="gD">0</b><span>дней</span></div><div><b id="gH">00</b><span>часов</span></div><div><b id="gM">00</b><span>минут</span></div><div><b id="gS">00</b><span>секунд</span></div></div>'
+    +'</section>';
+  const p=n=>String(n).padStart(2,'0');
+  const t=()=>{
+    const ms=HIKE_START.getTime()-Date.now();
+    if(ms<=0){ location.reload(); return; }
+    const s=Math.floor(ms/1000);
+    $('#gD').textContent=Math.floor(s/86400);
+    $('#gH').textContent=p(Math.floor(s%86400/3600));
+    $('#gM').textContent=p(Math.floor(s%3600/60));
+    $('#gS').textContent=p(s%60);
+  };
+  t(); setInterval(t,1000);
+}
+if(isLocked()){ load(); renderCover(); gate(); snowfall(); } else { load(); fromHash(); snowfall(); }
 if(S.storeErr==='blocked') toast('Этот браузер не сохраняет записи. Открой ссылку в обычном окне, не в инкогнито');
 })();
 </script>
