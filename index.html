@@ -592,6 +592,8 @@ body.locked .btn.start{display:none}
 .task input::before,.cv-ev input::before{content:"";position:absolute;inset:-10px}
 /* в Telegram нижнюю кнопку заменяет кнопка Telegram */
 body.tg .day-end{display:none}
+.gate.reg h2{margin:10px 0}
+.gate.reg a{color:var(--yellow);text-decoration:underline;text-underline-offset:5px;text-decoration-thickness:2px}
 .gate-cd span{font-size:12px;letter-spacing:0}
 .lt-addr span,.cv-rem .k{font-size:12px}
 .day-end{justify-content:flex-end}
@@ -640,6 +642,8 @@ const CFG = {
   DAY3_URL: '',             // короткий разбор на день 3 (необязательно)
   EXP_URL: 'https://solopovafilmyourstory.com/home#rec826934466',
   EXP_START: '15 декабря',  // старт курса
+  BOT_URL: 'https://t.me/alinasolopova_fys_bot',  // бот регистрации на мастер-класс
+  CHECK_URL: 'https://wrhkgedbwgdjzcjtctcy.supabase.co/functions/v1/bot?check',  // проверка, зарегистрирована ли участница
   EXP_PRICE: '',            // цена или «спеццена для участников похода»
   EXP_DEADLINE: '',         // до какой даты действует спеццена
   LESSON_1_MIN: null, LESSON_2_MIN: null  // длительность уроков в минутах
@@ -699,6 +703,7 @@ const blank=()=>({me:{name:'',about:'',facts:[],f1:'',f2:'',f3:'',music:[],image
   d4:{questions:[],takeaway:'',reviewOk:false},exp:{claimed:false,no:''},done:{},tasks:{0:{},1:{},2:{},3:{},4:{}},updatedAt:0});
 let D=blank();
 const S={day:0,storeErr:'',open:{}};
+let ACCESS=null;   /* null — проверяем, true — пускаем, false — экран регистрации */
 
 /* ---------- storage ---------- */
 /* старые отметки задач хранились по номеру строки — переносим их на новые ключи, старые не трогаем */
@@ -1075,6 +1080,7 @@ const DAY_TIME=()=>['Знакомство · 5 минут',
   'Эфир у костра'+[CFG.LIVE_DURATION,CFG.LIVE_RECORDING===true?'запись будет':''].filter(Boolean).map((x,i)=>(i?', ':' · ')+x).join('')];
 function nextOf(n){ return n<4?DAYS[n+1]:(n===4&&expOpen()?{n:5,name:EXP.name}:null); }
 function render(){
+  if(ACCESS!==true) return;   /* пока доступ не подтверждён, дни не показываем */
   if(S.day===5&&!expOpen()) S.day=4;
   renderCover(); renderStops();
   if(S.day===5){ $('#day').innerHTML=expedition(); tgButtons(); return; }
@@ -1087,7 +1093,7 @@ function render(){
     +(next?'<div class="day-end"><button class="btn snow" type="button" data-day="'+next.n+'">Дальше: '+esc(next.name.toLowerCase())+' →</button></div>':'');
   tgButtons();
 }function go(n,scroll){ S.calSel=null; S.day=Math.max(0,Math.min(expOpen()?5:4,n)); try{ localStorage.setItem(STORE+'-day',String(S.day)); history.replaceState(null,'','#'+(S.day===5?EXP.key:DAYS[S.day].key)); }catch(e){} render(); if(scroll) $('#stops').scrollIntoView({behavior:'smooth',block:'start'}); }
-function fromHash(){ const h=location.hash.replace('#',''); const d=DAYS.find(x=>x.key===h); if(d) S.day=d.n; if(h===EXP.key) S.day=expOpen()?5:4; S.calSel=null; render(); }
+function fromHash(){ if(ACCESS!==true) return; const h=location.hash.replace('#',''); const d=DAYS.find(x=>x.key===h); if(d) S.day=d.n; if(h===EXP.key) S.day=expOpen()?5:4; S.calSel=null; render(); }
 window.addEventListener('hashchange',fromHash);
 
 /* ---------- images ---------- */
@@ -1220,10 +1226,10 @@ if(inTG){
 function tgButtons(){
   if(!inTG) return;
   try{
-    const nx=isLocked()?null:nextOf(S.day);
+    const nx=(isLocked()||ACCESS!==true)?null:nextOf(S.day);
     if(nx){ TG.MainButton.setParams({text:S.day===4?'Забрать билет в экспедицию':'Дальше: '+nx.name.toLowerCase(),color:'#efdb55',text_color:'#0f1c33',is_active:true,is_visible:true}); }
     else TG.MainButton.hide();
-    if(tgv('6.1')){ if(S.day>0&&!isLocked()) TG.BackButton.show(); else TG.BackButton.hide(); }
+    if(tgv('6.1')){ if(S.day>0&&!isLocked()&&ACCESS===true) TG.BackButton.show(); else TG.BackButton.hide(); }
   }catch(e){}
 }
 /* ---------- облако Telegram: тексты без картинок, по разделам; свежее побеждает ---------- */
@@ -1273,6 +1279,7 @@ function gate(){
     +'</section>';
   const p=n=>String(n).padStart(2,'0');
   const t=()=>{
+    if(!$('#gD')) return;
     const ms=HIKE_START.getTime()-Date.now();
     if(ms<=0){ location.reload(); return; }
     const s=Math.floor(ms/1000);
@@ -1283,8 +1290,28 @@ function gate(){
   };
   t(); setInterval(t,1000);
 }
-if(isLocked()){ load(); renderCover(); gate(); tgButtons(); snowfall(); } else { load(); fromHash(); snowfall(); }
-cloudPull();
+/* Доступ только для зарегистрированных в боте. Команде: ?preview=1 пропускает проверку */
+function startApp(){ if(isLocked()){ if(!$('#gD')) gate(); tgButtons(); } else { document.body.classList.remove('locked'); fromHash(); } cloudPull(); }
+function regScreen(){
+  ACCESS=false; document.body.classList.add('locked');
+  $('#day').innerHTML='<section class="gate reg"><h2>зарегистрироваться на мастер-класс по видео можно <a href="'+esc(CFG.BOT_URL)+'" target="_blank" rel="noopener noreferrer">в этом боте</a></h2></section>';
+  tgButtons();
+}
+function checkAccess(){
+  const initData=TG&&TG.initData;
+  if(!initData){ regScreen(); return; }
+  /* пока ждём ответ — то же, что в заглушке: маршрут скрыт */
+  document.body.classList.add('locked');
+  if(isLocked()) gate(); else $('#day').innerHTML='';
+  tgButtons();
+  const ac=window.AbortController?new AbortController():null, tm=setTimeout(()=>{ if(ac) ac.abort(); },6000);
+  fetch(CFG.CHECK_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({initData:initData}),signal:ac?ac.signal:undefined})
+    .then(r=>r.json())
+    .then(j=>{ clearTimeout(tm); if(j&&j.registered===true){ ACCESS=true; startApp(); } else regScreen(); })
+    .catch(()=>{ clearTimeout(tm); regScreen(); });
+}
+load(); renderCover(); snowfall();
+if(PREVIEW){ ACCESS=true; startApp(); } else checkAccess();
 if(S.storeErr==='blocked') toast('Этот браузер не сохраняет записи. Открой ссылку в обычном окне, не в инкогнито');
 })();
 </script>
