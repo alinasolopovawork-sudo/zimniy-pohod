@@ -100,12 +100,30 @@ Deno.serve(async (req) => {
     if (b.op === "lead") {
       const tg = Number(b.tg_id);
       if (!Number.isSafeInteger(tg)) return json({ ok: false }, 400);
-      const row = {
+      const row: Record<string, unknown> = {
         tg_id: tg, status: STATUSES.has(b.status) ? b.status : "new",
         manager: str(b.manager, 60) || null, note: str(b.note, 2000) || null,
         updated_by: id, updated_at: new Date().toISOString(),
       };
+      if ("next" in b) row.next_at = /^\d{4}-\d{2}-\d{2}$/.test(String(b.next ?? "")) ? b.next : null;
       const { error } = await db.from("lead_status").upsert(row);
+      if (error) { console.error(error); return json({ ok: false }, 500); }
+      return json({ ok: true });
+    }
+    if (b.op === "assign") {
+      // Массовое назначение менеджера
+      const ids: number[] = (Array.isArray(b.tg_ids) ? b.tg_ids : []).slice(0, 2000).map(Number).filter((x: number) => Number.isSafeInteger(x));
+      const manager = str(b.manager, 60) || null, now = new Date().toISOString();
+      if (!ids.length) return json({ ok: false }, 400);
+      const { error } = await db.from("lead_status").upsert(ids.map((tg) => ({ tg_id: tg, manager, updated_by: id, updated_at: now })), { onConflict: "tg_id" });
+      if (error) { console.error(error); return json({ ok: false }, 500); }
+      return json({ ok: true, n: ids.length });
+    }
+    if (b.op === "pick") {
+      // Отметка «разобрать ролик на эфире»
+      const tg = Number(b.tg_id);
+      if (!Number.isSafeInteger(tg)) return json({ ok: false }, 400);
+      const { error } = await db.from("lead_status").upsert({ tg_id: tg, live_pick: b.pick === true, updated_by: id, updated_at: new Date().toISOString() }, { onConflict: "tg_id" });
       if (error) { console.error(error); return json({ ok: false }, 500); }
       return json({ ok: true });
     }
