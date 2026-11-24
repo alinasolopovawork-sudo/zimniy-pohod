@@ -44,10 +44,9 @@ async function openApp(chat: number, m: Awaited<ReturnType<typeof texts>>) {
 }
 
 // Рассылки от рассыльщика (participants.broadcaster): любое сообщение — черновик,
-// к нему можно добавить кнопки (цветные, ссылка / платформа / канал / скопировать текст),
+// к нему можно добавить кнопки (ссылка / платформа / канал / аккаунт / скопировать текст),
 // «Разослать всем» — копия сообщения (или альбома) с кнопками уходит всем зарегистрированным через очередь broadcasts.
 const SEND = "✅ Разослать всем", CANCEL = "✖️ Отмена", ADDBTN = "➕ Добавить кнопку", CLEARBTN = "🗑 Убрать кнопки";
-const STYLE: Record<string, string> = { "🟢": "success", "🔵": "primary", "🔴": "danger" };
 const BTN_HELP = [
   "Пришли кнопку одной строкой: <b>Текст — куда ведёт</b>",
   "",
@@ -58,13 +57,12 @@ const BTN_HELP = [
   "• Telegram-аккаунт — <code>Написать Алине — @username</code>",
   "• скопировать текст — <code>Промокод — копировать: WINTER10</code>",
   "",
-  "Цвет — значок в начале: 🟢 зелёная, 🔵 синяя, 🔴 красная.",
+  "В текст кнопки можно добавить эмодзи: <code>🏔 Открыть платформу — платформа</code>",
   "Две кнопки в одном ряду — через «|»:",
-  "<code>🟢 Урок — https://… | Канал — канал</code>",
+  "<code>🎞 Урок — https://… | 🔥 Канал — канал</code>",
 ].join("\n");
 function parseButton(part: string, m: Record<string, { text: string }>) {
-  let t = part.trim(), style: string | undefined;
-  for (const [e, st] of Object.entries(STYLE)) if (t.startsWith(e)) { style = st; t = t.slice(e.length).trim(); break; }
+  const t = part.trim();
   const mm = t.match(/^(.+?)\s+[—–-]\s+(.+)$/s);
   if (!mm) return null;
   const text = mm[1].trim().slice(0, 64), target = mm[2].trim();
@@ -79,7 +77,6 @@ function parseButton(part: string, m: Record<string, { text: string }>) {
   else if (/^https?:\/\/\S+$/i.test(target)) b.url = target;
   else if (/^t\.me\/\S+$/i.test(target)) b.url = "https://" + target;
   else return null;
-  if (style) b.style = style;
   return b;
 }
 async function onBroadcaster(msg: any, chat: number, m: Record<string, { text: string }>) {
