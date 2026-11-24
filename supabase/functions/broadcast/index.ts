@@ -1,5 +1,5 @@
 // Рассылки по расписанию: вызывается каждую минуту из pg_cron. Отправляет то, чему пора, по 25 сообщений в секунду.
-// Если у рассылки заполнены copy_chat_id и copy_message_id — участницам уходит копия этого сообщения (так рассылает Максим из бота).
+// Если у рассылки заполнены copy_chat_id и copy_message_id(s) — участницам уходит копия этого сообщения или альбома (так рассылает Максим из бота).
 import { createClient } from "npm:@supabase/supabase-js@2";
 
 const TOKEN = Deno.env.get("TELEGRAM_BOT_TOKEN") ?? "";
@@ -10,7 +10,10 @@ const PER_RUN = 2500, PAGE = 200;
 
 async function send(chat: number, b: any, appUrl: string) {
   let method: string, body: any;
-  if (b.copy_chat_id && b.copy_message_id) {
+  if (b.copy_chat_id && (b.copy_message_ids?.length ?? 0) > 1) {
+    method = "copyMessages";
+    body = { chat_id: chat, from_chat_id: b.copy_chat_id, message_ids: [...b.copy_message_ids].sort((x: number, y: number) => x - y) };
+  } else if (b.copy_chat_id && b.copy_message_id) {
     method = "copyMessage";
     body = { chat_id: chat, from_chat_id: b.copy_chat_id, message_id: b.copy_message_id };
   } else {

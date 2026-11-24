@@ -109,6 +109,38 @@ Deno.serve(async (req) => {
       if (error) { console.error(error); return json({ ok: false }, 500); }
       return json({ ok: true });
     }
+    if (b.op === "crm") {
+      // Отправка лидов в CRM: контакты берём из базы, этап и заметку присылает админка. Адрес вебхука — в app_secrets.
+      const items: any[] = Array.isArray(b.leads) ? b.leads.slice(0, 40) : [];
+      const { data: sec } = await db.from("app_secrets").select("value").eq("key", "crm_webhook").maybeSingle();
+      if (!sec?.value) return json({ ok: false, error: "no webhook" }, 500);
+      const ids = items.map((x) => Number(x.tg_id)).filter((x) => Number.isSafeInteger(x));
+      const { data: people } = await db.from("participants").select("tg_id,first_name,last_name,username,phone,source").in("tg_id", ids);
+      const byId = new Map((people ?? []).map((p: any) => [Number(p.tg_id), p]));
+      const results: any[] = [];
+      for (const it of items) {
+        const p: any = byId.get(Number(it.tg_id));
+        if (!p || (!p.phone && !p.username)) { results.push({ tg_id: it.tg_id, ok: false, error: "нет контакта" }); continue; }
+        const payload: Record<string, string> = {
+          name: [p.first_name, p.last_name].filter(Boolean).join(" ") || "без имени",
+          comment: str(it.comment, 3000), tags: str(it.tags, 300),
+          product: "Бесплатный мастер-класс «Путешествие к видеотворчеству», 2–6 декабря",
+          page: "Telegram-бот @alinasolopova_fys_bot · мини-апп «Зимний поход»",
+          utm_source: p.source || "", utm_medium: "telegram", utm_campaign: "zimniy-pohod",
+        };
+        if (p.phone) payload.phone = String(p.phone);
+        if (p.username) payload.tg = "@" + p.username;
+        try {
+          const r = await fetch(sec.value, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(payload) });
+          const t = await r.text(); let j: any = {}; try { j = JSON.parse(t); } catch { /* не JSON */ }
+          const deal = j?.deal_id != null ? String(j.deal_id) : null;
+          if (!r.ok) { results.push({ tg_id: it.tg_id, ok: false, error: "CRM ответила " + r.status }); continue; }
+          await db.from("lead_status").upsert({ tg_id: p.tg_id, crm_sent_at: new Date().toISOString(), crm_deal_id: deal, updated_by: id }, { onConflict: "tg_id" });
+          results.push({ tg_id: it.tg_id, ok: true, deal });
+        } catch (e) { console.error(e); results.push({ tg_id: it.tg_id, ok: false, error: "нет связи с CRM" }); }
+      }
+      return json({ ok: true, results });
+    }
     return json({ ok: false }, 400);
   }
   return json({ ok: false }, 404);

@@ -44,7 +44,7 @@ async function openApp(chat: number, m: Awaited<ReturnType<typeof texts>>) {
 }
 
 // Рассылки от рассыльщика (participants.broadcaster): любое сообщение — черновик,
-// «Разослать всем» — копия сообщения уходит всем зарегистрированным через очередь broadcasts.
+// «Разослать всем» — копия сообщения (или целого альбома) уходит всем зарегистрированным через очередь broadcasts.
 const SEND = "✅ Разослать всем", CANCEL = "✖️ Отмена";
 async function onBroadcaster(msg: any, chat: number) {
   const from = msg.from;
@@ -56,27 +56,27 @@ async function onBroadcaster(msg: any, chat: number) {
     return;
   }
   if (msg.text === SEND) {
-    const { data: d } = await db.from("broadcast_drafts").select("chat_id,message_id").eq("tg_id", from.id).maybeSingle();
+    const { data: d } = await db.from("broadcast_drafts").select("chat_id,message_id,message_ids").eq("tg_id", from.id).maybeSingle();
     if (!d) { await reply("Черновика нет. Пришли сообщение, которое нужно разослать."); return; }
     const { count } = await db.from("participants").select("tg_id", { count: "exact", head: true }).eq("blocked", false).not("registered_at", "is", null);
     const { error } = await db.from("broadcasts").insert({
       send_at: new Date().toISOString(), text: "", audience: "registered",
-      copy_chat_id: d.chat_id, copy_message_id: d.message_id, note: "из бота от " + (from.username ? "@" + from.username : from.id),
+      copy_chat_id: d.chat_id, copy_message_id: d.message_id,
+      copy_message_ids: (d.message_ids?.length ?? 0) > 1 ? d.message_ids : null, note: "из бота от " + (from.username ? "@" + from.username : from.id),
     });
     if (error) { console.error(error); await reply("Не получилось поставить рассылку. Попробуй ещё раз через минуту."); return; }
     await db.from("broadcast_drafts").delete().eq("tg_id", from.id);
     await reply(`Рассылка запущена: получат ${count ?? 0} зарегистрированных. Отправка начнётся в течение минуты.`);
     return;
   }
-  if (msg.media_group_id) {
-    await reply("Альбомы из нескольких фото разослать нельзя. Пришли одно фото или видео с подписью.");
-    return;
-  }
-  await db.from("broadcast_drafts").upsert({ tg_id: from.id, chat_id: chat, message_id: msg.message_id, created_at: new Date().toISOString() });
+  // Альбом приходит несколькими сообщениями с одним media_group_id — собираем их в один черновик и спрашиваем один раз
+  const { data: first, error: de } = await db.rpc("draft_add", { p_tg: from.id, p_chat: chat, p_msg: msg.message_id, p_group: msg.media_group_id ?? null });
+  if (de) { console.error(de); await reply("Не получилось сохранить черновик. Пришли ещё раз."); return; }
+  if (!first) return;
   const { count } = await db.from("participants").select("tg_id", { count: "exact", head: true }).eq("blocked", false).not("registered_at", "is", null);
   await tg("sendMessage", {
     chat_id: chat, reply_to_message_id: msg.message_id,
-    text: `Это сообщение получат ${count ?? 0} зарегистрированных участниц — ровно в таком виде. Отправить?\n\nЕсли нужно поправить — просто пришли новый вариант.`,
+    text: `${msg.media_group_id ? "Этот альбом" : "Это сообщение"} получат ${count ?? 0} зарегистрированных участниц — ровно в таком виде. Отправить?\n\nЕсли нужно поправить — просто пришли новый вариант.`,
     reply_markup: { keyboard: [[{ text: SEND }], [{ text: CANCEL }]], resize_keyboard: true, one_time_keyboard: true },
   });
 }
