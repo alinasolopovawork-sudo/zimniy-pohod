@@ -189,6 +189,8 @@ main.wrap{padding-block:34px 40px}
 .task .tt{font-family:var(--f);font-size:17px;font-weight:500;line-height:1.35}
 .task .ts{font-size:14px;color:var(--snow-dim);line-height:1.45}
 .task.on .tt{color:var(--snow-dim);text-decoration:line-through;text-decoration-color:rgba(180,194,216,.45)}
+.task .go,.cv-act,:is(.sec,.talk) .addrow .btn.sm,:is(.sec,.talk) .coloradd .btn.sm{position:relative}
+.task .go::after,.cv-act::after,:is(.sec,.talk) .addrow .btn.sm::after,:is(.sec,.talk) .coloradd .btn.sm::after{content:"";position:absolute;inset:-10px -8px}
 .task .go{border:0;background:none;padding:2px 0;color:var(--fire);font-size:14px;font-weight:700;white-space:nowrap;text-decoration:none;cursor:pointer}
 .task .go:hover{color:var(--snow)}
 .task .wait{font-size:14px;color:var(--snow-dim);white-space:nowrap;padding-top:3px}
@@ -571,6 +573,14 @@ const I={
 
 const DATES=[{d:2,m:11,wd:'ср',full:'Среда — 2 декабря',short:'ср, 2 декабря'},{d:3,m:11,wd:'чт',full:'Четверг — 3 декабря',short:'чт, 3 декабря'},{d:4,m:11,wd:'пт',full:'Пятница — 4 декабря',short:'пт, 4 декабря'},{d:5,m:11,wd:'сб',full:'Суббота — 5 декабря',short:'сб, 5 декабря'},{d:6,m:11,wd:'вс',full:'Воскресенье — 6 декабря',short:'вс, 6 декабря'}];
 const HIKE_YEAR=2026;
+/* время эфира: если у участницы другой часовой пояс, добавляем её местное время */
+const LIVE_LOCAL=(()=>{ const m=/(\d{1,2}):(\d{2})/.exec(LIVE_TIME||''); if(!m) return '';
+  try{ const d=DATES[4], at=new Date(Date.UTC(HIKE_YEAR,d.m,d.d,+m[1]-1,+m[2]));   /* Берлин зимой: UTC+1 */
+    const o={hour:'2-digit',minute:'2-digit'}, loc=at.toLocaleTimeString('ru-RU',o), ber=at.toLocaleTimeString('ru-RU',Object.assign({timeZone:'Europe/Berlin'},o));
+    if(loc===ber) return '';
+    return at.getDate()===d.d?loc:at.getDate()+' декабря в '+loc;
+  }catch(e){ return ''; } })();
+const LIVE_TXT=LIVE_TIME+(LIVE_LOCAL?', у тебя '+LIVE_LOCAL:'');
 function realToday(){ const t=new Date(); for(let i=0;i<5;i++){ if(t.getFullYear()===HIKE_YEAR&&t.getMonth()===DATES[i].m&&t.getDate()===DATES[i].d) return i; } return -1; }
 const DAYS=[
   {n:0,key:'sbory',name:'Сборы',icon:'pack',tag:'Собираем рюкзак',
@@ -600,15 +610,35 @@ function merge(src){ const b=blank(); Object.keys(b).forEach(k=>{ if(src&&src[k]
 function load(){
   let raw=null;
   try{ raw=localStorage.getItem(STORE); localStorage.setItem(STORE+'-p','1'); localStorage.removeItem(STORE+'-p'); }catch(e){ S.storeErr='blocked'; }
-  try{ const p=raw?JSON.parse(raw):null; if(p&&p.app===APP) D=merge(p.data); }catch(e){}
+  try{ const p=raw?JSON.parse(raw):null; if(p&&p.app===APP){ D=merge(p.data);
+    let m={}; try{ m=JSON.parse(localStorage.getItem(IMG_KEY)||'{}')||{}; }catch(e){}
+    const fill=x=>{ if(x&&x.img==='@') x.img=m[x.id]||''; };
+    D.me.images.forEach(fill); D.d1.refs.forEach(fill); D.me.images=D.me.images.filter(x=>x.img);
+    imgSig=p.v>=2?Object.keys(allImgs()).join(','):null; } else imgSig=''; }catch(e){}
   try{ const d=Number(localStorage.getItem(STORE+'-day')); if(d>=0&&d<=5) S.day=d; }catch(e){}
 }
 /* день пройден, когда отмечены все задачи этого дня */
 function syncDone(){ if(!D.done||typeof D.done!=='object') D.done={}; [0,1,2,3,4].forEach(n=>{ D.done[n]=TASKS[n].every((_,i)=>D.tasks[n]&&D.tasks[n][i]); }); }
+/* картинки лежат отдельно (IMG_KEY) и пишутся только когда меняется их набор; записи — маленьким куском, всегда влезают */
+const IMG_KEY=STORE+'-img', IMG_MAX=3500000;
+let imgSig='';
+function allImgs(){ const m={}; D.me.images.forEach(x=>{ if(x.img) m[x.id]=x.img; }); D.d1.refs.forEach(x=>{ if(x.img) m[x.id]=x.img; }); return m; }
+function dropUnsaved(){ const ok=new Set(String(imgSig||'').split(','));
+  D.me.images=D.me.images.filter(x=>ok.has(x.id)); if(D.me.cover&&!ok.has(D.me.cover)) D.me.cover='';
+  D.d1.refs=D.d1.refs.filter(x=>!x.img||ok.has(x.id)); }
 function persist(){
   syncDone();
-  try{ localStorage.setItem(STORE,JSON.stringify({app:APP,v:1,data:D})); trackSoon(); return true; }
-  catch(e){ if(S.storeErr!=='blocked') toast('В браузере закончилось место. Убери пару картинок.'); return false; }
+  const m=allImgs(), sig=Object.keys(m).join(',');
+  if(sig!==imgSig){
+    const str=JSON.stringify(m); let fit=str.length<=IMG_MAX;
+    if(fit){ try{ localStorage.setItem(IMG_KEY,str); imgSig=sig; }catch(e){ fit=false; } }
+    if(!fit){
+      if(imgSig===null){ try{ localStorage.setItem(STORE,JSON.stringify({app:APP,v:1,data:D})); trackSoon(); return true; }catch(e){} }  /* старое хранение одним куском */
+      dropUnsaved(); if(S.storeErr!=='blocked') toast('Картинка не поместилась в память телефона. Убери пару старых — записи сохраняются');
+    }
+  }
+  try{ localStorage.setItem(STORE,JSON.stringify({app:APP,v:2,data:D},(k,v)=>k==='img'?(v?'@':''):v)); trackSoon(); return true; }
+  catch(e){ if(S.storeErr!=='blocked') toast('Не получилось сохранить. Убери пару картинок.'); return false; }
 }
 let tSave=null; function persistSoon(){ clearTimeout(tSave); tSave=setTimeout(persist,350); }
 
@@ -698,7 +728,7 @@ const TASKS=[
   {t:'Собрать свою творческую ДНК',s:'Картинки и музыка, в которых узнаёшь себя: места, где тебе хорошо, любимый свет и цвета, вещи с историей, близкие люди, кадры из фильмов. Плюс свои цвета, стиль и видео, которые мечтаешь снимать.',go:'s-dna'},
   {t:'Собрать рюкзак',s:'Зарядить телефон, освободить память, найти наушники или микрофон.'},
   {t:'Подготовиться к первому уроку',s:'Выбери на завтра время, когда тебя никто не отвлечёт, и найди тихое место.'},
-  {t:'Поставить напоминание об эфире у костра',remind:1,s:'6 декабря, воскресенье'+(LIVE_TIME?', '+LIVE_TIME:'')+'. Здесь мы вместе посмотрим ваши ролики.',live:1}],
+  {t:'Поставить напоминание об эфире у костра',remind:1,s:'6 декабря, воскресенье'+(LIVE_TIME?', '+LIVE_TXT:'')+'. Здесь мы вместе посмотрим ваши ролики.',live:1}],
  [{t:'Посмотреть урок 1',s:'Про идею и поиск своей интонации.',link:'l1'},
   {t:'Записать идею своего ролика',s:'О чём он и что ты хочешь показать о себе.',go:'s-idea'},
   {t:'Составить список кадров',s:'Что хочется поймать в кадр.',go:'s-kadry'},
@@ -713,7 +743,7 @@ const TASKS=[
   {t:'Доснять недостающие кадры',s:'Всё, чего не хватило истории.',go:'s-dosn'},
   {t:'Доработать монтаж',s:'Звук, цвет, титры, ритм.',go:'s-pomen'},
   {t:'Сохранить финальную версию и вставить ссылку',s:'Чтобы показать ролик у костра.',go:'s-final'},
-  {t:'Завтра эфир у костра — освободить вечер',s:'6 декабря'+(LIVE_TIME?', '+LIVE_TIME:'')+'. Приходи с готовым роликом.',live:1},
+  {t:'Завтра эфир у костра — освободить вечер',s:'6 декабря'+(LIVE_TIME?', '+LIVE_TXT:'')+'. Приходи с готовым роликом.',live:1},
   {t:'Написать письмо себе в будущее',s:'Запечатай его — оно откроется 25 февраля.',go:'s-letter'}],
  [{t:'Подготовить ссылку на свой ролик',go:'s-rolik'},
   {t:'Записать вопросы к эфиру',s:'Что хочется спросить или обсудить.',go:'s-vopr'},
@@ -825,7 +855,7 @@ function expedition(){
 }
 function liveBanner(){
   const left=4-S.day, u=okUrl(LIVE_URL);
-  return '<section class="live"><div class="live-ic">'+I.fire+'</div><div class="live-t"><span class="live-k">эфир у костра</span><b>6 декабря, воскресенье'+(LIVE_TIME?' · '+esc(LIVE_TIME):'')+'</b><span>'+(left===1?'Уже завтра!':'Через '+left+' '+(left<5?'дня':'дней'))+' встречаемся у костра: смотрим ваши ролики и обсуждаем всё, что получилось.'+(LIVE_TIME?'':' Время сообщим в канале.')+'</span></div>'
+  return '<section class="live"><div class="live-ic">'+I.fire+'</div><div class="live-t"><span class="live-k">эфир у костра</span><b>6 декабря, воскресенье'+(LIVE_TIME?' · '+esc(LIVE_TIME):'')+'</b><span>'+(LIVE_LOCAL?'У тебя это '+esc(LIVE_LOCAL)+'. ':'')+''+(left===1?'Уже завтра!':'Через '+left+' '+(left<5?'дня':'дней'))+' встречаемся у костра: смотрим ваши ролики и обсуждаем всё, что получилось.'+(LIVE_TIME?'':' Время сообщим в канале.')+'</span></div>'
     +(u?'<a class="live-go" href="'+esc(u)+'" target="_blank" rel="noopener noreferrer">Ссылка на эфир ↗</a>':'<button class="live-go" type="button" data-day="4">Подробнее →</button>')+'</section>';
 }
 function day1(){
@@ -914,7 +944,7 @@ function render(){
     +'<div class="day-end"><span></span>'+(next?'<button class="btn snow" type="button" data-day="'+next.n+'">Дальше: '+esc(next.name.toLowerCase())+' →</button>':'')+'</div>';
 }
 function go(n,scroll){ S.calSel=null; S.day=Math.max(0,Math.min(5,n)); try{ localStorage.setItem(STORE+'-day',String(S.day)); history.replaceState(null,'','#'+(S.day===5?EXP.key:DAYS[S.day].key)); }catch(e){} render(); if(scroll) $('#stops').scrollIntoView({behavior:'smooth',block:'start'}); }
-function fromHash(){ if(ACCESS!==true) return; const h=location.hash.replace('#',''); const d=DAYS.find(x=>x.key===h); if(d) S.day=d.n; if(h===EXP.key) S.day=5; S.calSel=null; render(); }
+function fromHash(){ if(ACCESS!==true) return; const h=location.hash.replace('#',''); const d=DAYS.find(x=>x.key===h); if(d) S.day=d.n; else if(h===EXP.key) S.day=5; else if(!h&&realToday()>=0) S.day=realToday(); S.calSel=null; render(); }
 window.addEventListener('hashchange',fromHash);
 
 /* ---------- images ---------- */
@@ -924,8 +954,16 @@ function shrink(file,max){ return new Promise((res,rej)=>{ const u=URL.createObj
 let pickFor='me';
 async function addImages(files,target){
   files=[...files].filter(f=>f&&/^image\//.test(f.type)); if(!files.length) return; let n=0;
-  for(const f of files){ try{ if(target==='me') D.me.images.push({id:uid('p'),img:await shrink(f,1400)}); else D.d1.refs.unshift({id:uid('r'),img:await shrink(f,800),title:'',url:''}); n++; }catch(e){ toast('Не получилось открыть одну из картинок'); } }
-  if(!persist()) return; render(); if(n) toast(n===1?'Картинка добавлена':'Добавлено картинок: '+n);
+  let full=false;
+  for(const f of files){ let id;
+    try{ id=uid(target==='me'?'p':'r'); if(target==='me') D.me.images.push({id,img:await shrink(f,1100)}); else D.d1.refs.unshift({id,img:await shrink(f,700),title:'',url:''}); }
+    catch(e){ toast('Не получилось открыть одну из картинок'); continue; }
+    persist();   /* сохраняем по одной: если память кончилась, остаются те, что влезли */
+    if(!(target==='me'?D.me.images:D.d1.refs).some(x=>x.id===id)){ full=true; break; }
+    n++; }
+  render();
+  if(full) toast((n?'Добавлено картинок: '+n+'. ':'')+'Остальные не поместились в память телефона — убери пару старых');
+  else if(n) toast(n===1?'Картинка добавлена':'Добавлено картинок: '+n);
 }
 
 /* ---------- events ---------- */
@@ -1048,17 +1086,23 @@ function regScreen(){
   /* в Telegram открываем бота средствами Telegram, иначе — обычная ссылка */
   const bl=$('#botLink'); if(bl) bl.addEventListener('click',e=>{ const W=window.Telegram&&window.Telegram.WebApp; if(W&&W.openTelegramLink&&(W.initData||(W.platform&&W.platform!=='unknown'))){ e.preventDefault(); e.stopPropagation(); try{ W.openTelegramLink(BOT_URL); }catch(err){ location.href=BOT_URL; } } });
 }
-function checkAccess(){
+function netScreen(){
+  ACCESS=false; document.body.classList.add('locked');
+  $('#day').innerHTML='<section class="gate reg"><h2>Не получилось проверить регистрацию</h2><p class="hint" style="margin:0 0 20px">Похоже, слабый интернет. Проверь связь и попробуй ещё раз.</p><button class="btn snow" type="button" id="retryAcc">Попробовать ещё раз</button></section>';
+  const b=$('#retryAcc'); if(b) b.addEventListener('click',()=>{ b.disabled=true; b.textContent='Проверяю…'; checkAccess(1); });
+}
+function checkAccess(attempt){
+  attempt=attempt||0;
   const initData=TG&&TG.initData;
   if(!initData){ regScreen(); return; }
   /* пока ждём ответ — то же, что в заглушке: маршрут скрыт */
   document.body.classList.add('locked');
   if(isLocked()) gate(); else $('#day').innerHTML='';
-  const ac=window.AbortController?new AbortController():null, tm=setTimeout(()=>{ if(ac) ac.abort(); },6000);
+  const ac=window.AbortController?new AbortController():null, tm=setTimeout(()=>{ if(ac) ac.abort(); },attempt?12000:6000);
   fetch(CHECK_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({initData:initData}),signal:ac?ac.signal:undefined})
-    .then(r=>r.json())
+    .then(r=>{ if(!r.ok) throw new Error('http '+r.status); return r.json(); })
     .then(j=>{ clearTimeout(tm); if(j&&(j.registered===true||j.admin===true)){ ADMIN=j.admin===true; ACCESS=true; startApp(); } else regScreen(); })
-    .catch(()=>{ clearTimeout(tm); regScreen(); });
+    .catch(()=>{ clearTimeout(tm); if(attempt<1) checkAccess(attempt+1); else netScreen(); });
 }
 load(); renderCover(); snowfall();
 if(PREVIEW||TEST_OPEN===true){ ACCESS=true; startApp(); } else checkAccess();
