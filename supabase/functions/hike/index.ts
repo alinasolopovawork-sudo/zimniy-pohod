@@ -10,6 +10,16 @@ const ORIGIN = "https://alinasolopovawork-sudo.github.io";
 const cors = { "Access-Control-Allow-Origin": ORIGIN, "Access-Control-Allow-Methods": "POST, OPTIONS", "Access-Control-Allow-Headers": "content-type" };
 const json = (b: unknown, status = 200) => Response.json(b, { status, headers: cors });
 
+// Большой ответ админке сжимаем gzip: на телефоне грузится в 5–10 раз быстрее
+async function packed(req: Request, body: unknown) {
+  const text = JSON.stringify(body);
+  if (text.length < 4096 || !(req.headers.get("accept-encoding") ?? "").includes("gzip")) return json(body);
+  const gz = await new Response(new Blob([text]).stream().pipeThrough(new CompressionStream("gzip"))).arrayBuffer();
+  return new Response(gz, { headers: { ...cors, "content-type": "application/json", "content-encoding": "gzip", "vary": "accept-encoding" } });
+}
+// Проверка сжатия без данных участниц
+const PING = () => ({ ok: true, ping: "x".repeat(20000) });
+
 const EVENTS = new Set(["open", "day", "link", "remind", "claim"]);
 const LINKS = new Set(["channel", "l1", "l2", "live", "exp", "bot", "other"]);
 const STATUSES = new Set(["new", "contacted", "thinking", "bought", "refused"]);
@@ -79,6 +89,8 @@ Deno.serve(async (req) => {
   try { const t = await req.text(); if (t.length > 60000) return json({ ok: false }, 413); b = JSON.parse(t); }
   catch { return json({ ok: false }, 400); }
 
+  if (url.searchParams.has("ping")) return packed(req, PING());
+
   if (url.searchParams.has("track")) {
     const id = await userFrom(String(b.initData ?? ""), 72);
     if (!id) return json({ ok: false }, 401);
@@ -95,7 +107,7 @@ Deno.serve(async (req) => {
     if (b.op === "data") {
       const { data, error } = await db.rpc("hike_admin_data");
       if (error) { console.error(error); return json({ ok: false }, 500); }
-      return json({ ok: true, data });
+      return packed(req, { ok: true, data });
     }
     if (b.op === "lead") {
       const tg = Number(b.tg_id);

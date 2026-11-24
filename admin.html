@@ -7,7 +7,7 @@
 <meta name="robots" content="noindex,nofollow">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <style>
 /* VOICE: рабочий пульт команды продаж и маркетинга — спокойно, плотно, по делу
    IDEA: карта похода, где видно, кто на какой стоянке и кто отстал
@@ -182,6 +182,7 @@ td.ck,th.ck{width:34px;padding-inline:4px}
 .ideas div .lnk{display:block;margin-top:2px}
 @media (max-width:900px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.kpis .kpi:first-child{grid-column:1/-1}.grid,.segs{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:600px){
+ .top{backdrop-filter:none;background:var(--night)}
  .tabs{flex-wrap:nowrap;overflow-x:auto;width:100%;scrollbar-width:none}
  .tabs a{padding:8px 11px;font-size:14px;flex:none}
  .st{grid-template-columns:minmax(0,1fr) 4.5em;row-gap:4px}.st .bar{grid-column:1/-1;grid-row:2}.st .loss{grid-column:1/-1;text-align:left}
@@ -194,7 +195,6 @@ td.ck,th.ck{width:34px;padding-inline:4px}
 }
 @media (prefers-reduced-motion:reduce){.drawer,.toast{transition:none}}
 </style>
-<script>new MutationObserver(()=>{for(const c of document.querySelectorAll('.stack td:not([data-l])')){let i=0,p=c;while(p=p.previousElementSibling)i+=p.colSpan;c.dataset.l=c.closest('table').rows[0].cells[i]?.textContent||''}}).observe(document,{childList:true,subtree:true})</script>
 </head>
 <body>
 <header class="top">
@@ -297,7 +297,9 @@ function demo(){
 function doneDays(p){let n=0;for(let d=0;d<5;d++){const t=p.tasks[d];if(t.length&&t.every(Boolean))n++}return n}
 const PTS=[["Открыла мини-апп",5,p=>p.opened],["Поставила напоминание об эфире",5,p=>p.remind],["Записала идею ролика",10,p=>!!p.idea],["Дни, пройденные целиком",8,p=>doneDays(p)],["Вставила ссылку на ролик",20,p=>!!p.video],["Задала вопрос к эфиру",10,p=>p.qs.length>0],["Пришла на эфир",15,p=>p.live],["Забрала пропуск",15,p=>p.pass],["Нажала «Узнать про экспедицию»",30,p=>p.exp]];
 const pv=(f,p)=>{const r=f(p);return typeof r==='number'?r:(r?1:0)};
-function stage(p){
+function stage(p){ return p._stg!==undefined?p._stg:(p._stg=stage0(p)); }
+function stuck(p){ return p._stk!==undefined?p._stk:(p._stk=stuck0(p)); }
+function stage0(p){
   if(p.bought) return 'Купила';
   if(p.exp) return 'Перешла к экспедиции';
   if(p.pass) return 'Забрала пропуск';
@@ -307,7 +309,7 @@ function stage(p){
   if(p.contact) return 'Только регистрация';
   return 'Нажала старт, нет контакта';
 }
-function stuck(p){
+function stuck0(p){
   if(p.exp||p.bought) return '';
   if(!p.contact) return 'не поделилась контактом в боте';
   if(!p.opened) return 'не открыла мини-апп';
@@ -334,6 +336,7 @@ const mans=()=>[...new Set(MAN.slice(1).concat(ALL.map(p=>p.man).filter(m=>m&&m!
 function vurl(v){ let u=String(v||'').trim(); if(!u) return ''; if(!/^https?:\/\//i.test(u)) u='https://'+u; try{ const x=new URL(u); return /^https?:$/.test(x.protocol)?x.href:''; }catch(e){ return ''; } }
 
 function build(){
+  ALL.forEach(p=>{p._stg=undefined;p._stk=undefined;p._q=(p.name+' '+p.user+' '+p.phone+' '+p.idea).toLowerCase()});
   L=ALL.filter(p=>SHOW_TEAM||!p.admin);
   L.forEach(p=>{p.score=PTS.reduce((s,[,v,f])=>s+v*pv(f,p),0);p.temp=p.score>=90||p.exp?'hot':p.score>=40?'warm':'cold';
     p.hotAt=p.temp==='hot'?(p.at.exp||p.at.claim||p.last):0; p.hotH=p.hotAt?Math.max(0,Math.round((NOW-p.hotAt)/36e5)):0});
@@ -364,6 +367,8 @@ function build(){
 
 /* ===== отрисовка ===== */
 const V=document.getElementById('view');
+/* подписи столбцов для таблиц на телефоне */
+function lab(root){for(const t of root.querySelectorAll('table.stack')){const h=[...t.rows[0].cells].map(c=>c.textContent);for(const r of t.tBodies[0]?t.tBodies[0].rows:[])[...r.cells].forEach((c,i)=>{if(!c.dataset.l)c.dataset.l=h[i]||''})}}
 let LF={q:'',temp:'',stage:'',src:'',seg:'',stuckOnly:false,lim:40,man:lsGet('zp-admin-man'),sort:'score',plan:false};
 function empty(){ return N===0?'<section class="card" style="margin-bottom:16px"><h2>Пока пусто</h2><p class="hint" style="margin:0">Участницы появятся здесь, как только нажмут «старт» в боте. Действия в мини-аппе — когда начнут его открывать.</p></section>':''; }
 function kpis(){
@@ -426,15 +431,18 @@ function filtered(){
   const so=LF.sort==='hot'?(a,b)=>(b.hotAt-a.hotAt)||b.score-a.score
     :LF.sort==='next'?(a,b)=>((a.next||'9')<(b.next||'9')?-1:(a.next||'9')>(b.next||'9')?1:0)||b.score-a.score
     :(a,b)=>b.score-a.score||b.last-a.last;
-  return (seg?seg.list:L).filter(p=>(!q||(p.name+' '+p.user+' '+p.phone+' '+p.idea).toLowerCase().includes(q))&&(!LF.temp||p.temp===LF.temp)&&(!LF.src||p.src===LF.src)&&(!LF.stage||stage(p)===LF.stage)&&(!LF.stuckOnly||(stuck(p)&&p.stuckH>24))
+  return (seg?seg.list:L).filter(p=>(!q||p._q.includes(q))&&(!LF.temp||p.temp===LF.temp)&&(!LF.src||p.src===LF.src)&&(!LF.stage||stage(p)===LF.stage)&&(!LF.stuckOnly||(stuck(p)&&p.stuckH>24))
     &&(!LF.man||p.man===LF.man)&&(!LF.plan||planned(p))).sort(so);
 }
 function vLidy(){
+  return `<h1>Лиды для продаж</h1><p class="lead">Все участницы с этапом, местом, где застряли, баллами и статусом. Нажмите на строку — откроется карточка.</p>
+  <div class="filters"><input id="fq" type="search" placeholder="Имя, ник, телефон или идея ролика" value="${esc(LF.q)}" aria-label="Поиск"></div>
+  <div id="lres">${lidyRes()}</div>`;
+}
+function lidyRes(){
   if(LF.man&&LF.man!=='—'&&!mans().includes(LF.man)) LF.man='';
   const f=filtered(), seg=LF.seg&&SEGS.find(s=>s.id===LF.seg), stages=[...new Set(L.map(stage))];
-  return `<h1>Лиды для продаж</h1><p class="lead">Все участницы с этапом, местом, где застряли, баллами и статусом. Нажмите на строку — откроется карточка.</p>
-  <div class="filters"><input id="fq" type="search" placeholder="Имя, ник, телефон или идея ролика" value="${esc(LF.q)}" aria-label="Поиск">
-   <select id="fst" aria-label="Этап"><option value="">Все этапы</option>${stages.map(s=>`<option${LF.stage===s?' selected':''}>${esc(s)}</option>`).join('')}</select>
+  return `<div class="filters"><select id="fst" aria-label="Этап"><option value="">Все этапы</option>${stages.map(s=>`<option${LF.stage===s?' selected':''}>${esc(s)}</option>`).join('')}</select>
    <select id="fsr" aria-label="Источник"><option value="">Все источники</option>${SRC.map(s=>`<option${LF.src===s?' selected':''}>${esc(s)}</option>`).join('')}</select>
    <select id="fman" aria-label="Чьи лиды"><option value="">Все менеджеры</option><option value="—"${LF.man==='—'?' selected':''}>Без менеджера</option>${mans().map(m=>`<option value="${esc(m)}"${LF.man===m?' selected':''}>Мои: ${esc(m)}</option>`).join('')}</select>
    <select id="fso" aria-label="Сортировка">${[['score','По баллам'],['hot','Свежие горячие'],['next','По дате связи']].map(([k,t])=>`<option value="${k}"${LF.sort===k?' selected':''}>${t}</option>`).join('')}</select></div>
@@ -519,6 +527,7 @@ function card(p){
 let cur=null;
 function openCard(id){cur=ALL.find(p=>String(p.id)===String(id));if(!cur)return;document.getElementById('drawer').innerHTML=card(cur);const d=document.getElementById('dr');d.className='open';d.setAttribute('aria-hidden','false');document.getElementById('close').focus()}
 function closeCard(){const d=document.getElementById('dr');d.className='';d.setAttribute('aria-hidden','true')}
+function refresh(){const r=document.getElementById('lres');if(r){r.innerHTML=lidyRes();lab(r)}else route()}
 let tt;function toast(t){const e=document.getElementById('toast');e.textContent=t;e.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('on'),2600)}
 function copy(txt,msg){(navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>toast(msg),()=>toast('Не получилось скопировать'))}
 function msg(title,text){V.innerHTML=`<section class="card" style="max-width:640px;margin:40px auto"><h2>${esc(title)}</h2><p>${text}</p></section>`}
@@ -544,7 +553,7 @@ async function sendCRM(list,btn){
   build(); route(); if(cur&&document.getElementById('dr').className==='open') openCard(cur.id);
 }
 const VIEWS={obzor:vObzor,lidy:vLidy,segmenty:vSeg,efir:vEfir,marketing:vMarketing,dannye:vData};
-function route(){ if(!ALL.length&&!LOADED) return; const h=location.hash.replace('#','');const k=VIEWS[h]?h:'obzor';V.innerHTML=VIEWS[k]();const dw=V.querySelector('.dyn-w');if(dw)dw.scrollLeft=dw.scrollWidth;document.querySelectorAll('#tabs a').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+k))}
+function route(){ if(!ALL.length&&!LOADED) return; const h=location.hash.replace('#','');const k=VIEWS[h]?h:'obzor';V.innerHTML=VIEWS[k]();lab(V);const dw=V.querySelector('.dyn-w');if(dw)dw.scrollLeft=dw.scrollWidth;document.querySelectorAll('#tabs a').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+k))}
 window.addEventListener('hashchange',()=>{closeCard();route();window.scrollTo(0,0)});
 async function api(body){ const r=await fetch(API,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(Object.assign({initData:INIT},body))}); let j={}; try{ j=await r.json(); }catch(e){} return {status:r.status,j}; }
 async function load(){
@@ -568,9 +577,9 @@ document.addEventListener('click',async e=>{
   const row=t.closest('tr.click');if(row){openCard(row.dataset.id);return}
   const op=t.closest('[data-open]');if(op){openCard(op.dataset.open);return}
   if(t.closest('[data-plan]')){LF={...LF,plan:true,seg:'',lim:40};location.hash='lidy';route();return}
-  if(t.id==='fplan'){LF.plan=!LF.plan;route();return}
-  if(t.id==='selallb'){filtered().forEach(p=>SEL.add(String(p.id)));route();return}
-  if(t.id==='bclear'){SEL.clear();route();return}
+  if(t.id==='fplan'){LF.plan=!LF.plan;refresh();return}
+  if(t.id==='selallb'){filtered().forEach(p=>SEL.add(String(p.id)));refresh();return}
+  if(t.id==='bclear'){SEL.clear();refresh();return}
   if(t.id==='bassign'){
     const v=document.getElementById('bman').value, man=v||'—', ids=[...SEL];
     if(!ids.length) return;
@@ -596,10 +605,10 @@ document.addEventListener('click',async e=>{
     copy(txt,'Скопировано'); return; }
   if(t.closest('#close')||t.id==='shade'){closeCard();return}
   const sg=t.closest('[data-seg]');if(sg){LF={...LF,seg:sg.dataset.seg,lim:40};location.hash='lidy';route();return}
-  const tp=t.closest('[data-temp]');if(tp){LF.temp=tp.dataset.temp;route();return}
-  if(t.id==='fstk'){LF.stuckOnly=!LF.stuckOnly;route();return}
-  if(t.id==='fseg'){LF.seg='';route();return}
-  if(t.id==='more'){LF.lim+=60;route();return}
+  const tp=t.closest('[data-temp]');if(tp){LF.temp=tp.dataset.temp;refresh();return}
+  if(t.id==='fstk'){LF.stuckOnly=!LF.stuckOnly;refresh();return}
+  if(t.id==='fseg'){LF.seg='';refresh();return}
+  if(t.id==='more'){LF.lim+=60;refresh();return}
   if(t.id==='team'){SHOW_TEAM=!SHOW_TEAM;build();route();return}
   const cpp=t.closest('[data-cp]');if(cpp){copy(cpp.dataset.cp,'Телефон скопирован');return}
   if(t.id==='csave'&&cur){
@@ -620,13 +629,13 @@ document.addEventListener('click',async e=>{
     const txt=['Имя\tНик\tТелефон\tЭтап\tЗастряла\tБаллы\tТемпература\tИсточник\tИдея ролика\tСсылка на ролик\tВопросы к эфиру\tБыла в сети'].concat(list.map(p=>[p.name,p.user?'@'+p.user:'',p.phone,stage(p),stuck(p),p.score,TT[p.temp],p.src,p.idea,p.video,p.qs.join(' | '),ago(p.stuckH)].map(x=>String(x).replace(/[\t\n]/g,' ')).join('\t'))).join('\n');
     copy(txt,'Скопировано: '+fmt(list.length)+' строк — вставьте в таблицу или CRM');return}
 });
-document.addEventListener('input',e=>{if(e.target.id==='fq'){LF.q=e.target.value;const pos=e.target.selectionStart;route();const i=document.getElementById('fq');i.focus();i.setSelectionRange(pos,pos)}});
+let qt;document.addEventListener('input',e=>{if(e.target.id==='fq'){LF.q=e.target.value;LF.lim=40;clearTimeout(qt);qt=setTimeout(refresh,180)}});
 document.addEventListener('change',e=>{const t=e.target;
-  if(t.id==='fst'){LF.stage=t.value;route()}if(t.id==='fsr'){LF.src=t.value;route()}
-  if(t.id==='fman'){LF.man=t.value;lsSet('zp-admin-man',t.value);route()}
-  if(t.id==='fso'){LF.sort=t.value;route()}
-  if(t.dataset&&t.dataset.sel){t.checked?SEL.add(t.dataset.sel):SEL.delete(t.dataset.sel);route()}
-  if(t.id==='selall'){const f=filtered();f.forEach(p=>t.checked?SEL.add(String(p.id)):SEL.delete(String(p.id)));route()}
+  if(t.id==='fst'){LF.stage=t.value;refresh()}if(t.id==='fsr'){LF.src=t.value;refresh()}
+  if(t.id==='fman'){LF.man=t.value;lsSet('zp-admin-man',t.value);refresh()}
+  if(t.id==='fso'){LF.sort=t.value;refresh()}
+  if(t.dataset&&t.dataset.sel){t.checked?SEL.add(t.dataset.sel):SEL.delete(t.dataset.sel);refresh()}
+  if(t.id==='selall'){const f=filtered();f.forEach(p=>t.checked?SEL.add(String(p.id)):SEL.delete(String(p.id)));refresh()}
 });
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeCard()});
 load();
