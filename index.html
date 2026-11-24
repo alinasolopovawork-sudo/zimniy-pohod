@@ -607,10 +607,28 @@ function load(){
 function syncDone(){ if(!D.done||typeof D.done!=='object') D.done={}; [0,1,2,3,4].forEach(n=>{ D.done[n]=TASKS[n].every((_,i)=>D.tasks[n]&&D.tasks[n][i]); }); }
 function persist(){
   syncDone();
-  try{ localStorage.setItem(STORE,JSON.stringify({app:APP,v:1,data:D})); return true; }
+  try{ localStorage.setItem(STORE,JSON.stringify({app:APP,v:1,data:D})); trackSoon(); return true; }
   catch(e){ if(S.storeErr!=='blocked') toast('В браузере закончилось место. Убери пару картинок.'); return false; }
 }
 let tSave=null; function persistSoon(){ clearTimeout(tSave); tSave=setTimeout(persist,350); }
+
+/* ---------- аналитика для команды ----------
+   Только внутри Telegram: прогресс по дням и задачам, ключевые нажатия и ответы (идея, ссылка на ролик, вопросы к эфиру)
+   уходят в функцию hike в Supabase. «Кто я», картинки и письмо себе не отправляются. Данные видны только в админке. */
+const TRACK_URL='https://wrhkgedbwgdjzcjtctcy.supabase.co/functions/v1/hike?track';
+const TQ=[]; let tTimer=null, tLast='', tDay=-2, tOpened=false;
+function tInit(){ const W=window.Telegram&&window.Telegram.WebApp; return (W&&W.initData)||''; }
+function trackSnap(){ return {day:S.day,tasks:D.tasks,done:D.done,idea:String(D.d1.idea||'').slice(0,300),video:String(D.d3.final||'').slice(0,300),
+  questions:(D.d4.questions||[]).slice(0,10).map(q=>String(q).slice(0,300)),letter:!!D.d3.sealed,pass:!!(D.exp&&D.exp.claimed)}; }
+function track(type,data){ if(!tInit()) return; TQ.push({type:type,data:data||{},at:new Date().toISOString()}); if(TQ.length>50) TQ.shift(); trackSoon(); }
+function trackSoon(){ clearTimeout(tTimer); tTimer=setTimeout(trackFlush,2500); }
+function trackFlush(){ clearTimeout(tTimer); const init=tInit(); if(!init||ACCESS!==true) return; const sn=JSON.stringify(trackSnap()); if(sn===tLast&&!TQ.length) return;
+  const body=JSON.stringify({initData:init,snap:JSON.parse(sn),events:TQ.splice(0,TQ.length)}); tLast=sn;
+  try{ fetch(TRACK_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:body,keepalive:true}).catch(()=>{ tLast=''; }); }catch(e){} }
+function trackDay(){ if(S.day!==tDay){ tDay=S.day; track('day',{n:S.day}); } }
+function trackLinkTo(href){ const m=[[CHANNEL_URL,'channel'],[LESSON_1,'l1'],[LESSON_2,'l2'],[LIVE_URL,'live'],[EXP_URL,'exp'],[BOT_URL,'bot']].find(x=>x[0]&&href===x[0]); return m?m[1]:'other'; }
+function trackOpen(){ if(tOpened) return; tOpened=true; track('open',{locked:isLocked()}); if(ADMIN&&!document.getElementById('admLink')){ const f=document.querySelector('.foot'); if(f) f.insertAdjacentHTML('beforeend',' · <a id="admLink" href="admin.html" style="color:inherit">админка</a>'); } }
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden') trackFlush(); });
 window.addEventListener('storage',e=>{ if(e.key===STORE){ load(); render(); } });
 function toast(m){ const r=$('#toastRoot'); r.innerHTML='<div class="toast" role="status">'+esc(m)+'</div>'; clearTimeout(toast.t); toast.t=setTimeout(()=>{r.innerHTML='';},2800); }
 const getP=p=>p.split('.').reduce((o,k)=>o&&o[k],D);
@@ -884,7 +902,7 @@ function renderCover(){
 }
 function render(){
   if(ACCESS!==true) return;   /* пока доступ не подтверждён, дни не показываем */
-  syncDone();
+  syncDone(); trackDay();
   renderCover(); renderStops();
   if(S.day===5){ $('#day').innerHTML=expedition(); return; }
   const d=DAYS[S.day], next=S.day===4?{n:5,name:EXP.name}:DAYS[S.day+1];
@@ -913,7 +931,8 @@ async function addImages(files,target){
 /* ---------- events ---------- */
 document.addEventListener('click',e=>{
   const t=e.target;
-  const rm=t.closest('[data-remind]'); if(rm){ const [c,i]=rm.dataset.remind.split('-').map(Number); D.tasks[c][i]=true; persist(); render(); return; }
+  const ln=t.closest('a[href^="http"]'); if(ln) track('link',{to:trackLinkTo(ln.getAttribute('href'))});
+  const rm=t.closest('[data-remind]'); if(rm){ const [c,i]=rm.dataset.remind.split('-').map(Number); D.tasks[c][i]=true; track('remind'); persist(); render(); return; }
   const cl=t.closest('[data-cal]'); if(cl){ S.calSel=Number(cl.dataset.cal); render(); return; }
   const dy=t.closest('[data-day]'); if(dy){ S.calSel=null; go(Number(dy.dataset.day),true); return; }
   const gt=t.closest('[data-go]'); if(gt){ const el=document.getElementById(gt.dataset.go); if(el) el.scrollIntoView({behavior:'smooth',block:'start'}); return; }
@@ -924,7 +943,7 @@ document.addEventListener('click',e=>{
   const dl=t.closest('[data-dellist]'); if(dl){ getP(dl.dataset.dellist).splice(Number(dl.dataset.i),1); persist(); render(); return; }
   const dr=t.closest('[data-delref]'); if(dr){ D.d1.refs=D.d1.refs.filter(r=>r.id!==dr.dataset.delref); persist(); render(); return; }
   const dc=t.closest('[data-delcolor]'); if(dc){ D.dna.colors.splice(Number(dc.dataset.delcolor),1); persist(); render(); return; }
-  const xe=t.closest('[data-exp]'); if(xe){ D.exp.claimed=true; persist(); render(); toast('Билет твой'); const el=document.querySelector('.xp-letter'); if(el) el.scrollIntoView({behavior:'smooth',block:'start'}); return; }
+  const xe=t.closest('[data-exp]'); if(xe){ D.exp.claimed=true; track('claim'); persist(); render(); toast('Билет твой'); const el=document.querySelector('.xp-letter'); if(el) el.scrollIntoView({behavior:'smooth',block:'start'}); return; }
   const lt=t.closest('[data-letter]'); if(lt){
     if(lt.dataset.letter==='seal'){ if(!(D.d3.letter||'').trim()){ toast('Сначала напиши письмо'); const ta=document.querySelector('.lt-text'); if(ta) ta.focus(); return; }
       if(!lt.classList.contains('armed')){ lt.classList.add('armed'); lt.textContent='Точно запечатать? До 25 февраля не прочитать'; return; }
@@ -1022,7 +1041,7 @@ function gate(){
   t(); setInterval(t,1000);
 }
 /* Доступ только для зарегистрированных в боте. Команде: ?preview=1 пропускает проверку */
-function startApp(){ if(isLocked()){ if(!$('#gD')) gate(); } else { document.body.classList.remove('locked'); fromHash(); } }
+function startApp(){ trackOpen(); if(isLocked()){ if(!$('#gD')) gate(); } else { document.body.classList.remove('locked'); fromHash(); } }
 function regScreen(){
   ACCESS=false; document.body.classList.add('locked');
   $('#day').innerHTML='<section class="gate reg"><h2>зарегистрироваться на мастер-класс по видео можно <a href="'+esc(BOT_URL)+'" target="_blank" rel="noopener noreferrer" id="botLink">в этом боте</a></h2></section>';
