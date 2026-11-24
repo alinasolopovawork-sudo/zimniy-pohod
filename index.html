@@ -307,7 +307,9 @@ main.wrap{padding-block:34px 40px}
 .live-t span:last-child{font-size:15px;color:#dfe6f2}
 .live-go{border:0;background:var(--yellow);color:#23262d;border-radius:99px;padding:11px 18px;font-weight:700;font-size:15px;white-space:nowrap;text-decoration:none;cursor:pointer;font-family:var(--f)}
 .live-go:hover{filter:brightness(1.08)}
-@media (max-width:600px){ .live{grid-template-columns:auto minmax(0,1fr);padding:18px} .live-go{grid-column:1/-1;justify-self:start} }
+.live-acts{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.live-go.ghost{background:transparent;color:var(--snow);border:1px solid rgba(244,247,251,.55)}
+@media (max-width:600px){ .live{grid-template-columns:auto minmax(0,1fr);padding:18px} .live-go{grid-column:1/-1;justify-self:start} .live-acts{grid-column:1/-1;justify-content:flex-start} }
 .cv-ev.fire .b{background:#fde3cf;border-left-color:#e2733a}
 .cv-ev.fire .b b{color:#8a3d12}
 .cv-fire{font-family:var(--mono);font-size:12px;font-weight:600;color:#8a3d12;white-space:nowrap}
@@ -581,6 +583,22 @@ const LIVE_LOCAL=(()=>{ const m=/(\d{1,2}):(\d{2})/.exec(LIVE_TIME||''); if(!m) 
     return at.getDate()===d.d?loc:at.getDate()+' декабря в '+loc;
   }catch(e){ return ''; } })();
 const LIVE_TXT=LIVE_TIME+(LIVE_LOCAL?', у тебя '+LIVE_LOCAL:'');
+/* эфир в календарь: Google — ссылкой, iPhone и другие — файлом efir.ics (в нём напоминания за сутки и за час).
+   При переносе эфира поменяй LIVE_TIME и время в efir.ics (DTSTART/DTEND, по UTC: Берлин зимой минус 1 час) */
+const LIVE_AT=(()=>{ const m=/(\d{1,2}):(\d{2})/.exec(LIVE_TIME||''); if(!m) return null; const d=DATES[4]; return new Date(Date.UTC(HIKE_YEAR,d.m,d.d,+m[1]-1,+m[2])); })();
+const CAL_TITLE='Эфир у костра · Зимний поход Film Your Story', CAL_ICS='efir.ics', CAL_HOURS=2;
+function gcalUrl(){ const f=t=>t.toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,''), e=new Date(LIVE_AT.getTime()+CAL_HOURS*36e5);
+  return 'https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent(CAL_TITLE)+'&dates='+f(LIVE_AT)+'/'+f(e)+'&details='+encodeURIComponent('Ссылка на эфир появится в мини-аппе и в канале похода. '+BOT_URL); }
+function openExt(u){ const W=window.Telegram&&window.Telegram.WebApp; if(W&&W.initData&&W.openLink){ try{ W.openLink(u); return; }catch(e){} } window.open(u,'_blank','noopener'); }
+function addToCal(done){
+  if(!LIVE_AT) return;
+  const ics=new URL(CAL_ICS,location.href).href, W=window.Telegram&&window.Telegram.WebApp;
+  const pick=id=>{ if(id==='g') openExt(gcalUrl()); else if(id==='a') openExt(ics); else return; track('remind'); if(done) done(); };
+  if(W&&W.initData&&W.showPopup&&W.isVersionAtLeast&&W.isVersionAtLeast('6.2')){
+    try{ W.showPopup({title:'Эфир в календарь',message:'6 декабря, '+LIVE_TXT+'. Календарь напомнит за сутки и за час.',buttons:[{id:'a',type:'default',text:'iPhone и другие'},{id:'g',type:'default',text:'Google Календарь'},{type:'cancel'}]},pick); return; }catch(e){}
+  }
+  pick(/android/i.test(navigator.userAgent)?'g':'a');   /* вне Telegram: Android — Google, остальные — файл */
+}
 function realToday(){ const t=new Date(); for(let i=0;i<5;i++){ if(t.getFullYear()===HIKE_YEAR&&t.getMonth()===DATES[i].m&&t.getDate()===DATES[i].d) return i; } return -1; }
 const DAYS=[
   {n:0,key:'sbory',name:'Сборы',icon:'pack',tag:'Собираем рюкзак',
@@ -780,7 +798,7 @@ function routeBlock(){
   const evs=TASKS[c].map((k,i)=>{ let act='';
     if(k.link){ const u=okUrl(LINKS[k.link]()); act=u?'<a class="cv-act" href="'+esc(u)+'" target="_blank" rel="noopener noreferrer">'+LINK_TXT[k.link]+'</a>':'<span class="cv-wait">'+LINK_WAIT[k.link]+'</span>'; }
     else if(k.go&&c===S.day) act='<button class="cv-act" type="button" data-go="'+k.go+'">перейти ↓</button>';
-    if(k.remind) act=st[i]?'<span class="cv-wait">Напомним за сутки и за час до эфира</span>':'<button class="cv-act" type="button" data-remind="'+c+'-'+i+'">Напомнить об эфире</button>';
+    if(k.remind) act=st[i]?'<span class="cv-wait">Эфир в твоём календаре · <button class="cv-act" type="button" data-remind="'+c+'-'+i+'">добавить ещё раз</button></span>':'<button class="cv-act" type="button" data-remind="'+c+'-'+i+'">Добавить в календарь</button>';
     if(k.live&&!act) act='<span class="cv-fire">🔥 6.12</span>';
     if(k.remind) return '<div class="cv-ev fire'+(st[i]?' ok':'')+'"><span aria-hidden="true"></span><div class="b"><label><b>'+esc(k.t)+'</b>'+(k.s?'<span>'+esc(k.s)+'</span>':'')+'</label>'+act+'</div></div>';
     return '<div class="cv-ev'+(i===0?' pink':'')+(k.live?' fire':'')+(st[i]?' ok':'')+'"><input type="checkbox" id="cv'+c+'-'+i+'" data-check="tasks.'+c+'" data-i="'+i+'"'+(st[i]?' checked':'')+' aria-label="Готово: '+esc(k.t)+'"><div class="b"><label for="cv'+c+'-'+i+'"><b>'+esc(k.t)+'</b>'+(k.s?'<span>'+esc(k.s)+'</span>':'')+'</label>'+act+'</div></div>'; }).join('');
@@ -856,7 +874,8 @@ function expedition(){
 function liveBanner(){
   const left=4-S.day, u=okUrl(LIVE_URL);
   return '<section class="live"><div class="live-ic">'+I.fire+'</div><div class="live-t"><span class="live-k">эфир у костра</span><b>6 декабря, воскресенье'+(LIVE_TIME?' · '+esc(LIVE_TIME):'')+'</b><span>'+(LIVE_LOCAL?'У тебя это '+esc(LIVE_LOCAL)+'. ':'')+''+(left===1?'Уже завтра!':'Через '+left+' '+(left<5?'дня':'дней'))+' встречаемся у костра: смотрим ваши ролики и обсуждаем всё, что получилось.'+(LIVE_TIME?'':' Время сообщим в канале.')+'</span></div>'
-    +(u?'<a class="live-go" href="'+esc(u)+'" target="_blank" rel="noopener noreferrer">Ссылка на эфир ↗</a>':'<button class="live-go" type="button" data-day="4">Подробнее →</button>')+'</section>';
+    +'<div class="live-acts">'+(u?'<a class="live-go" href="'+esc(u)+'" target="_blank" rel="noopener noreferrer">Ссылка на эфир ↗</a>':'<button class="live-go" type="button" data-day="4">Подробнее →</button>')
+    +(LIVE_AT?'<button class="live-go ghost" type="button" data-cal-add="1">В календарь</button>':'')+'</div></section>';
 }
 function day1(){
   return lessonCard(LESSON_1,'Урок 1. Идея','Смотри на YouTube')
@@ -970,7 +989,8 @@ async function addImages(files,target){
 document.addEventListener('click',e=>{
   const t=e.target;
   const ln=t.closest('a[href^="http"]'); if(ln) track('link',{to:trackLinkTo(ln.getAttribute('href'))});
-  const rm=t.closest('[data-remind]'); if(rm){ const [c,i]=rm.dataset.remind.split('-').map(Number); D.tasks[c][i]=true; track('remind'); persist(); render(); return; }
+  const rm=t.closest('[data-remind]'); if(rm){ const [c,i]=rm.dataset.remind.split('-').map(Number); addToCal(()=>{ D.tasks[c][i]=true; persist(); render(); toast('Открываю календарь'); }); return; }
+  if(t.closest('[data-cal-add]')){ addToCal(()=>{ D.tasks[0][5]=true; persist(); render(); toast('Открываю календарь'); }); return; }
   const cl=t.closest('[data-cal]'); if(cl){ S.calSel=Number(cl.dataset.cal); render(); return; }
   const dy=t.closest('[data-day]'); if(dy){ S.calSel=null; go(Number(dy.dataset.day),true); return; }
   const gt=t.closest('[data-go]'); if(gt){ const el=document.getElementById(gt.dataset.go); if(el) el.scrollIntoView({behavior:'smooth',block:'start'}); return; }
