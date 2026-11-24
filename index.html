@@ -616,7 +616,7 @@ const DAYS=[
 const blank=()=>({me:{name:'',about:'',facts:[],f1:'',f2:'',f3:'',music:[],images:[],cover:''},dna:{colors:[],words:[],style:'',inspire:[],dreams:[]},
   d0:{expect:'',hard:'',pack:{}},d1:{idea:'',show:'',shots:[],refs:[],notes:''},
   d2:{start:'',middle:'',end:'',music:'',check:{},notes:''},d3:{reshoot:[],change:[],check:{},final:'',letter:'',letterTo:'',sealed:''},
-  d4:{questions:[],takeaway:''},exp:{claimed:false,no:''},done:{},tasks:{0:{},1:{},2:{},3:{},4:{}}});
+  d4:{questions:[],takeaway:''},exp:{claimed:false,no:''},done:{},tasks:{0:{},1:{},2:{},3:{},4:{}},auto:{}});
 let D=blank();
 const S={day:0,storeErr:''};
 let ACCESS=null;   /* null — проверяем, true — пускаем, false — экран регистрации */
@@ -645,7 +645,9 @@ function dropUnsaved(){ const ok=new Set(String(imgSig||'').split(','));
   D.me.images=D.me.images.filter(x=>ok.has(x.id)); if(D.me.cover&&!ok.has(D.me.cover)) D.me.cover='';
   D.d1.refs=D.d1.refs.filter(x=>!x.img||ok.has(x.id)); }
 function persist(){
+  const got=autoTasks();
   syncDone();
+  if(got.length&&ACCESS===true) setTimeout(()=>{ refreshTasks(); toast(got.length===1?'Задача отмечена: «'+got[0]+'»':'Отмечено задач: '+got.length); },0);
   const m=allImgs(), sig=Object.keys(m).join(',');
   if(sig!==imgSig){
     const str=JSON.stringify(m); let fit=str.length<=IMG_MAX;
@@ -769,6 +771,32 @@ const TASKS=[
   {t:'Записать, что забираю с собой из похода',go:'s-zab'}]
 ];
 const LINKS={channel:()=>CHANNEL_URL,l1:()=>LESSON_1,l2:()=>LESSON_2,live:()=>LIVE_URL};
+/* задачи отмечаются сами, когда заполнено то, о чём они просят. Срабатывает один раз в момент заполнения:
+   если участница сама снимет галочку, она не вернётся, пока поле не заполнят заново. Ссылки (канал, уроки, эфир) — по нажатию */
+const has=v=>!!String(v||'').trim(), isLink=v=>/^\S+\.\S{2,}/.test(String(v||'').trim());
+const AUTO=[
+  [0,1,()=>has(D.me.name)&&has(D.me.f1)&&has(D.me.f2)&&has(D.me.f3)],
+  [0,2,()=>[D.me.images.length,D.me.music.length,D.dna.colors.length,has(D.dna.style),D.dna.dreams.length,D.dna.inspire.length].filter(Boolean).length>=4],
+  [1,1,()=>has(D.d1.idea)],
+  [1,2,()=>D.d1.shots.length>=3],
+  [1,3,()=>D.d1.refs.length>=3],
+  [2,1,()=>!!D.d2.check[0]],
+  [2,2,()=>has(D.d2.start)&&has(D.d2.middle)&&has(D.d2.end)],
+  [2,3,()=>has(D.d2.music)||!!D.d2.check[1]],
+  [2,4,()=>!!D.d2.check[2]],
+  [3,0,()=>D.d3.change.length>=1],
+  [3,2,()=>!!D.d3.check[2]],
+  [3,3,()=>isLink(D.d3.final)],
+  [3,5,()=>has(D.d3.sealed)],
+  [4,0,()=>isLink(D.d3.final)],
+  [4,1,()=>D.d4.questions.length>=1],
+  [4,3,()=>has(D.d4.takeaway)]];
+function autoTasks(){ if(!D.auto||typeof D.auto!=='object') D.auto={}; const got=[];
+  AUTO.forEach(([n,i,f])=>{ let v=false; try{ v=!!f(); }catch(e){} const k=n+'-'+i;
+    if(v&&!D.auto[k]&&!(D.tasks[n]&&D.tasks[n][i])){ D.tasks[n][i]=true; got.push(TASKS[n][i].t); }
+    D.auto[k]=v; });
+  return got; }
+function refreshTasks(){ const cv=document.querySelector('.cv-sec'); if(cv&&ACCESS===true&&S.day<5) cv.outerHTML=routeBlock(); renderStops(); }
 const LINK_TXT={channel:'Открыть канал ↗',l1:'Смотреть урок ↗',l2:'Смотреть урок ↗',live:'Перейти в эфир ↗'};
 const LINK_WAIT={channel:'ссылка появится скоро',l1:'урок появится в день урока',l2:'урок появится в день урока',live:'ссылка появится в день эфира'};
 const tasksDone=n=>TASKS[n].filter((_,i)=>D.tasks[n]&&D.tasks[n][i]).length;
@@ -988,7 +1016,9 @@ async function addImages(files,target){
 /* ---------- events ---------- */
 document.addEventListener('click',e=>{
   const t=e.target;
-  const ln=t.closest('a[href^="http"]'); if(ln) track('link',{to:trackLinkTo(ln.getAttribute('href'))});
+  const ln=t.closest('a[href^="http"]'); if(ln){ const to=trackLinkTo(ln.getAttribute('href')); track('link',{to});
+    let hit=false; TASKS.forEach((ts,n)=>ts.forEach((k,i)=>{ if(k.link===to&&!D.tasks[n][i]){ D.tasks[n][i]=true; hit=true; } }));
+    if(hit){ persist(); setTimeout(refreshTasks,400); } }
   const rm=t.closest('[data-remind]'); if(rm){ const [c,i]=rm.dataset.remind.split('-').map(Number); addToCal(()=>{ D.tasks[c][i]=true; persist(); render(); toast('Открываю календарь'); }); return; }
   if(t.closest('[data-cal-add]')){ addToCal(()=>{ D.tasks[0][5]=true; persist(); render(); toast('Открываю календарь'); }); return; }
   const cl=t.closest('[data-cal]'); if(cl){ S.calSel=Number(cl.dataset.cal); render(); return; }
@@ -1099,7 +1129,7 @@ function gate(){
   t(); setInterval(t,1000);
 }
 /* Доступ только для зарегистрированных в боте. Команде: ?preview=1 пропускает проверку */
-function startApp(){ trackOpen(); if(isLocked()){ if(!$('#gD')) gate(); } else { document.body.classList.remove('locked'); fromHash(); } }
+function startApp(){ trackOpen(); if(isLocked()){ if(!$('#gD')) gate(); } else { document.body.classList.remove('locked'); if(autoTasks().length) persist(); fromHash(); } }
 function regScreen(){
   ACCESS=false; document.body.classList.add('locked');
   $('#day').innerHTML='<section class="gate reg"><h2>зарегистрироваться на мастер-класс по видео можно <a href="'+esc(BOT_URL)+'" target="_blank" rel="noopener noreferrer" id="botLink">в этом боте</a></h2></section>';
