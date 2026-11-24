@@ -38,7 +38,7 @@ h2{font-family:var(--mono);font-weight:600;text-transform:uppercase;font-size:17
 .card{background:var(--night2);border:1px solid var(--line);border-radius:16px;padding:18px}
 .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:16px}
 .full{grid-column:1/-1}
-.kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
 .kpi{background:var(--night2);border:1px solid var(--line);border-radius:14px;padding:14px}
 .kpi b{display:block;font-family:var(--mono);font-size:clamp(22px,2.6vw,30px);font-weight:600;line-height:1.1}
 .kpi span{color:var(--dim);font-size:13px}
@@ -183,11 +183,11 @@ const W=window.Telegram&&window.Telegram.WebApp;
 const INIT=(W&&W.initData)||'';
 try{ W&&W.ready&&W.ready(); W&&W.expand&&W.expand(); }catch(e){}
 
-let L=[], ALL=[], NOW=Date.now(), HOURS=Array(24).fill(0), SRC=[], FUN=[], SEGS=[], N=0, LOADED='', SHOW_TEAM=false;
+let CH_KNOWN=false, L=[], ALL=[], NOW=Date.now(), HOURS=Array(24).fill(0), SRC=[], FUN=[], SEGS=[], N=0, LOADED='', SHOW_TEAM=false;
 
 /* ===== живые данные → участницы ===== */
 function fromLive(d){
-  NOW=Date.parse(d.now)||Date.now(); HOURS=(d.hours||[]).map(Number);
+  NOW=Date.parse(d.now)||Date.now(); HOURS=(d.hours||[]).map(Number); CH_KNOWN=!!d.channelKnown;
   return (d.people||[]).map(r=>{
     const sn=r.snap||{}, ev=r.ev||{}, st=sn.tasks||{};
     const tasks=TASKS.map((ts,di)=>ts.map((_,k)=>!!(st[di]&&st[di][k])));
@@ -196,7 +196,7 @@ function fromLive(d){
     const ld=r.lead||{}, sti=Math.max(0,STK.indexOf(ld.status||'new'));
     const last=Date.parse(r.lastSeen||r.reg||r.started)||NOW;
     return {id:r.id,name:[r.first,r.last].filter(Boolean).join(' ')||'без имени',user:r.user||'',phone:r.phone||'',src:r.src||'без метки',
-      started:Date.parse(r.started)||NOW,reg:r.reg?Date.parse(r.reg):0,contact:!!r.reg,opened,admin:!!r.admin,blocked:!!r.blocked,tasks,day,
+      inChannel:r.inChannel===true?true:r.inChannel===false?false:null,started:Date.parse(r.started)||NOW,reg:r.reg?Date.parse(r.reg):0,contact:!!r.reg,opened,admin:!!r.admin,blocked:!!r.blocked,tasks,day,
       idea:sn.idea||'',video:sn.video||'',qs:sn.questions||[],letter:!!sn.letter,
       remind:!!(ev.remind||tasks[0][5]),channelClick:!!(ev['link:channel']||tasks[0][0]),
       l1:!!(ev['link:l1']||tasks[1][0]),l2:!!(ev['link:l2']||tasks[2][0]),
@@ -207,7 +207,7 @@ function fromLive(d){
 }
 /* ===== демо (admin.html?demo=1) ===== */
 function demo(){
-  NOW=new Date('2026-12-06T19:30:00+01:00').getTime();
+  NOW=new Date('2026-12-06T19:30:00+01:00').getTime(); CH_KNOWN=true;
   const SR=[["reels",1.0],["stories",1.12],["baza",1.2],["ads",0.78],["без метки",0.9]];
   const NM=["Аня","Катя","Маша","Лиза","Даша","Полина","Ира","Оля","Света","Наташа","Юля","Вика"], LN=["К.","С.","М.","Л.","Р.","Т."];
   const ID=["бабушка и её тетрадь с рецептами","мой утренний путь до работы","один день на даче у мамы","моя собака и первый снег"];
@@ -224,7 +224,7 @@ function demo(){
     const T=TASKS.map((ts,d)=>ts.map((_,k)=>!!(tasks[d]&&tasks[d][k])));
     const live=day>=4&&T[4][2], pass=live&&R()<.62*q, exp=pass&&R()<.5*q, bought=exp&&R()<.16;
     const last=opened?NOW-(day>=4?R()*20:day>=0?(4-day)*20+R()*30:30+R()*80)*36e5:NOW-(4+R()*9)*864e5;
-    out.push({id:i+1,name:pick(NM)+' '+pick(LN),user:'user'+(1000+i),phone:'+7 9•• •••-••-'+String(10+Math.floor(R()*89)),src:s[0],started:NOW-(5+R()*9)*864e5,reg:contact?NOW-(4+R()*9)*864e5:0,contact,opened,admin:false,blocked:false,
+    out.push({inChannel:contact?R()<.74*Math.min(1,q):null,id:i+1,name:pick(NM)+' '+pick(LN),user:'user'+(1000+i),phone:'+7 9•• •••-••-'+String(10+Math.floor(R()*89)),src:s[0],started:NOW-(5+R()*9)*864e5,reg:contact?NOW-(4+R()*9)*864e5:0,contact,opened,admin:false,blocked:false,
       tasks:T,day,idea:day>=1&&T[1][1]?pick(ID):'',video:day>=3&&T[3][3]?'youtu.be/demo'+i:'',qs:day>=4&&T[4][1]?[pick(QU)]:[],letter:day>=3&&T[3][5],
       remind:T[0][5],channelClick:T[0][0],l1:T[1][0],l2:T[2][0],live,pass,exp,bought,st:bought?3:exp&&R()<.5?1:0,man:'—',note:'',crm:bought,deal:'',opens:1,last,stuckH:Math.round((NOW-last)/36e5)});
   }
@@ -286,6 +286,7 @@ function build(){
    {id:'qs',tag:'тёплые',name:'Задали вопросы к эфиру',why:'Написали вопрос — у них есть конкретная боль.',do:'Ответить на вопрос лично и связать ответ с программой курса.',f:p=>p.qs.length>0&&!p.exp&&!p.bought},
    {id:'stuck',tag:'вернуть',name:'Застряли больше суток',why:'Начали поход, не дошли до эфира и не заходили больше 24 часов.',do:'Сообщение от бота: «ты остановилась на …» со ссылкой на мини-апп.',f:p=>p.day>=0&&!p.live&&p.stuckH>24},
    {id:'noopen',tag:'вернуть',name:'Зарегистрировались, но не открыли',why:'Поделились контактом в боте, а мини-апп так и не открыли.',do:'Сообщение от бота с кнопкой мини-аппа; второй раз — через сутки.',f:p=>p.contact&&!p.opened},
+   {id:'nochannel',tag:'вернуть',name:'Не вступили в канал',why:'Зарегистрировались, но не в канале похода — пропустят ссылки на уроки, эфир и общение.',do:'Сообщение от бота с кнопкой «Зайти в канал».',f:p=>p.contact&&p.inChannel===false},
    {id:'nocontact',tag:'вернуть',name:'Нажали старт, но не дали контакт',why:'Зашли в бота и остановились на шаге «поделиться контактом».',do:'Сообщение от бота: зачем нужен контакт и что ждёт в походе.',f:p=>!p.contact&&!p.blocked}];
   SEGS.forEach(s=>{s.list=L.filter(s.f)});
   const m={}; L.forEach(p=>{m[p.src]=(m[p.src]||0)+1}); SRC=Object.keys(m).sort((a,b)=>m[b]-m[a]);
@@ -299,6 +300,7 @@ function kpis(){
   const reg=FUN[1][2], op=FUN[2][2], live=L.filter(p=>p.live).length, hot=L.filter(p=>p.temp==='hot').length, st=SEGS.find(s=>s.id==='stuck').list.length;
   return `<section class="kpis">
    <div class="kpi"><b>${fmt(reg)}</b><span>зарегистрировались в боте</span></div>
+   ${CH_KNOWN?`<div class="kpi"><b>${pc(L.filter(p=>p.inChannel).length,reg)}%</b><span>в канале похода · ${fmt(L.filter(p=>p.inChannel).length)}</span></div>`:''}
    <div class="kpi"><b>${pc(op,reg)}%</b><span>открыли мини-апп · ${fmt(op)}</span></div>
    <div class="kpi"><b>${pc(live,reg)}%</b><span>дошли до эфира · ${fmt(live)}</span></div>
    <div class="kpi hot"><b>${fmt(hot)}</b><span>горячих лидов для продаж</span></div>
@@ -357,7 +359,7 @@ function vSeg(){
 }
 function vMarketing(){
   const ts=taskStats(), mx=Math.max(1,...HOURS), ss=srcStats();
-  const clicks=[["Открыли ссылку на канал",L.filter(p=>p.channelClick).length],["Урок 1",L.filter(p=>p.l1).length],["Урок 2",L.filter(p=>p.l2).length],["Эфир у костра",L.filter(p=>p.live).length],["Напомнить об эфире",L.filter(p=>p.remind).length],["Запечатали письмо себе",L.filter(p=>p.letter).length],["Узнать про экспедицию",L.filter(p=>p.exp).length]];
+  const clicks=[...(CH_KNOWN?[["Вступили в канал (по данным бота)",L.filter(p=>p.inChannel).length]]:[]),["Открыли ссылку на канал",L.filter(p=>p.channelClick).length],["Урок 1",L.filter(p=>p.l1).length],["Урок 2",L.filter(p=>p.l2).length],["Эфир у костра",L.filter(p=>p.live).length],["Напомнить об эфире",L.filter(p=>p.remind).length],["Запечатали письмо себе",L.filter(p=>p.letter).length],["Узнать про экспедицию",L.filter(p=>p.exp).length]];
   return `<h1>Маркетинг: что работает и где застревают</h1><p class="lead">Откуда приходят люди, какие задачи их останавливают и когда они активны.</p>
   <div class="grid"><section class="card full"><h2>Источники</h2><p class="hint">Метка берётся из ссылки на бота: t.me/alinasolopova_fys_bot?start=reels. Для каждой площадки — своя ссылка, только латиница, цифры, «-» и «_». Проценты — от зарегистрировавшихся.</p>
    <div class="scroll"><table class="stack"><thead><tr><th>Источник</th><th class="num">Нажали старт</th><th class="num">Регистраций</th><th class="num">Открыли</th><th class="num">Дошли до эфира</th><th class="num">Горячих</th><th class="num">Купили</th></tr></thead><tbody>
@@ -370,7 +372,7 @@ function vMarketing(){
 }
 function vData(){
   return `<h1>Какие данные собираются</h1><p class="lead">Эти данные описаны в политике обработки данных бота. Видны только в этой админке, только аккаунтам команды.</p>
-  <div class="grid"><section class="card"><h2>Из бота</h2><ul class="list"><li>Telegram-id, имя и ник</li><li>Номер телефона — при регистрации</li><li>Метка источника из ссылки <code>?start=</code></li><li>Заблокировала ли бота</li></ul></section>
+  <div class="grid"><section class="card"><h2>Из бота</h2><ul class="list"><li>Telegram-id, имя и ник</li><li>Номер телефона — при регистрации</li><li>Метка источника из ссылки <code>?start=</code></li><li>Состоит ли в канале похода — бот админ канала и видит, кто вступил и вышел</li><li>Заблокировала ли бота</li></ul></section>
   <section class="card"><h2>Из мини-аппа</h2><ul class="list"><li>Когда открывала и какие дни смотрела</li><li>Какие задачи отметила</li><li>Нажатия: канал, уроки, эфир, напоминание, пропуск, «Узнать про экспедицию»</li><li>Ключевые ответы: идея ролика, ссылка на ролик, вопросы к эфиру</li></ul><p class="hint" style="margin-top:8px">Не собираются: «кто я», факты о себе, картинки, творческая ДНК, письмо себе — они остаются в телефоне участницы.</p></section>
   <section class="card"><h2>Где хранится</h2><p>В базе Supabase проекта zimniy-pohod-bot (Ирландия): таблицы participants, hike_progress, hike_events, lead_status. В GitHub — только код.</p></section>
   <section class="card"><h2>CRM</h2><p>Кнопки «Отправить в CRM» передают в CRM команды имя, телефон, ник, источник и комментарий: этап, где застряла, баллы, идею и ссылку на ролик, вопросы к эфиру, статус и заметку. Адрес CRM хранится на сервере.</p></section>
@@ -383,7 +385,7 @@ function card(p){
   if(p.opened) tl.push([p.last,'Последний раз в мини-аппе · заходила '+p.opens+' раз']);
   return `<div class="dr-h"><div><h3>${esc(p.name)}</h3><span class="hint">${p.user?'@'+esc(p.user)+' · ':''}${esc(p.phone||'телефона нет')}</span></div><button class="x" id="close" aria-label="Закрыть">✕</button></div>
   <div class="row" style="margin-top:10px">${p.user?`<a class="btn sm" href="https://t.me/${encodeURIComponent(p.user)}" target="_blank" rel="noopener">Написать в Telegram</a>`:''}${p.phone?`<button class="btn sm g" data-cp="${esc(p.phone)}">Скопировать телефон</button>`:''}</div>
-  <div class="facts"><div><span>Этап</span>${esc(stage(p))}</div><div><span>Баллы</span>${p.score} · <span class="pill t-${p.temp}" style="display:inline-block">${TT[p.temp]}</span></div><div><span>Источник</span>${esc(p.src)}</div><div><span>Была в сети</span>${ago(p.stuckH)}</div>${s?`<div style="grid-column:1/-1"><span>Застряла</span><b style="color:var(--red)">${esc(s)}</b></div>`:''}</div>
+  <div class="facts"><div><span>Этап</span>${esc(stage(p))}</div><div><span>Баллы</span>${p.score} · <span class="pill t-${p.temp}" style="display:inline-block">${TT[p.temp]}</span></div><div><span>Источник</span>${esc(p.src)}</div><div><span>Была в сети</span>${ago(p.stuckH)}</div><div style="grid-column:1/-1"><span>Канал похода</span>${p.inChannel===true?'в канале':p.inChannel===false?'<b style="color:var(--red)">не вступила</b>':'пока неизвестно'}</div>${s?`<div style="grid-column:1/-1"><span>Застряла</span><b style="color:var(--red)">${esc(s)}</b></div>`:''}</div>
   <div class="days5">${DAYS.map((d,i)=>{const t=p.tasks[i],n=t.filter(Boolean).length,all=n===t.length;return `<div class="${all?'ok':''}${p.day===i&&!all&&s?' stop':''}">${d[0]}<b>${n?n+'/'+t.length:'—'}</b></div>`}).join('')}</div>
   <div class="dr-s"><h4>Ответы</h4>${p.idea?`<div class="ans"><span>идея ролика</span>${esc(p.idea)}</div>`:''}${p.video?`<div class="ans"><span>ссылка на ролик</span>${esc(p.video)}</div>`:''}${p.qs.map(q=>`<div class="ans"><span>вопрос к эфиру</span>${esc(q)}</div>`).join('')}${!p.idea&&!p.video&&!p.qs.length?'<p class="hint">Пока нет ответов.</p>':''}</div>
   <div class="dr-s"><h4>Работа продаж</h4><div class="f2"><select id="cst" aria-label="Статус">${STL.map((t,i)=>`<option value="${i}"${p.st===i?' selected':''}>${t}</option>`).join('')}</select><select id="cman" aria-label="Менеджер">${(MAN.includes(p.man)?MAN:MAN.concat([p.man])).map(m=>`<option${p.man===m?' selected':''}>${esc(m)}</option>`).join('')}</select><textarea id="cnote" placeholder="Заметка к звонку">${esc(p.note)}</textarea></div>

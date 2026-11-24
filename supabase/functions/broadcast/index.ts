@@ -16,6 +16,7 @@ async function send(chat: number, b: any, appUrl: string) {
   } else if (b.copy_chat_id && b.copy_message_id) {
     method = "copyMessage";
     body = { chat_id: chat, from_chat_id: b.copy_chat_id, message_id: b.copy_message_id };
+    if (Array.isArray(b.buttons) && b.buttons.length) body.reply_markup = { inline_keyboard: b.buttons };
   } else {
     let markup: unknown = undefined;
     if (b.button_text && b.button_url) {
@@ -33,6 +34,11 @@ async function send(chat: number, b: any, appUrl: string) {
     if (r.ok) return "ok";
     if (r.error_code === 429) { await sleep(((r.parameters?.retry_after ?? 1) + 1) * 1000); continue; }
     if (r.error_code === 403) return "blocked";
+    // Если Telegram не принял цвет кнопки — отправляем те же кнопки без цвета
+    if (r.error_code === 400 && body.reply_markup?.inline_keyboard && JSON.stringify(body.reply_markup).includes('"style"')) {
+      body.reply_markup = { inline_keyboard: body.reply_markup.inline_keyboard.map((row: any[]) => row.map(({ style: _s, ...b }) => b)) };
+      continue;
+    }
     return "fail";
   }
   return "fail";
