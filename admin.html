@@ -24,6 +24,9 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .top-in{max-width:1240px;margin:0 auto;padding:10px max(3vw,14px);display:flex;align-items:center;gap:14px;flex-wrap:wrap}
 .brand{font-family:var(--mono);font-weight:600;text-transform:uppercase;font-size:17px;letter-spacing:-.01em;margin-right:auto}
 .upd{display:flex;gap:8px;align-items:center;color:var(--dim);font-size:13px}
+.upd{flex-wrap:wrap}
+.regc{flex:none;background:var(--rose);color:#23262d;border-radius:999px;padding:5px 11px;font-weight:600;font-size:13px;white-space:nowrap}
+.regc b{font-family:var(--mono)}
 .upd button{background:var(--night2);border:1px solid var(--line);border-radius:999px;padding:6px 12px;min-height:36px;font-size:13px}
 .brand small{display:block;font-family:var(--f);text-transform:none;font-weight:400;font-size:12.5px;color:var(--dim);letter-spacing:0}
 .tabs{display:flex;gap:4px;flex-wrap:wrap}
@@ -42,6 +45,7 @@ h2{font-family:var(--mono);font-weight:600;text-transform:uppercase;font-size:17
 .kpi{background:var(--night2);border:1px solid var(--line);border-radius:14px;padding:14px}
 .kpi b{display:block;font-family:var(--mono);font-size:clamp(22px,2.6vw,30px);font-weight:600;line-height:1.1}
 .kpi span{color:var(--dim);font-size:13px}
+.kpi.reg{border-color:var(--rose)}
 .kpi.hot{background:var(--rose);color:#23262d;border-color:var(--rose)}.kpi.hot span{color:#4a3340}
 /* маршрут-воронка */
 .route{display:grid;gap:6px}
@@ -201,7 +205,7 @@ td.ck,th.ck{width:34px;padding-inline:4px}
   <div class="demo" id="demo" hidden>Демо-данные: так админка выглядит на выдуманных участницах.</div>
   <div class="top-in">
     <div class="brand">Зимний поход · админка<small>Film Your Story · поход 2–6 декабря · для продаж и маркетинга</small></div>
-    <div class="upd"><span id="upd"></span><button type="button" id="reload">Обновить</button></div>
+    <div class="upd"><span class="regc" id="regc" hidden></span><span id="upd"></span><button type="button" id="reload">Обновить</button></div>
     <nav class="tabs" id="tabs">
       <a href="#obzor">Обзор</a><a href="#lidy">Лиды</a><a href="#segmenty">Сегменты</a><a href="#efir">К эфиру</a><a href="#marketing">Маркетинг</a><a href="#dannye">Данные</a>
     </nav>
@@ -228,7 +232,7 @@ const W=window.Telegram&&window.Telegram.WebApp;
 const INIT=(W&&W.initData)||'';
 try{ W&&W.ready&&W.ready(); W&&W.expand&&W.expand(); }catch(e){}
 
-let CH_KNOWN=false, L=[], ALL=[], NOW=Date.now(), HOURS=Array(24).fill(0), SRC=[], FUN=[], SEGS=[], N=0, LOADED='', SHOW_TEAM=false, DAILY={};
+let REG_T=0, REG_Y=0, CH_KNOWN=false, L=[], ALL=[], NOW=Date.now(), HOURS=Array(24).fill(0), SRC=[], FUN=[], SEGS=[], N=0, LOADED='', SHOW_TEAM=false, DAILY={};
 const SEL=new Set();
 let EF={picked:false,vlim:innerWidth<600?12:24,ilim:30};
 /* дата по Берлину в виде ГГГГ-ММ-ДД */
@@ -362,6 +366,10 @@ function build(){
    {id:'nochannel',tag:'вернуть',name:'Не вступили в канал',why:'Зарегистрировались, но не в канале похода — пропустят ссылки на уроки, эфир и общение.',do:'Сообщение от бота с кнопкой «Зайти в канал».',f:p=>p.contact&&p.inChannel===false},
    {id:'nocontact',tag:'вернуть',name:'Нажали старт, но не дали контакт',why:'Зашли в бота и остановились на шаге «поделиться контактом».',do:'Сообщение от бота: зачем нужен контакт и что ждёт в походе.',f:p=>!p.contact&&!p.blocked}];
   SEGS.forEach(s=>{s.list=L.filter(s.f)});
+  /* регистрации в боте — в шапке на всех вкладках */
+  const t=today(), y=addDay(t,-1), rt=L.filter(p=>p.reg&&bday(p.reg)===t).length, ry=L.filter(p=>p.reg&&bday(p.reg)===y).length, rc=document.getElementById('regc');
+  REG_T=rt; REG_Y=ry;
+  if(rc){ rc.hidden=false; rc.innerHTML='регистраций в боте: <b>'+fmt(reg)+'</b>'+(rt?' · сегодня +'+fmt(rt):''); }
   const m={}; L.forEach(p=>{m[p.src]=(m[p.src]||0)+1}); SRC=Object.keys(m).sort((a,b)=>m[b]-m[a]);
 }
 
@@ -374,7 +382,7 @@ function empty(){ return N===0?'<section class="card" style="margin-bottom:16px"
 function kpis(){
   const reg=FUN[1][2], op=FUN[2][2], live=L.filter(p=>p.live).length, hot=L.filter(p=>p.temp==='hot').length, st=SEGS.find(s=>s.id==='stuck').list.length;
   return `<section class="kpis">
-   <div class="kpi"><b>${fmt(reg)}</b><span>зарегистрировались в боте</span></div>
+   <div class="kpi reg"><b>${fmt(reg)}</b><span>зарегистрировались в боте · сегодня +${fmt(REG_T)}, вчера +${fmt(REG_Y)}${N>reg?` · ещё ${fmt(N-reg)} нажали «старт», но не дали контакт`:""}</span></div>
    ${CH_KNOWN?`<div class="kpi"><b>${pc(L.filter(p=>p.inChannel).length,reg)}%</b><span>в канале похода · ${fmt(L.filter(p=>p.inChannel).length)}</span></div>`:''}
    <div class="kpi"><b>${pc(op,reg)}%</b><span>открыли мини-апп · ${fmt(op)}</span></div>
    <div class="kpi"><b>${pc(live,reg)}%</b><span>дошли до эфира · ${fmt(live)}</span></div>
