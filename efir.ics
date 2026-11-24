@@ -1,0 +1,28 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Film Your Story//Zimniy pohod//RU
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:efir-2026-12-06@zimniy-pohod.filmyourstory
+DTSTAMP:20261125T000000Z
+DTSTART:20261206T150000Z
+DTEND:20261206T170000Z
+SUMMARY:Эфир у костра · Зимний поход Film Your Story
+DESCRIPTION:Прямой эфир у костра: смотрим роли
+ ки участниц и обсуждаем всё\, что получил
+ ось. Ссылка на эфир появится в мини-аппе 
+ и в канале похода.\nhttps://t.me/alinasolopova_fys_bot
+URL:https://t.me/alinasolopova_fys_bot
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Завтра эфир у костра
+TRIGGER:-P1D
+END:VALARM
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Через час эфир у костра
+TRIGGER:-PT1H
+END:VALARM
+END:VEVENT
+END:VCALENDAR
