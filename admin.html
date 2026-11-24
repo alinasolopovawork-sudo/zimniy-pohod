@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Админка зимнего похода</title>
+<meta name="robots" content="noindex,nofollow">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE: рабочий пульт команды продаж и маркетинга — спокойно, плотно, по делу
+   IDEA: карта похода, где видно, кто на какой стоянке и кто отстал
+   PICTURE: маршрут-воронка из стоянок с числом людей и потерями между ними
+   COLOUR and TYPE: ночь мини-аппа #0f1c33, снег, розовые плашки, жёлтые кнопки; IBM Plex Mono для заголовков и цифр, Inter для текста
+   LAYOUT: шапка с разделами, первый экран — главные цифры и маршрут; на телефоне разделы внизу */
+:root{color-scheme:dark;--night:#0f1c33;--night2:#16284a;--night3:#1d3360;--line:#2a4170;--snow:#f4f7fb;--dim:#b4c2d8;--mute:#8396b5;--beige:#efe8da;--rose:#f4b5d4;--rosed:#a8447a;--yellow:#efdb55;--pine:#8fb35a;--red:#ef7a6a;--mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;--f:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--night);color:var(--snow);font:15px/1.5 var(--f);overflow-x:clip}
+a{color:var(--yellow)}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--yellow);outline-offset:2px}
+.top{position:sticky;top:0;z-index:20;background:rgba(15,28,51,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.top-in{max-width:1240px;margin:0 auto;padding:10px max(3vw,14px);display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.brand{font-family:var(--mono);font-weight:600;text-transform:uppercase;font-size:17px;letter-spacing:-.01em;margin-right:auto}
+.upd{display:flex;gap:8px;align-items:center;color:var(--dim);font-size:13px}
+.upd button{background:var(--night2);border:1px solid var(--line);border-radius:999px;padding:6px 12px;min-height:36px;font-size:13px}
+.brand small{display:block;font-family:var(--f);text-transform:none;font-weight:400;font-size:12.5px;color:var(--dim);letter-spacing:0}
+.tabs{display:flex;gap:4px;flex-wrap:wrap}
+.tabs a{text-decoration:none;color:var(--dim);padding:9px 13px;border-radius:999px;font-weight:500;min-height:40px;display:inline-flex;align-items:center}
+.tabs a.on{background:var(--rose);color:#23262d}
+.demo{background:var(--yellow);color:#23262d;font-size:13px;text-align:center;padding:6px 12px;font-weight:500}
+main{max-width:1240px;margin:0 auto;padding:22px max(3vw,14px) 60px}
+h1{font-family:var(--mono);font-weight:600;text-transform:uppercase;font-size:clamp(24px,3.4vw,36px);line-height:1.08;letter-spacing:-.02em;margin:4px 0 6px;text-wrap:balance}
+.lead{color:var(--dim);margin:0 0 20px;max-width:70ch}
+h2{font-family:var(--mono);font-weight:600;text-transform:uppercase;font-size:17px;letter-spacing:-.01em;margin:0 0 4px}
+.hint{color:var(--mute);font-size:13.5px;margin:0 0 14px}
+.card{background:var(--night2);border:1px solid var(--line);border-radius:16px;padding:18px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:16px}
+.full{grid-column:1/-1}
+.kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.kpi{background:var(--night2);border:1px solid var(--line);border-radius:14px;padding:14px}
+.kpi b{display:block;font-family:var(--mono);font-size:clamp(22px,2.6vw,30px);font-weight:600;line-height:1.1}
+.kpi span{color:var(--dim);font-size:13px}
+.kpi.hot{background:var(--rose);color:#23262d;border-color:var(--rose)}.kpi.hot span{color:#4a3340}
+/* маршрут-воронка */
+.route{display:grid;gap:6px}
+.st{display:grid;grid-template-columns:minmax(0,15em) minmax(0,1fr) 5.5em 5em;gap:10px;align-items:center;padding:4px 0}
+.st .n{font-size:14px}
+.st .n small{display:block;color:var(--mute);font-size:12px}
+.bar{height:22px;background:var(--night);border-radius:6px;overflow:hidden;position:relative}
+.bar i{position:absolute;inset:0 auto 0 0;background:linear-gradient(90deg,var(--yellow),#f3e58a);border-radius:6px}
+.bar.r i{background:linear-gradient(90deg,var(--rose),#f8cfe2)}
+.st .v{font-family:var(--mono);text-align:right;white-space:nowrap}
+.st .loss{font-family:var(--mono);font-size:12.5px;text-align:right;color:var(--mute);white-space:nowrap}
+.st .loss.big{color:var(--red);font-weight:600}
+.ins{display:grid;gap:10px}
+.in{background:var(--night);border-left:3px solid var(--yellow);border-radius:8px;padding:10px 12px}
+.in.r{border-color:var(--red)}.in.g{border-color:var(--pine)}
+.in b{display:block;margin-bottom:2px}
+.in span{color:var(--dim);font-size:13.5px}
+/* таблицы */
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;color:var(--mute);font-weight:500;font-size:12.5px;padding:8px 8px;border-bottom:1px solid var(--line)}
+td{padding:9px 8px;border-bottom:1px solid rgba(42,65,112,.6);vertical-align:top}
+td.num,th.num{text-align:right;font-family:var(--mono);white-space:nowrap}
+tr.click{cursor:pointer}tr.click:hover td{background:rgba(244,181,212,.06)}
+.pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap}
+.t-hot{background:var(--rose);color:#23262d}.t-warm{background:var(--yellow);color:#23262d}.t-cold{background:var(--night3);color:var(--dim)}
+.crm-y{color:var(--pine);font-size:12.5px;white-space:nowrap}.crm-n{color:var(--mute);font-size:12.5px;white-space:nowrap}
+.who b{display:block}.who span{color:var(--mute);font-size:12.5px}
+.stuck{color:var(--red);font-size:12.5px;display:block}
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;align-items:center}
+.filters input,.filters select{background:var(--night);border:1px solid var(--line);color:var(--snow);border-radius:10px;padding:9px 11px;font:16px var(--f);min-height:44px}
+.filters input{flex:1 1 220px}
+.chip{background:var(--night);border:1px solid var(--line);border-radius:999px;padding:8px 13px;min-height:40px;font-size:14px}
+.chip.on{background:var(--rose);color:#23262d;border-color:var(--rose)}
+.btn{text-decoration:none;display:inline-flex;align-items:center;background:var(--yellow);color:#23262d;border:0;border-radius:999px;padding:10px 16px;font-weight:600;min-height:44px}
+.btn.g{background:transparent;color:var(--snow);border:1px solid var(--line)}
+.btn.sm{padding:7px 12px;min-height:36px;font-size:13.5px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.more{display:flex;justify-content:center;margin-top:14px}
+/* сегменты */
+.segs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.seg{background:var(--night2);border:1px solid var(--line);border-radius:16px;padding:16px;display:grid;gap:8px;align-content:start}
+.seg-h{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.seg-h b{font-size:16px}
+.seg-h .c{font-family:var(--mono);font-size:26px;font-weight:600;white-space:nowrap}
+.seg p{margin:0;color:var(--dim);font-size:14px}
+.seg .do{background:var(--night);border-radius:10px;padding:9px 11px;font-size:13.5px}
+.seg .do b{color:var(--yellow);font-weight:600}
+.tag{font-family:var(--mono);font-size:11.5px;text-transform:uppercase;background:var(--rose);color:#23262d;padding:1px 7px;justify-self:start}
+.tag.y{background:var(--yellow)}
+/* задачи */
+.tk{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,9em) 3.5em;gap:10px;align-items:center;padding:5px 0;font-size:14px}
+.tk .bar{height:14px}
+.tk.worst .bar i{background:var(--red)}
+.tk .v{font-family:var(--mono);text-align:right}
+.dayh{font-family:var(--mono);font-size:13px;text-transform:uppercase;color:var(--rose);margin:14px 0 4px}
+.dayh:first-child{margin-top:0}
+.hours{display:grid;grid-template-columns:repeat(24,minmax(0,1fr));gap:3px;align-items:end;height:130px}
+.hours i{display:block;background:var(--yellow);border-radius:3px 3px 0 0;min-height:2px}
+.hours i.pk{background:var(--rose)}
+.hl{display:grid;grid-template-columns:repeat(24,minmax(0,1fr));gap:3px;font-family:var(--mono);font-size:10.5px;color:var(--mute);margin-top:4px}
+.hl span{text-align:center}
+/* карточка участницы */
+.shade{position:fixed;inset:0;background:rgba(5,10,20,.6);z-index:40;display:none}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(560px,100%);background:var(--night2);border-left:1px solid var(--line);z-index:41;transform:translateX(100%);transition:transform .25s ease;overflow-y:auto;padding:18px 18px 40px}
+.open .shade{display:block}.open .drawer{transform:none}
+.dr-h{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.dr-h h3{margin:0;font-family:var(--mono);text-transform:uppercase;font-size:22px;line-height:1.1}
+.x{background:var(--night);border:1px solid var(--line);border-radius:999px;width:44px;height:44px;font-size:20px;flex:none}
+.facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:14px 0}
+.facts div{background:var(--night);border-radius:10px;padding:9px 11px;font-size:13.5px}
+.facts div span{display:block;color:var(--mute);font-size:12px}
+.dr-s{margin-top:16px}
+.dr-s h4{font-family:var(--mono);text-transform:uppercase;font-size:13px;color:var(--rose);margin:0 0 6px}
+.ans{background:var(--beige);color:#2b2620;border-radius:10px;padding:10px 12px;font-size:14px;margin-bottom:6px}
+.ans span{display:block;font-size:12px;color:#8a7f69}
+.tl{list-style:none;margin:0;padding:0;border-left:2px solid var(--line)}
+.tl li{position:relative;padding:4px 0 8px 14px;font-size:13.5px}
+.tl li::before{content:"";position:absolute;left:-6px;top:10px;width:10px;height:10px;border-radius:50%;background:var(--yellow)}
+.tl li.m::before{background:var(--rose)}
+.tl li span{color:var(--mute);font-family:var(--mono);font-size:12px;margin-right:6px}
+.days5{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}
+.days5 div{background:var(--night);border-radius:8px;padding:6px;text-align:center;font-size:12px;color:var(--mute)}
+.days5 div b{display:block;font-family:var(--mono);font-size:14px;color:var(--snow)}
+.days5 div.ok{background:rgba(143,179,90,.18)}.days5 div.ok b{color:var(--pine)}
+.days5 div.stop{outline:2px solid var(--red)}
+.score{display:grid;gap:3px;font-size:13.5px}
+.score div{display:flex;justify-content:space-between;gap:10px;border-bottom:1px dashed var(--line);padding:3px 0}
+.score div b{font-family:var(--mono)}
+.f2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.f2 select,.f2 textarea{width:100%;background:var(--night);border:1px solid var(--line);color:var(--snow);border-radius:10px;padding:9px 11px;font:16px var(--f);min-height:44px}
+.f2 textarea{grid-column:1/-1;min-height:70px;resize:vertical}
+.toast{visibility:hidden;position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(140%);background:var(--snow);color:#23262d;padding:10px 16px;border-radius:999px;font-weight:500;z-index:60;transition:transform .2s;max-width:92vw;text-align:center}
+.toast.on{transform:translateX(-50%);visibility:visible}
+.list{margin:0;padding-left:20px}.list li{margin:4px 0}
+.scroll{overflow-x:auto}
+code{font-family:var(--mono);font-size:13px;background:var(--night);padding:1px 5px;border-radius:4px;overflow-wrap:anywhere}
+@media (max-width:900px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.kpis .kpi:first-child{grid-column:1/-1}.grid,.segs{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:600px){
+ .tabs{flex-wrap:nowrap;overflow-x:auto;width:100%;scrollbar-width:none}
+ .tabs a{padding:8px 11px;font-size:14px;flex:none}
+ .st{grid-template-columns:minmax(0,1fr) 4.5em;row-gap:4px}.st .bar{grid-column:1/-1;grid-row:2}.st .loss{grid-column:1/-1;text-align:left}
+ .facts{grid-template-columns:minmax(0,1fr)}
+ table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding-block:10px;border-bottom:1px solid var(--line)}.stack td{display:flow-root;border:0;padding:3px 0;padding-inline-start:7.5em;text-align:start}.stack td::before{content:attr(data-l);float:inline-start;width:7em;margin-inline-start:-7.5em;color:var(--mute);font-size:12px;white-space:normal}.stack td:empty{display:none}
+ .hl span:nth-child(odd){visibility:hidden}
+}
+@media (prefers-reduced-motion:reduce){.drawer,.toast{transition:none}}
+</style>
+<script>new MutationObserver(()=>{for(const c of document.querySelectorAll('.stack td:not([data-l])')){let i=0,p=c;while(p=p.previousElementSibling)i+=p.colSpan;c.dataset.l=c.closest('table').rows[0].cells[i]?.textContent||''}}).observe(document,{childList:true,subtree:true})</script>
+</head>
+<body>
+<header class="top">
+  <div class="demo" id="demo" hidden>Демо-данные: так админка выглядит на выдуманных участницах.</div>
+  <div class="top-in">
+    <div class="brand">Зимний поход · админка<small>Film Your Story · поход 2–6 декабря · для продаж и маркетинга</small></div>
+    <div class="upd"><span id="upd"></span><button type="button" id="reload">Обновить</button></div>
+    <nav class="tabs" id="tabs">
+      <a href="#obzor">Обзор</a><a href="#lidy">Лиды</a><a href="#segmenty">Сегменты</a><a href="#marketing">Маркетинг</a><a href="#dannye">Данные</a>
+    </nav>
+  </div>
+</header>
+<main id="view"></main>
+<div id="dr" aria-hidden="true"><div class="shade" id="shade"></div><aside class="drawer" id="drawer" role="dialog" aria-label="Карточка участницы"></aside></div>
+<div class="toast" id="toast" role="status"></div>
+<script>
+{
+/* ===== справочники из мини-аппа (index.html: DAYS, TASKS) ===== */
+const DAYS=[["Сборы","02.12"],["В путь","03.12"],["Привал","04.12"],["Ночёвка","05.12"],["У костра","06.12"]];
+const TASKS=[
+ ["Присоединиться к каналу похода","Понять, кто я","Собрать свою творческую ДНК","Собрать рюкзак","Подготовиться к первому уроку","Поставить напоминание об эфире"],
+ ["Посмотреть урок 1","Записать идею своего ролика","Составить список кадров","Собрать 3–5 референсов","Снять первые кадры"],
+ ["Посмотреть урок 2","Отобрать лучшие кадры","Продумать структуру","Выбрать музыку","Собрать черновой монтаж"],
+ ["Пересмотреть черновик","Доснять недостающие кадры","Доработать монтаж","Сохранить финал и вставить ссылку","Освободить вечер под эфир","Написать письмо себе"],
+ ["Подготовить ссылку на ролик","Записать вопросы к эфиру","Прийти на эфир у костра","Записать, что забираю с собой"]];
+const STK=["new","contacted","thinking","bought","refused"], STL=["Новый","Связались","Думает","Купила","Отказ"];
+const MAN=["—","Софья","Менеджер 2","Менеджер 3"];
+const API='https://wrhkgedbwgdjzcjtctcy.supabase.co/functions/v1/hike?admin';
+const DEMO=/[?&]demo=1/.test(location.search);
+const W=window.Telegram&&window.Telegram.WebApp;
+const INIT=(W&&W.initData)||'';
+try{ W&&W.ready&&W.ready(); W&&W.expand&&W.expand(); }catch(e){}
+
+let L=[], ALL=[], NOW=Date.now(), HOURS=Array(24).fill(0), SRC=[], FUN=[], SEGS=[], N=0, LOADED='', SHOW_TEAM=false;
+
+/* ===== живые данные → участницы ===== */
+function fromLive(d){
+  NOW=Date.parse(d.now)||Date.now(); HOURS=(d.hours||[]).map(Number);
+  return (d.people||[]).map(r=>{
+    const sn=r.snap||{}, ev=r.ev||{}, st=sn.tasks||{};
+    const tasks=TASKS.map((ts,di)=>ts.map((_,k)=>!!(st[di]&&st[di][k])));
+    let day=-1; tasks.forEach((t,di)=>{ if(t.some(Boolean)) day=di; });
+    const opened=!!r.firstSeen; if(opened&&day<0&&(r.maxDay||0)>=0) day=-1;
+    const ld=r.lead||{}, sti=Math.max(0,STK.indexOf(ld.status||'new'));
+    const last=Date.parse(r.lastSeen||r.reg||r.started)||NOW;
+    return {id:r.id,name:[r.first,r.last].filter(Boolean).join(' ')||'без имени',user:r.user||'',phone:r.phone||'',src:r.src||'без метки',
+      started:Date.parse(r.started)||NOW,reg:r.reg?Date.parse(r.reg):0,contact:!!r.reg,opened,admin:!!r.admin,blocked:!!r.blocked,tasks,day,
+      idea:sn.idea||'',video:sn.video||'',qs:sn.questions||[],letter:!!sn.letter,
+      remind:!!(ev.remind||tasks[0][5]),channelClick:!!(ev['link:channel']||tasks[0][0]),
+      l1:!!(ev['link:l1']||tasks[1][0]),l2:!!(ev['link:l2']||tasks[2][0]),
+      live:!!(ev['link:live']||tasks[4][2]),pass:!!(sn.pass||ev.claim),exp:!!ev['link:exp'],
+      bought:sti===3,st:sti,man:ld.manager||'—',note:ld.note||'',
+      opens:r.opens||0,last,stuckH:Math.max(0,Math.round((NOW-last)/36e5))};
+  });
+}
+/* ===== демо (admin.html?demo=1) ===== */
+function demo(){
+  NOW=new Date('2026-12-06T19:30:00+01:00').getTime();
+  const SR=[["reels",1.0],["stories",1.12],["baza",1.2],["ads",0.78],["без метки",0.9]];
+  const NM=["Аня","Катя","Маша","Лиза","Даша","Полина","Ира","Оля","Света","Наташа","Юля","Вика"], LN=["К.","С.","М.","Л.","Р.","Т."];
+  const ID=["бабушка и её тетрадь с рецептами","мой утренний путь до работы","один день на даче у мамы","моя собака и первый снег"];
+  const QU=["Как перестать стесняться снимать на улице?","На какой телефон лучше снимать?","Сколько должен длиться ролик?"];
+  const TB=[[.86,.71,.43,.62,.55,.48],[.82,.66,.51,.38,.44],[.77,.58,.6,.63,.41],[.7,.36,.52,.47,.66,.39],[.62,.46,.71,.4]];
+  let seed=7; const R=()=>(seed=seed*16807%2147483647)/2147483647, pick=a=>a[Math.floor(R()*a.length)];
+  const out=[];
+  for(let i=0;i<1300;i++){
+    const s=SR[(x=>x<.34?0:x<.58?1:x<.76?2:x<.92?3:4)(R())], q=s[1];
+    const contact=R()<.94, opened=contact&&R()<.82*q, tasks=TASKS.map(()=>[]);
+    let day=-1;
+    if(opened) for(let d=0;d<5;d++){ if(R()>(d===0?.9:[0,.79,.78,.8,.86][d]*Math.min(1.1,q))) break; day=d;
+      tasks[d]=TASKS[d].map((_,k)=>R()<Math.min(.97,TB[d][k]*(0.85+q*.2))); if(!tasks[d].some(Boolean)) tasks[d][0]=true; if(d<4&&tasks[d].filter(Boolean).length<2&&R()<.45) break; }
+    const T=TASKS.map((ts,d)=>ts.map((_,k)=>!!(tasks[d]&&tasks[d][k])));
+    const live=day>=4&&T[4][2], pass=live&&R()<.62*q, exp=pass&&R()<.5*q, bought=exp&&R()<.16;
+    const last=opened?NOW-(day>=4?R()*20:day>=0?(4-day)*20+R()*30:30+R()*80)*36e5:NOW-(4+R()*9)*864e5;
+    out.push({id:i+1,name:pick(NM)+' '+pick(LN),user:'user'+(1000+i),phone:'+7 9•• •••-••-'+String(10+Math.floor(R()*89)),src:s[0],started:NOW-(5+R()*9)*864e5,reg:contact?NOW-(4+R()*9)*864e5:0,contact,opened,admin:false,blocked:false,
+      tasks:T,day,idea:day>=1&&T[1][1]?pick(ID):'',video:day>=3&&T[3][3]?'youtu.be/demo'+i:'',qs:day>=4&&T[4][1]?[pick(QU)]:[],letter:day>=3&&T[3][5],
+      remind:T[0][5],channelClick:T[0][0],l1:T[1][0],l2:T[2][0],live,pass,exp,bought,st:bought?3:exp&&R()<.5?1:0,man:'—',note:'',opens:1,last,stuckH:Math.round((NOW-last)/36e5)});
+  }
+  HOURS=Array.from({length:24},(_,h)=>Math.round(400*Math.exp(-((h-15)**2)/30)+20));
+  return out;
+}
+
+/* ===== баллы, этап, где застряла ===== */
+function doneDays(p){let n=0;for(let d=0;d<5;d++){const t=p.tasks[d];if(t.length&&t.every(Boolean))n++}return n}
+const PTS=[["Открыла мини-апп",5,p=>p.opened],["Поставила напоминание об эфире",5,p=>p.remind],["Записала идею ролика",10,p=>!!p.idea],["Дни, пройденные целиком",8,p=>doneDays(p)],["Вставила ссылку на ролик",20,p=>!!p.video],["Задала вопрос к эфиру",10,p=>p.qs.length>0],["Пришла на эфир",15,p=>p.live],["Забрала пропуск",15,p=>p.pass],["Нажала «Узнать про экспедицию»",30,p=>p.exp]];
+const pv=(f,p)=>{const r=f(p);return typeof r==='number'?r:(r?1:0)};
+function stage(p){
+  if(p.bought) return 'Купила';
+  if(p.exp) return 'Перешла к экспедиции';
+  if(p.pass) return 'Забрала пропуск';
+  if(p.live) return 'Была на эфире';
+  if(p.day>=0) return 'День '+p.day+' · '+DAYS[p.day][0];
+  if(p.opened) return 'Открыла, не начала';
+  if(p.contact) return 'Только регистрация';
+  return 'Нажала старт, нет контакта';
+}
+function stuck(p){
+  if(p.exp||p.bought) return '';
+  if(!p.contact) return 'не поделилась контактом в боте';
+  if(!p.opened) return 'не открыла мини-апп';
+  if(p.pass) return 'не перешла на сайт экспедиции';
+  if(p.live) return 'не забрала пропуск';
+  if(p.day<0) return 'не начала день 0';
+  const t=p.tasks[p.day], k=t.findIndex(x=>!x);
+  if(k<0&&p.day<4) return 'не начала день '+(p.day+1);
+  if(k<0) return '';
+  return 'день '+p.day+': «'+TASKS[p.day][k]+'»';
+}
+const ago=h=>h<1?'только что':h<24?h+' ч назад':Math.floor(h/24)+' дн назад';
+const fmt=n=>Number(n).toLocaleString('ru-RU');
+const pc=(a,b)=>b?Math.round(a/b*100):0;
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const TT={hot:'горячая',warm:'тёплая',cold:'холодная'};
+
+function build(){
+  L=ALL.filter(p=>SHOW_TEAM||!p.admin);
+  L.forEach(p=>{p.score=PTS.reduce((s,[,v,f])=>s+v*pv(f,p),0);p.temp=p.score>=90||p.exp?'hot':p.score>=40?'warm':'cold'});
+  N=L.length;
+  const reg=L.filter(p=>p.contact).length;
+  FUN=[
+   ["Нажали «старт» в боте","",N],
+   ["Поделились контактом","регистрация в боте",reg],
+   ["Открыли мини-апп","",L.filter(p=>p.opened).length],
+   ...DAYS.map((d,i)=>["День "+i+" · "+d[0],d[1]+" · хотя бы одна задача",L.filter(p=>p.day>=i).length]),
+   ["Пришли на эфир","нажали «Перейти в эфир» или отметили задачу",L.filter(p=>p.live).length],
+   ["Забрали пропуск","страница «Экспедиция»",L.filter(p=>p.pass).length],
+   ["Нажали «Узнать про экспедицию»","переход на сайт",L.filter(p=>p.exp).length],
+   ["Купили","статус «Купила» в админке",L.filter(p=>p.bought).length]];
+  SEGS=[
+   {id:'hot',tag:'звонить сегодня',name:'Перешли к экспедиции',why:'Забрали пропуск, прочитали письмо Алины и открыли страницу экспедиции на сайте, но ещё не купили.',do:'Позвонить в первые сутки. Начать с её идеи ролика — она в карточке.',f:p=>p.exp&&!p.bought},
+   {id:'pass',tag:'звонить сегодня',name:'Забрали пропуск, но не перешли',why:'Дошли до конца похода и открыли пропуск. На сайт экспедиции не перешли.',do:'Написать в Telegram: напомнить про письмо Алины и дать ссылку на экспедицию.',f:p=>p.pass&&!p.exp&&!p.bought},
+   {id:'video',tag:'тёплые',name:'Сняли ролик',why:'Вставили ссылку на готовый ролик — самые вовлечённые участницы.',do:'Похвалить ролик по делу, спросить, что было трудно.',f:p=>!!p.video&&!p.exp&&!p.bought},
+   {id:'live',tag:'тёплые',name:'Были на эфире, пропуск не забрали',why:'Пришли на эфир, но страницу «Экспедиция» не открыли.',do:'Отправить запись эфира и кнопку на пропуск.',f:p=>p.live&&!p.pass},
+   {id:'qs',tag:'тёплые',name:'Задали вопросы к эфиру',why:'Написали вопрос — у них есть конкретная боль.',do:'Ответить на вопрос лично и связать ответ с программой курса.',f:p=>p.qs.length>0&&!p.exp&&!p.bought},
+   {id:'stuck',tag:'вернуть',name:'Застряли больше суток',why:'Начали поход, не дошли до эфира и не заходили больше 24 часов.',do:'Сообщение от бота: «ты остановилась на …» со ссылкой на мини-апп.',f:p=>p.day>=0&&!p.live&&p.stuckH>24},
+   {id:'noopen',tag:'вернуть',name:'Зарегистрировались, но не открыли',why:'Поделились контактом в боте, а мини-апп так и не открыли.',do:'Сообщение от бота с кнопкой мини-аппа; второй раз — через сутки.',f:p=>p.contact&&!p.opened},
+   {id:'nocontact',tag:'вернуть',name:'Нажали старт, но не дали контакт',why:'Зашли в бота и остановились на шаге «поделиться контактом».',do:'Сообщение от бота: зачем нужен контакт и что ждёт в походе.',f:p=>!p.contact&&!p.blocked}];
+  SEGS.forEach(s=>{s.list=L.filter(s.f)});
+  const m={}; L.forEach(p=>{m[p.src]=(m[p.src]||0)+1}); SRC=Object.keys(m).sort((a,b)=>m[b]-m[a]);
+}
+
+/* ===== отрисовка ===== */
+const V=document.getElementById('view');
+let LF={q:'',temp:'',stage:'',src:'',seg:'',stuckOnly:false,lim:40};
+function empty(){ return N===0?'<section class="card" style="margin-bottom:16px"><h2>Пока пусто</h2><p class="hint" style="margin:0">Участницы появятся здесь, как только нажмут «старт» в боте. Действия в мини-аппе — когда начнут его открывать.</p></section>':''; }
+function kpis(){
+  const reg=FUN[1][2], op=FUN[2][2], live=L.filter(p=>p.live).length, hot=L.filter(p=>p.temp==='hot').length, st=SEGS.find(s=>s.id==='stuck').list.length;
+  return `<section class="kpis">
+   <div class="kpi"><b>${fmt(reg)}</b><span>зарегистрировались в боте</span></div>
+   <div class="kpi"><b>${pc(op,reg)}%</b><span>открыли мини-апп · ${fmt(op)}</span></div>
+   <div class="kpi"><b>${pc(live,reg)}%</b><span>дошли до эфира · ${fmt(live)}</span></div>
+   <div class="kpi hot"><b>${fmt(hot)}</b><span>горячих лидов для продаж</span></div>
+   <div class="kpi"><b>${fmt(st)}</b><span>застряли больше суток</span></div></section>`;
+}
+function bigLoss(){let mx=-1,mi=1;for(let i=1;i<FUN.length-1;i++){const pr=FUN[i-1][2];if(!pr)continue;const l=(pr-FUN[i][2])/pr;if(l>mx){mx=l;mi=i}}return mi}
+function funnel(){
+  const mi=bigLoss(), top=FUN[0][2]||1;
+  return FUN.map((f,i)=>{const prev=i?FUN[i-1][2]:f[2], loss=Math.max(0,prev-f[2]);
+   return `<div class="st"><div class="n">${esc(f[0])}${f[1]?`<small>${esc(f[1])}</small>`:''}</div><div class="bar${i>=FUN.length-3?' r':''}"><i style="width:${pc(f[2],top)}%"></i></div><div class="v">${fmt(f[2])}</div><div class="loss${i===mi&&loss?' big':''}">${i?'−'+fmt(loss)+' · '+pc(loss,prev)+'%':''}</div></div>`}).join('');
+}
+function taskStats(){return TASKS.map((ts,d)=>{const inD=L.filter(p=>p.day>=d);return ts.map((_,k)=>inD.length?pc(inD.filter(p=>p.tasks[d][k]).length,inD.length):null)})}
+function worstTask(){let w=null;taskStats().forEach((d,di)=>d.forEach((p,k)=>{if(p!==null&&(!w||p<w.p))w={p,d:di,t:TASKS[di][k]}}));return w}
+function srcStats(){return SRC.map(name=>{const a=L.filter(p=>p.src===name),r=a.filter(p=>p.contact).length;return {name,n:a.length,reg:r,op:pc(a.filter(p=>p.opened).length,r),live:pc(a.filter(p=>p.live).length,r),hotR:pc(a.filter(p=>p.temp==='hot').length,a.length),buy:a.filter(p=>p.bought).length}})}
+function insights(){
+  if(N<20) return '<p class="hint">Выводы появятся, когда наберётся хотя бы 20 участниц.</p>';
+  const mi=bigLoss(), w=worstTask(), bs=srcStats().filter(s=>s.n>=10).sort((a,b)=>b.hotR-a.hotR)[0], tot=HOURS.reduce((a,b)=>a+b,0), pk=HOURS.indexOf(Math.max(...HOURS));
+  return `<div class="ins">
+   <div class="in r"><b>Больше всего теряем: «${esc(FUN[mi-1][0])}» → «${esc(FUN[mi][0])}»</b><span>Уходят ${pc(FUN[mi-1][2]-FUN[mi][2],FUN[mi-1][2])}%. Проверьте, понятно ли, что делать дальше, и есть ли сообщение от бота на этом шаге.</span></div>
+   ${w?`<div class="in"><b>Самая трудная задача: «${esc(w.t)}», день ${w.d}</b><span>Делают ${w.p}% открывших день. Её можно упростить, перенести в «по желанию» или дать пример.</span></div>`:''}
+   ${bs?`<div class="in g"><b>Лучший источник: ${esc(bs.name)}</b><span>${bs.hotR}% горячих лидов против ${pc(L.filter(p=>p.temp==='hot').length,N)}% в среднем.</span></div>`:''}
+   ${tot?`<div class="in"><b>Пик активности — ${pk}:00–${pk+1}:00 по Берлину</b><span>В это время лучше отправлять сообщения от бота.</span></div>`:''}</div>`;
+}
+function vObzor(){
+  return `<h1>Где сейчас участницы похода</h1><p class="lead">Сколько людей на каждой стоянке, где теряем больше всего и кому продажам писать первыми.</p>
+  ${empty()}${kpis()}
+  <div class="grid"><section class="card full"><h2>Маршрут: где теряем людей</h2><p class="hint">Каждая строка — сколько человек дошли до этого шага. Справа — сколько ушло после прошлого шага; красным — самый большой обрыв.</p><div class="route">${funnel()}</div></section>
+  <section class="card"><h2>Что исправить</h2><p class="hint">Выводы считаются сами по свежим данным.</p>${insights()}</section>
+  <section class="card"><h2>Кому писать первыми</h2><p class="hint">Готовые списки для отдела продаж.</p>${SEGS.slice(0,4).map(s=>`<div class="st" style="grid-template-columns:minmax(0,1fr) auto"><div class="n">${esc(s.name)}<small>${esc(s.tag)}</small></div><button class="btn sm g" data-seg="${s.id}">${fmt(s.list.length)} →</button></div>`).join('')}</section></div>`;
+}
+function filtered(){
+  const q=LF.q.trim().toLowerCase(), seg=LF.seg&&SEGS.find(s=>s.id===LF.seg);
+  return (seg?seg.list:L).filter(p=>(!q||(p.name+' '+p.user+' '+p.phone+' '+p.idea).toLowerCase().includes(q))&&(!LF.temp||p.temp===LF.temp)&&(!LF.src||p.src===LF.src)&&(!LF.stage||stage(p)===LF.stage)&&(!LF.stuckOnly||(stuck(p)&&p.stuckH>24))).sort((a,b)=>b.score-a.score||b.last-a.last);
+}
+function vLidy(){
+  const f=filtered(), seg=LF.seg&&SEGS.find(s=>s.id===LF.seg), stages=[...new Set(L.map(stage))];
+  return `<h1>Лиды для продаж</h1><p class="lead">Все участницы с этапом, местом, где застряли, баллами и статусом. Нажмите на строку — откроется карточка.</p>
+  <div class="filters"><input id="fq" type="search" placeholder="Имя, ник, телефон или идея ролика" value="${esc(LF.q)}" aria-label="Поиск">
+   <select id="fst" aria-label="Этап"><option value="">Все этапы</option>${stages.map(s=>`<option${LF.stage===s?' selected':''}>${esc(s)}</option>`).join('')}</select>
+   <select id="fsr" aria-label="Источник"><option value="">Все источники</option>${SRC.map(s=>`<option${LF.src===s?' selected':''}>${esc(s)}</option>`).join('')}</select></div>
+  <div class="filters">${[['','все'],['hot','горячие'],['warm','тёплые'],['cold','холодные']].map(([k,t])=>`<button class="chip${LF.temp===k?' on':''}" data-temp="${k}">${t}</button>`).join('')}
+   <button class="chip${LF.stuckOnly?' on':''}" id="fstk">застряли &gt; 24 ч</button>
+   ${seg?`<button class="chip on" id="fseg">сегмент: ${esc(seg.name)} ✕</button>`:''}</div>
+  <div class="row" style="justify-content:space-between;margin-bottom:10px"><span class="hint" style="margin:0">Найдено: ${fmt(f.length)}</span>
+   <div class="row"><button class="btn sm" data-copy="list">Скопировать для CRM</button></div></div>
+  <section class="card" style="padding:4px 12px"><div class="scroll"><table class="stack"><thead><tr><th>Участница</th><th>Этап</th><th>Источник</th><th>Была в сети</th><th class="num">Баллы</th><th>Статус</th></tr></thead><tbody>
+  ${f.slice(0,LF.lim).map(p=>{const s=stuck(p);return `<tr class="click" data-id="${p.id}"><td class="who"><b>${esc(p.name)}</b><span>${p.user?'@'+esc(p.user):esc(p.phone)}</span></td><td>${esc(stage(p))}${s?`<span class="stuck">застряла: ${esc(s)}</span>`:''}</td><td>${esc(p.src)}</td><td>${ago(p.stuckH)}</td><td class="num">${p.score} <span class="pill t-${p.temp}">${TT[p.temp]}</span></td><td>${p.st?`<span class="crm-y">${esc(STL[p.st])}${p.man!=='—'?' · '+esc(p.man):''}</span>`:'<span class="crm-n">новый</span>'}</td></tr>`}).join('')}
+  </tbody></table></div></section>${f.length>LF.lim?`<div class="more"><button class="btn g" id="more">Показать ещё</button></div>`:''}
+  <section class="card" style="margin-top:16px"><h2>Как считаются баллы</h2><p class="hint">Горячая — от 90 баллов или переход к экспедиции; тёплая — от 40.</p><div class="score">${PTS.map(([t,v])=>`<div><span>${esc(t)}</span><b>+${v}${t.startsWith('Дни')?' за день':''}</b></div>`).join('')}</div></section>`;
+}
+function vSeg(){
+  return `<h1>Сегменты</h1><p class="lead">Готовые списки: кого звать в продажу сегодня, кого греть и кого вернуть в поход. Обновляются сами.</p>
+  <div class="segs">${SEGS.map(s=>`<article class="seg"><span class="tag${s.tag==='вернуть'?' y':''}">${esc(s.tag)}</span><div class="seg-h"><b>${esc(s.name)}</b><span class="c">${fmt(s.list.length)}</span></div><p>${esc(s.why)}</p><div class="do"><b>Что делать:</b> ${esc(s.do)}</div>
+   <div class="row"><button class="btn sm g" data-seg="${s.id}">Открыть список</button><button class="btn sm g" data-copy="${s.id}">Скопировать</button></div></article>`).join('')}</div>
+  <p class="hint" style="margin-top:14px">Отправка в CRM и сообщения от бота по сегменту включатся, когда будет доступ к CRM и согласованы тексты сообщений. Пока список можно скопировать и вставить в таблицу.</p>`;
+}
+function vMarketing(){
+  const ts=taskStats(), mx=Math.max(1,...HOURS), ss=srcStats();
+  const clicks=[["Открыли ссылку на канал",L.filter(p=>p.channelClick).length],["Урок 1",L.filter(p=>p.l1).length],["Урок 2",L.filter(p=>p.l2).length],["Эфир у костра",L.filter(p=>p.live).length],["Напомнить об эфире",L.filter(p=>p.remind).length],["Запечатали письмо себе",L.filter(p=>p.letter).length],["Узнать про экспедицию",L.filter(p=>p.exp).length]];
+  return `<h1>Маркетинг: что работает и где застревают</h1><p class="lead">Откуда приходят люди, какие задачи их останавливают и когда они активны.</p>
+  <div class="grid"><section class="card full"><h2>Источники</h2><p class="hint">Метка берётся из ссылки на бота: t.me/alinasolopova_fys_bot?start=reels. Для каждой площадки — своя ссылка, только латиница, цифры, «-» и «_». Проценты — от зарегистрировавшихся.</p>
+   <div class="scroll"><table class="stack"><thead><tr><th>Источник</th><th class="num">Нажали старт</th><th class="num">Регистраций</th><th class="num">Открыли</th><th class="num">Дошли до эфира</th><th class="num">Горячих</th><th class="num">Купили</th></tr></thead><tbody>
+   ${ss.map(s=>`<tr><td><b>${esc(s.name)}</b></td><td class="num">${fmt(s.n)}</td><td class="num">${fmt(s.reg)}</td><td class="num">${s.op}%</td><td class="num">${s.live}%</td><td class="num">${s.hotR}%</td><td class="num">${s.buy}</td></tr>`).join('')||'<tr><td colspan="7" class="hint">Пока нет данных</td></tr>'}</tbody></table></div></section>
+  <section class="card"><h2>Задачи: на чём застревают</h2><p class="hint">Доля дошедших до дня, которые сделали задачу. Красным — самая трудная задача дня.</p>
+   ${ts.map((d,di)=>{const v=d.filter(x=>x!==null),mn=v.length?Math.min(...v):-1;return `<div class="dayh">день ${di} · ${esc(DAYS[di][0])} · ${DAYS[di][1]}</div>`+d.map((p,k)=>`<div class="tk${p===mn?' worst':''}"><span>${esc(TASKS[di][k])}</span><div class="bar"><i style="width:${p||0}%"></i></div><span class="v">${p===null?'—':p+'%'}</span></div>`).join('')}).join('')}</section>
+  <section class="card"><h2>Нажатия по кнопкам</h2><p class="hint">Сколько человек нажали хотя бы раз.</p>${clicks.map(([t,v])=>`<div class="tk"><span>${esc(t)}</span><div class="bar"><i style="width:${pc(v,N)}%"></i></div><span class="v">${fmt(v)}</span></div>`).join('')}
+   <h2 style="margin-top:22px">Когда активны</h2><p class="hint">Действия в мини-аппе по часам, время берлинское. Розовым — пик: лучшее время для сообщений.</p>
+   <div class="hours">${HOURS.map(v=>`<i class="${v===mx&&v>0?'pk':''}" style="height:${Math.round(v/mx*100)}%" title="${v}"></i>`).join('')}</div><div class="hl">${HOURS.map((_,i)=>`<span>${i}</span>`).join('')}</div></section></div>`;
+}
+function vData(){
+  return `<h1>Какие данные собираются</h1><p class="lead">Эти данные описаны в политике обработки данных бота. Видны только в этой админке, только аккаунтам команды.</p>
+  <div class="grid"><section class="card"><h2>Из бота</h2><ul class="list"><li>Telegram-id, имя и ник</li><li>Номер телефона — при регистрации</li><li>Метка источника из ссылки <code>?start=</code></li><li>Заблокировала ли бота</li></ul></section>
+  <section class="card"><h2>Из мини-аппа</h2><ul class="list"><li>Когда открывала и какие дни смотрела</li><li>Какие задачи отметила</li><li>Нажатия: канал, уроки, эфир, напоминание, пропуск, «Узнать про экспедицию»</li><li>Ключевые ответы: идея ролика, ссылка на ролик, вопросы к эфиру</li></ul><p class="hint" style="margin-top:8px">Не собираются: «кто я», факты о себе, картинки, творческая ДНК, письмо себе — они остаются в телефоне участницы.</p></section>
+  <section class="card"><h2>Где хранится</h2><p>В базе Supabase проекта zimniy-pohod-bot (Ирландия): таблицы participants, hike_progress, hike_events, lead_status. В GitHub — только код.</p></section>
+  <section class="card"><h2>Команда</h2><p>Админка открывается тем, у кого в таблице participants стоит отметка is_admin. ${SHOW_TEAM?'Команда сейчас показана в цифрах.':'Команда не входит в цифры.'}</p><button class="btn sm g" id="team">${SHOW_TEAM?'Скрыть команду из цифр':'Показать команду в цифрах'}</button></section></div>`;
+}
+function card(p){
+  const s=stuck(p), dt=t=>new Date(t).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit',timeZone:'Europe/Berlin'});
+  const tl=[[p.started,'Нажала «старт» в боте · источник: '+p.src,1]];
+  if(p.reg) tl.push([p.reg,'Поделилась контактом']);
+  if(p.opened) tl.push([p.last,'Последний раз в мини-аппе · заходила '+p.opens+' раз']);
+  return `<div class="dr-h"><div><h3>${esc(p.name)}</h3><span class="hint">${p.user?'@'+esc(p.user)+' · ':''}${esc(p.phone||'телефона нет')}</span></div><button class="x" id="close" aria-label="Закрыть">✕</button></div>
+  <div class="row" style="margin-top:10px">${p.user?`<a class="btn sm" href="https://t.me/${encodeURIComponent(p.user)}" target="_blank" rel="noopener">Написать в Telegram</a>`:''}${p.phone?`<button class="btn sm g" data-cp="${esc(p.phone)}">Скопировать телефон</button>`:''}</div>
+  <div class="facts"><div><span>Этап</span>${esc(stage(p))}</div><div><span>Баллы</span>${p.score} · <span class="pill t-${p.temp}" style="display:inline-block">${TT[p.temp]}</span></div><div><span>Источник</span>${esc(p.src)}</div><div><span>Была в сети</span>${ago(p.stuckH)}</div>${s?`<div style="grid-column:1/-1"><span>Застряла</span><b style="color:var(--red)">${esc(s)}</b></div>`:''}</div>
+  <div class="days5">${DAYS.map((d,i)=>{const t=p.tasks[i],n=t.filter(Boolean).length,all=n===t.length;return `<div class="${all?'ok':''}${p.day===i&&!all&&s?' stop':''}">${d[0]}<b>${n?n+'/'+t.length:'—'}</b></div>`}).join('')}</div>
+  <div class="dr-s"><h4>Ответы</h4>${p.idea?`<div class="ans"><span>идея ролика</span>${esc(p.idea)}</div>`:''}${p.video?`<div class="ans"><span>ссылка на ролик</span>${esc(p.video)}</div>`:''}${p.qs.map(q=>`<div class="ans"><span>вопрос к эфиру</span>${esc(q)}</div>`).join('')}${!p.idea&&!p.video&&!p.qs.length?'<p class="hint">Пока нет ответов.</p>':''}</div>
+  <div class="dr-s"><h4>Работа продаж</h4><div class="f2"><select id="cst" aria-label="Статус">${STL.map((t,i)=>`<option value="${i}"${p.st===i?' selected':''}>${t}</option>`).join('')}</select><select id="cman" aria-label="Менеджер">${(MAN.includes(p.man)?MAN:MAN.concat([p.man])).map(m=>`<option${p.man===m?' selected':''}>${esc(m)}</option>`).join('')}</select><textarea id="cnote" placeholder="Заметка к звонку">${esc(p.note)}</textarea></div>
+   <div class="row" style="margin-top:8px"><button class="btn sm" id="csave">Сохранить</button></div></div>
+  <div class="dr-s"><h4>История</h4><ul class="tl">${tl.sort((a,b)=>a[0]-b[0]).map(([t,x,m])=>`<li class="${m?'m':''}"><span>${dt(t)}</span>${esc(x)}</li>`).join('')}</ul></div>
+  <div class="dr-s"><h4>Из чего баллы</h4><div class="score">${PTS.filter(([,,f])=>pv(f,p)).map(([t,v,f])=>`<div><span>${esc(t)}</span><b>+${v*pv(f,p)}</b></div>`).join('')||'<p class="hint">Пока ноль.</p>'}</div></div>`;
+}
+let cur=null;
+function openCard(id){cur=ALL.find(p=>String(p.id)===String(id));if(!cur)return;document.getElementById('drawer').innerHTML=card(cur);const d=document.getElementById('dr');d.className='open';d.setAttribute('aria-hidden','false');document.getElementById('close').focus()}
+function closeCard(){const d=document.getElementById('dr');d.className='';d.setAttribute('aria-hidden','true')}
+let tt;function toast(t){const e=document.getElementById('toast');e.textContent=t;e.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('on'),2600)}
+function copy(txt,msg){(navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>toast(msg),()=>toast('Не получилось скопировать'))}
+function msg(title,text){V.innerHTML=`<section class="card" style="max-width:640px;margin:40px auto"><h2>${esc(title)}</h2><p>${text}</p></section>`}
+
+const VIEWS={obzor:vObzor,lidy:vLidy,segmenty:vSeg,marketing:vMarketing,dannye:vData};
+function route(){ if(!ALL.length&&!LOADED) return; const h=location.hash.replace('#','');const k=VIEWS[h]?h:'obzor';V.innerHTML=VIEWS[k]();document.querySelectorAll('#tabs a').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+k))}
+window.addEventListener('hashchange',()=>{closeCard();route();window.scrollTo(0,0)});
+async function api(body){ const r=await fetch(API,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(Object.assign({initData:INIT},body))}); let j={}; try{ j=await r.json(); }catch(e){} return {status:r.status,j}; }
+async function load(){
+  if(DEMO){ ALL=demo(); LOADED='демо'; document.getElementById('upd').textContent='демо-данные'; document.getElementById('demo').hidden=false; build(); route(); return; }
+  if(!INIT){ msg('Откройте админку в Telegram','Админка работает только внутри Telegram: откройте мини-апп «Зимний поход» в боте и нажмите внизу «админка». Посмотреть, как она выглядит, можно <a href="?demo=1">на демо-данных</a>.'); return; }
+  document.getElementById('upd').textContent='загружаю…';
+  try{
+    const {status,j}=await api({op:'data'});
+    if(status===401){ msg('Нужно открыть заново','Telegram не подтвердил вход или ссылка устарела. Закройте мини-апп и откройте его снова из бота.'); return; }
+    if(status===403){ msg('Нет доступа','Админка открывается только аккаунтам команды. Если вы из команды, попросите отметить вас админом.'); return; }
+    if(!j.ok){ msg('Не загрузилось','Сервер не ответил. Попробуйте обновить через минуту.'); return; }
+    ALL=fromLive(j.data); LOADED=new Date().toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});
+    document.getElementById('upd').textContent='обновлено в '+LOADED; build(); route();
+  }catch(e){ msg('Нет связи','Проверьте интернет и обновите страницу.'); }
+}
+document.addEventListener('click',async e=>{
+  const t=e.target;
+  if(t.id==='reload'){ load(); return; }
+  const row=t.closest('tr.click');if(row){openCard(row.dataset.id);return}
+  if(t.closest('#close')||t.id==='shade'){closeCard();return}
+  const sg=t.closest('[data-seg]');if(sg){LF={...LF,seg:sg.dataset.seg,lim:40};location.hash='lidy';route();return}
+  const tp=t.closest('[data-temp]');if(tp){LF.temp=tp.dataset.temp;route();return}
+  if(t.id==='fstk'){LF.stuckOnly=!LF.stuckOnly;route();return}
+  if(t.id==='fseg'){LF.seg='';route();return}
+  if(t.id==='more'){LF.lim+=60;route();return}
+  if(t.id==='team'){SHOW_TEAM=!SHOW_TEAM;build();route();return}
+  const cpp=t.closest('[data-cp]');if(cpp){copy(cpp.dataset.cp,'Телефон скопирован');return}
+  if(t.id==='csave'&&cur){
+    const st=+document.getElementById('cst').value, man=document.getElementById('cman').value, note=document.getElementById('cnote').value;
+    if(DEMO){ Object.assign(cur,{st,man,note,bought:st===3}); toast('Сохранено (демо)'); build(); route(); return; }
+    t.disabled=true; t.textContent='Сохраняю…';
+    try{ const {j}=await api({op:'lead',tg_id:cur.id,status:STK[st],manager:man==='—'?'':man,note}); if(j.ok){ Object.assign(cur,{st,man,note,bought:st===3}); toast('Сохранено'); build(); route(); openCard(cur.id); } else toast('Не сохранилось, попробуйте ещё раз'); }
+    catch(err){ toast('Нет связи, не сохранилось'); }
+    t.disabled=false; t.textContent='Сохранить'; return;
+  }
+  const cp=t.closest('[data-copy]');if(cp){const k=cp.dataset.copy, list=k==='list'?filtered():(SEGS.find(s=>s.id===k)||{list:[]}).list;
+    const txt=['Имя\tНик\tТелефон\tЭтап\tЗастряла\tБаллы\tТемпература\tИсточник\tИдея ролика\tСсылка на ролик\tВопросы к эфиру\tБыла в сети'].concat(list.map(p=>[p.name,p.user?'@'+p.user:'',p.phone,stage(p),stuck(p),p.score,TT[p.temp],p.src,p.idea,p.video,p.qs.join(' | '),ago(p.stuckH)].map(x=>String(x).replace(/[\t\n]/g,' ')).join('\t'))).join('\n');
+    copy(txt,'Скопировано: '+fmt(list.length)+' строк — вставьте в таблицу или CRM');return}
+});
+document.addEventListener('input',e=>{if(e.target.id==='fq'){LF.q=e.target.value;const pos=e.target.selectionStart;route();const i=document.getElementById('fq');i.focus();i.setSelectionRange(pos,pos)}});
+document.addEventListener('change',e=>{if(e.target.id==='fst'){LF.stage=e.target.value;route()}if(e.target.id==='fsr'){LF.src=e.target.value;route()}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeCard()});
+load();
+}
+</script>
+</body>
+</html>
