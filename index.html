@@ -519,7 +519,7 @@ body.locked{min-height:100vh}
   <canvas id="snow" aria-hidden="true"></canvas>
   <div class="paper" aria-hidden="true"></div>
   <div class="wrap">
-    <div class="tframe"><h1>зимний поход</h1><div class="sub"><mark>29.11 — 03.12</mark> пять остановок, чтобы найти свою историю и снять о ней ролик</div></div>
+    <div class="tframe"><h1>зимний поход</h1><div class="sub"><mark>01.12 — 05.12</mark> пять остановок, чтобы найти свою историю и снять о ней ролик</div></div>
   </div>
 </header>
 
@@ -542,7 +542,7 @@ const LIVE_URL='';            // ссылка на прямой эфир у ко
 const CHANNEL_URL='https://t.me/+zEnjgArTqOxkMmVi'; // ссылка на канал похода (Telegram и т.п.)
 const LIVE_TIME='16:00 по Берлину'; // время эфира, например: '19:00 по Берлину'
 const LIVE_WHEN='';
-const TEST_OPEN=true;          // ТЕСТ: пока true — мини-апп открыт всем без проверки регистрации и без заглушки до 29.11. Перед запуском поставить false
+const TEST_OPEN=true;          // ТЕСТ: пока true — мини-апп открыт всем без проверки регистрации и без заглушки до 01.12. Перед запуском поставить false
 const BOT_URL='https://t.me/alinasolopova_fys_bot';  // бот регистрации на мастер-класс
 const CHECK_URL='https://wrhkgedbwgdjzcjtctcy.supabase.co/functions/v1/bot?check';  // проверка, зарегистрирована ли участница
 
@@ -569,7 +569,7 @@ const I={
   star:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z"/></svg>'
 };
 
-const DATES=[{d:29,m:10,wd:'вс',full:'Воскресенье — 29 ноября',short:'вс, 29 ноября'},{d:30,m:10,wd:'пн',full:'Понедельник — 30 ноября',short:'пн, 30 ноября'},{d:1,m:11,wd:'вт',full:'Вторник — 1 декабря',short:'вт, 1 декабря'},{d:2,m:11,wd:'ср',full:'Среда — 2 декабря',short:'ср, 2 декабря'},{d:3,m:11,wd:'чт',full:'Четверг — 3 декабря',short:'чт, 3 декабря'}];
+const DATES=[{d:1,m:11,wd:'вт',full:'Вторник — 1 декабря',short:'вт, 1 декабря'},{d:2,m:11,wd:'ср',full:'Среда — 2 декабря',short:'ср, 2 декабря'},{d:3,m:11,wd:'чт',full:'Четверг — 3 декабря',short:'чт, 3 декабря'},{d:4,m:11,wd:'пт',full:'Пятница — 4 декабря',short:'пт, 4 декабря'},{d:5,m:11,wd:'сб',full:'Суббота — 5 декабря',short:'сб, 5 декабря'}];
 const HIKE_YEAR=2026;
 function realToday(){ const t=new Date(); for(let i=0;i<5;i++){ if(t.getFullYear()===HIKE_YEAR&&t.getMonth()===DATES[i].m&&t.getDate()===DATES[i].d) return i; } return -1; }
 const DAYS=[
@@ -680,7 +680,7 @@ const TASKS=[
   {t:'Собрать свою творческую ДНК',s:'Картинки и музыка, в которых узнаёшь себя: места, где тебе хорошо, любимый свет и цвета, вещи с историей, близкие люди, кадры из фильмов. Плюс свои цвета, стиль и видео, которые мечтаешь снимать.',go:'s-dna'},
   {t:'Собрать рюкзак',s:'Зарядить телефон, освободить память, найти наушники или микрофон.'},
   {t:'Подготовиться к первому уроку',s:'Выбери на завтра время, когда тебя никто не отвлечёт, и найди тихое место.'},
-  {t:'Поставить напоминание об эфире у костра',remind:1,s:'3 декабря, четверг'+(LIVE_TIME?', '+LIVE_TIME:'')+'. Здесь мы вместе посмотрим ваши ролики.',live:1}],
+  {t:'Поставить напоминание об эфире у костра',remind:1,s:'5 декабря, суббота'+(LIVE_TIME?', '+LIVE_TIME:'')+'. Здесь мы вместе посмотрим ваши ролики.',live:1}],
  [{t:'Посмотреть урок 1',s:'Про идею и поиск своей интонации.',link:'l1'},
   {t:'Записать идею своего ролика',s:'О чём он и что ты хочешь показать о себе.',go:'s-idea'},
   {t:'Составить список кадров',s:'Что хочется поймать в кадр.',go:'s-kadry'},
@@ -695,7 +695,7 @@ const TASKS=[
   {t:'Доснять недостающие кадры',s:'Всё, чего не хватило истории.',go:'s-dosn'},
   {t:'Доработать монтаж',s:'Звук, цвет, титры, ритм.',go:'s-pomen'},
   {t:'Сохранить финальную версию и вставить ссылку',s:'Чтобы показать ролик у костра.',go:'s-final'},
-  {t:'Завтра эфир у костра — освободить вечер',s:'3 декабря'+(LIVE_TIME?', '+LIVE_TIME:'')+'. Приходи с готовым роликом.',live:1},
+  {t:'Завтра эфир у костра — освободить вечер',s:'5 декабря'+(LIVE_TIME?', '+LIVE_TIME:'')+'. Приходи с готовым роликом.',live:1},
   {t:'Написать письмо себе в будущее',s:'Запечатай его — оно откроется 25 февраля.',go:'s-letter'}],
  [{t:'Подготовить ссылку на свой ролик',go:'s-rolik'},
   {t:'Записать вопросы к эфиру',s:'Что хочется спросить или обсудить.',go:'s-vopr'},
@@ -724,16 +724,16 @@ const CAL_VIEW=[
 ];
 function routeBlock(){
   if(S.calSel==null) S.calSel=S.day;
-  const c=S.calSel, today=realToday(), nums=[29,30,1,2,3,4,5], wd=['вс','пн','вт','ср','чт','пт','сб'];
-  const week=wd.map(w=>'<div class="cv-wd">'+w+'</div>').join('')+nums.map((n,i)=>i<5
+  const c=S.calSel, today=realToday(), nums=[30,1,2,3,4,5,6], wd=['пн','вт','ср','чт','пт','сб','вс'], first=1;
+  const week=wd.map(w=>'<div class="cv-wd">'+w+'</div>').join('')+nums.map((n,j)=>{ const i=j-first; return i>=0&&i<5
     ?'<button class="cv-day'+(c===i?' on':'')+(today===i?' today':'')+(D.done[i]?' done':'')+'" type="button" data-cal="'+i+'" aria-label="День '+i+', '+CAL_VIEW[i].what+'"><span class="dn">'+n+'</span><span class="lb">'+CAL_VIEW[i].what+'</span></button>'
-    :'<div class="cv-day off" aria-hidden="true"><span class="dn">'+n+'</span><span class="lb">&nbsp;</span></div>').join('');
+    :'<div class="cv-day off" aria-hidden="true"><span class="dn">'+n+'</span><span class="lb">&nbsp;</span></div>'; }).join('');
   const st=D.tasks[c]||{}, v=CAL_VIEW[c], d=DAYS[c];
   const evs=TASKS[c].map((k,i)=>{ let act='';
     if(k.link){ const u=okUrl(LINKS[k.link]()); act=u?'<a class="cv-act" href="'+esc(u)+'" target="_blank" rel="noopener noreferrer">'+LINK_TXT[k.link]+'</a>':'<span class="cv-wait">'+LINK_WAIT[k.link]+'</span>'; }
     else if(k.go&&c===S.day) act='<button class="cv-act" type="button" data-go="'+k.go+'">перейти ↓</button>';
     if(k.remind) act=st[i]?'<span class="cv-wait">Напомним за сутки и за час до эфира</span>':'<button class="cv-act" type="button" data-remind="'+c+'-'+i+'">Напомнить об эфире</button>';
-    if(k.live&&!act) act='<span class="cv-fire">🔥 3.12</span>';
+    if(k.live&&!act) act='<span class="cv-fire">🔥 5.12</span>';
     if(k.remind) return '<div class="cv-ev fire'+(st[i]?' ok':'')+'"><span aria-hidden="true"></span><div class="b"><label><b>'+esc(k.t)+'</b>'+(k.s?'<span>'+esc(k.s)+'</span>':'')+'</label>'+act+'</div></div>';
     return '<div class="cv-ev'+(i===0?' pink':'')+(k.live?' fire':'')+(st[i]?' ok':'')+'"><input type="checkbox" id="cv'+c+'-'+i+'" data-check="tasks.'+c+'" data-i="'+i+'"'+(st[i]?' checked':'')+' aria-label="Готово: '+esc(k.t)+'"><div class="b"><label for="cv'+c+'-'+i+'"><b>'+esc(k.t)+'</b>'+(k.s?'<span>'+esc(k.s)+'</span>':'')+'</label>'+act+'</div></div>'; }).join('');
   return '<section class="cv-sec"><h3 class="cv-title">Что нас ждёт</h3>'
@@ -807,7 +807,7 @@ function expedition(){
 }
 function liveBanner(){
   const left=4-S.day, u=okUrl(LIVE_URL);
-  return '<section class="live"><div class="live-ic">'+I.fire+'</div><div class="live-t"><span class="live-k">эфир у костра</span><b>3 декабря, четверг'+(LIVE_TIME?' · '+esc(LIVE_TIME):'')+'</b><span>'+(left===1?'Уже завтра!':'Через '+left+' '+(left<5?'дня':'дней'))+' встречаемся у костра: смотрим ваши ролики и обсуждаем всё, что получилось.'+(LIVE_TIME?'':' Время сообщим в канале.')+'</span></div>'
+  return '<section class="live"><div class="live-ic">'+I.fire+'</div><div class="live-t"><span class="live-k">эфир у костра</span><b>5 декабря, суббота'+(LIVE_TIME?' · '+esc(LIVE_TIME):'')+'</b><span>'+(left===1?'Уже завтра!':'Через '+left+' '+(left<5?'дня':'дней'))+' встречаемся у костра: смотрим ваши ролики и обсуждаем всё, что получилось.'+(LIVE_TIME?'':' Время сообщим в канале.')+'</span></div>'
     +(u?'<a class="live-go" href="'+esc(u)+'" target="_blank" rel="noopener noreferrer">Ссылка на эфир ↗</a>':'<button class="live-go" type="button" data-day="4">Подробнее →</button>')+'</section>';
 }
 function day1(){
@@ -837,7 +837,7 @@ function day3(){
 }
 const LETTER_OPEN='2027-02-25', LETTER_OPEN_TXT='25 февраля';
 const STAMP='<svg class="lt-stamp" viewBox="0 0 64 74" aria-hidden="true"><path d="M2 2h60v70H2z" fill="#fbf6ec" stroke="#c9bda4" stroke-width="1.5" stroke-dasharray="3 2.4"/><rect x="8" y="8" width="48" height="44" fill="#a8447a"/><path d="M8 52 L22 30 L30 40 L40 22 L56 46 V52 Z" fill="#efdb55"/><path d="M36 28l4-6 4 6" fill="#fbf6ec"/><circle cx="46" cy="17" r="4" fill="#f4b5d4"/><text x="32" y="65" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="7" fill="#5a5244">FYS · 2026</text></svg>';
-const POSTMARK='<svg class="lt-post" viewBox="0 0 90 90" aria-hidden="true"><circle cx="45" cy="45" r="38" fill="none" stroke="#a8447a" stroke-width="2"/><circle cx="45" cy="45" r="30" fill="none" stroke="#a8447a" stroke-width="1"/><text x="45" y="40" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9" fill="#a8447a">ЗИМНИЙ</text><text x="45" y="51" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9" fill="#a8447a">ПОХОД</text><text x="45" y="62" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="8" fill="#a8447a">02.12.26</text></svg>';
+const POSTMARK='<svg class="lt-post" viewBox="0 0 90 90" aria-hidden="true"><circle cx="45" cy="45" r="38" fill="none" stroke="#a8447a" stroke-width="2"/><circle cx="45" cy="45" r="30" fill="none" stroke="#a8447a" stroke-width="1"/><text x="45" y="40" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9" fill="#a8447a">ЗИМНИЙ</text><text x="45" y="51" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="9" fill="#a8447a">ПОХОД</text><text x="45" y="62" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="8" fill="#a8447a">04.12.26</text></svg>';
 function letterBlock(){
   const L=D.d3, today=ymdNow(), opened=L.sealed&&today>=LETTER_OPEN;
   let body;
@@ -1000,12 +1000,12 @@ if(TG){
     if(TG.isVersionAtLeast&&TG.isVersionAtLeast('7.7')&&TG.disableVerticalSwipes) TG.disableVerticalSwipes();
   }catch(e){}
 }
-/* Заглушка до старта: до 29.11, 00:00 по Берлину вместо маршрута отсчёт. Для команды: добавить ?preview=1 к адресу */
-const HIKE_START=new Date('2026-11-29T00:00:00+01:00');
+/* Заглушка до старта: до 01.12, 00:00 по Берлину вместо маршрута отсчёт. Для команды: добавить ?preview=1 к адресу */
+const HIKE_START=new Date('2026-12-01T00:00:00+01:00');
 const isLocked=()=>Date.now()<HIKE_START.getTime()&&!PREVIEW&&!ADMIN&&TEST_OPEN!==true;
 function gate(){
   document.body.classList.add('locked');
-  $('#day').innerHTML='<section class="gate"><span class="k">старт 29.11 · 00:00 по Берлину</span><h2>До старта похода</h2>'
+  $('#day').innerHTML='<section class="gate"><span class="k">старт 01.12 · 00:00 по Берлину</span><h2>До старта похода</h2>'
     +'<div class="gate-cd"><div><b id="gD">0</b><span>дней</span></div><div><b id="gH">00</b><span>часов</span></div><div><b id="gM">00</b><span>минут</span></div><div><b id="gS">00</b><span>секунд</span></div></div>'
     +'</section>';
   const p=n=>String(n).padStart(2,'0');
