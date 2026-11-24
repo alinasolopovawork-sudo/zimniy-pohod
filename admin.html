@@ -113,6 +113,7 @@ tr.click{cursor:pointer}tr.click:hover td{background:rgba(244,181,212,.06)}
 .facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:14px 0}
 .facts div{background:var(--night);border-radius:10px;padding:9px 11px;font-size:13.5px}
 .facts div span{display:block;color:var(--mute);font-size:12px}
+.facts div span.pill{display:inline-block;color:#23262d}.facts div span.nx{color:var(--yellow);font-size:13.5px}.facts div span.nx.late{color:var(--red)}
 .dr-s{margin-top:16px}
 .dr-s h4{font-family:var(--mono);text-transform:uppercase;font-size:13px;color:var(--rose);margin:0 0 6px}
 .ans{background:var(--beige);color:#2b2620;border-radius:10px;padding:10px 12px;font-size:14px;margin-bottom:6px}
@@ -138,6 +139,47 @@ tr.click{cursor:pointer}tr.click:hover td{background:rgba(244,181,212,.06)}
 .list{margin:0;padding-left:20px}.list li{margin:4px 0}
 .scroll{overflow-x:auto}
 code{font-family:var(--mono);font-size:13px;background:var(--night);padding:1px 5px;border-radius:4px;overflow-wrap:anywhere}
+/* динамика по дням */
+.dyn-w{overflow-x:auto;padding-bottom:4px}
+.dyn{display:flex;gap:6px;align-items:flex-end;min-height:170px;min-width:100%}
+.dc{flex:1 0 34px;display:flex;flex-direction:column;align-items:center;gap:4px}
+.dc .bs{display:flex;gap:2px;align-items:flex-end;height:140px;width:100%;justify-content:center}
+.dc .bs i{display:block;width:30%;max-width:12px;border-radius:3px 3px 0 0}
+.dc span{font-family:var(--mono);font-size:10.5px;color:var(--mute);white-space:nowrap}
+.dc.td span{color:var(--snow);font-weight:600}
+.s1{background:var(--yellow)}.s2{background:var(--rose)}.s3{background:var(--pine)}
+.lg{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--dim);margin:10px 0 0}
+.lg i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+.tvy{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:14px}
+.tvy div{background:var(--night);border-radius:10px;padding:10px 12px}
+.tvy b{display:block;font-family:var(--mono);font-size:22px;line-height:1.15}
+.tvy span{color:var(--mute);font-size:12.5px;display:block}
+.up{color:var(--pine)}.dn{color:var(--red)}
+/* лиды: выбор и план */
+td.ck,th.ck{width:34px;padding-inline:4px}
+.ck input,#selall{width:22px;height:22px;accent-color:var(--rose);margin:0}
+.selbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:var(--night3);border:1px solid var(--rose);border-radius:12px;padding:8px 10px;margin-bottom:10px}
+.selbar select{background:var(--night);border:1px solid var(--line);color:var(--snow);border-radius:10px;padding:7px 10px;font:16px var(--f);min-height:40px}
+.hotago{display:block;color:var(--rose);font-size:12px;font-family:var(--f);white-space:nowrap}
+.nx{display:block;font-size:12.5px;color:var(--yellow);white-space:nowrap}.nx.late{color:var(--red)}
+.f2 label{display:grid;gap:4px;font-size:12px;color:var(--mute)}
+.f2 input[type=date]{width:100%;background:var(--night);border:1px solid var(--line);color:var(--snow);border-radius:10px;padding:9px 11px;font:16px var(--f);min-height:44px;color-scheme:dark}
+/* к эфиру */
+.q{display:grid;grid-template-columns:2.6em minmax(0,1fr);gap:10px;padding:10px 0;border-bottom:1px solid rgba(42,65,112,.6)}
+.q:last-child{border-bottom:0}
+.q .qn{font-family:var(--mono);font-size:18px;font-weight:600;color:var(--yellow);text-align:right}
+.q p{margin:0 0 3px}
+.lnk{background:none;border:0;padding:0;color:var(--dim);font:inherit;font-size:13px;text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px;cursor:pointer}
+.who-l{color:var(--mute);font-size:13px}
+.vids{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
+.vid{background:var(--night);border:1px solid var(--line);border-radius:14px;padding:12px;display:grid;gap:6px;align-content:start}
+.vid.on{border-color:var(--rose);box-shadow:inset 0 0 0 1px var(--rose)}
+.vid .nm{font-weight:600;text-align:left;color:var(--snow);font-size:15px;text-decoration:none}
+.vid .id{font-size:13.5px;color:var(--dim);margin:0}
+.vid a.op{overflow-wrap:anywhere;font-size:13.5px}
+.ideas{display:grid;gap:6px}
+.ideas div{background:var(--night);border-radius:10px;padding:9px 11px;font-size:14px}
+.ideas div .lnk{display:block;margin-top:2px}
 @media (max-width:900px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.kpis .kpi:first-child{grid-column:1/-1}.grid,.segs{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:600px){
  .tabs{flex-wrap:nowrap;overflow-x:auto;width:100%;scrollbar-width:none}
@@ -146,6 +188,9 @@ code{font-family:var(--mono);font-size:13px;background:var(--night);padding:1px 
  .facts{grid-template-columns:minmax(0,1fr)}
  table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding-block:10px;border-bottom:1px solid var(--line)}.stack td{display:flow-root;border:0;padding:3px 0;padding-inline-start:7.5em;text-align:start}.stack td::before{content:attr(data-l);float:inline-start;width:7em;margin-inline-start:-7.5em;color:var(--mute);font-size:12px;white-space:normal}.stack td:empty{display:none}
  .hl span:nth-child(odd){visibility:hidden}
+ .stack tr{position:relative}.stack td.ck{position:absolute;right:0;top:10px;padding:0;width:auto}.stack td.ck::before{display:none}.stack td.who{padding-inline-end:36px}
+ .filters select{flex:1 1 calc(50% - 4px);min-width:0}
+ .tvy{grid-template-columns:minmax(0,1fr)}.tvy div{display:flex;align-items:baseline;gap:10px}.tvy b{font-size:20px;min-width:2.2em}
 }
 @media (prefers-reduced-motion:reduce){.drawer,.toast{transition:none}}
 </style>
@@ -158,7 +203,7 @@ code{font-family:var(--mono);font-size:13px;background:var(--night);padding:1px 
     <div class="brand">Зимний поход · админка<small>Film Your Story · поход 2–6 декабря · для продаж и маркетинга</small></div>
     <div class="upd"><span id="upd"></span><button type="button" id="reload">Обновить</button></div>
     <nav class="tabs" id="tabs">
-      <a href="#obzor">Обзор</a><a href="#lidy">Лиды</a><a href="#segmenty">Сегменты</a><a href="#marketing">Маркетинг</a><a href="#dannye">Данные</a>
+      <a href="#obzor">Обзор</a><a href="#lidy">Лиды</a><a href="#segmenty">Сегменты</a><a href="#efir">К эфиру</a><a href="#marketing">Маркетинг</a><a href="#dannye">Данные</a>
     </nav>
   </div>
 </header>
@@ -183,13 +228,22 @@ const W=window.Telegram&&window.Telegram.WebApp;
 const INIT=(W&&W.initData)||'';
 try{ W&&W.ready&&W.ready(); W&&W.expand&&W.expand(); }catch(e){}
 
-let CH_KNOWN=false, L=[], ALL=[], NOW=Date.now(), HOURS=Array(24).fill(0), SRC=[], FUN=[], SEGS=[], N=0, LOADED='', SHOW_TEAM=false;
+let CH_KNOWN=false, L=[], ALL=[], NOW=Date.now(), HOURS=Array(24).fill(0), SRC=[], FUN=[], SEGS=[], N=0, LOADED='', SHOW_TEAM=false, DAILY={};
+const SEL=new Set();
+let EF={picked:false,vlim:innerWidth<600?12:24,ilim:30};
+/* дата по Берлину в виде ГГГГ-ММ-ДД */
+const BD=new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Berlin',year:'numeric',month:'2-digit',day:'2-digit'});
+const bday=t=>BD.format(new Date(t));
+const dm=s=>s.slice(8,10)+'.'+s.slice(5,7);
+const addDay=(s,n)=>{const d=new Date(s+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10)};
+const lsGet=k=>{try{return localStorage.getItem(k)||''}catch(e){return ''}};
+const lsSet=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
 
 /* ===== живые данные → участницы ===== */
 function fromLive(d){
-  NOW=Date.parse(d.now)||Date.now(); HOURS=(d.hours||[]).map(Number); CH_KNOWN=!!d.channelKnown;
+  NOW=Date.parse(d.now)||Date.now(); HOURS=(d.hours||[]).map(Number); CH_KNOWN=!!d.channelKnown; DAILY=d.daily||{};
   return (d.people||[]).map(r=>{
-    const sn=r.snap||{}, ev=r.ev||{}, st=sn.tasks||{};
+    const sn=r.snap||{}, ev=r.ev||{}, st=sn.tasks||{}, ea=r.evAt||{}, tm=k=>ea[k]?Date.parse(ea[k])||0:0;
     const tasks=TASKS.map((ts,di)=>ts.map((_,k)=>!!(st[di]&&st[di][k])));
     let day=-1; tasks.forEach((t,di)=>{ if(t.some(Boolean)) day=di; });
     const opened=!!r.firstSeen; if(opened&&day<0&&(r.maxDay||0)>=0) day=-1;
@@ -202,6 +256,8 @@ function fromLive(d){
       l1:!!(ev['link:l1']||tasks[1][0]),l2:!!(ev['link:l2']||tasks[2][0]),
       live:!!(ev['link:live']||tasks[4][2]),pass:!!(sn.pass||ev.claim),exp:!!ev['link:exp'],
       bought:sti===3,st:sti,man:ld.manager||'—',note:ld.note||'',crm:!!ld.crm,deal:ld.deal||'',
+      next:ld.next||'',pick:ld.pick===true,firstSeen:r.firstSeen?Date.parse(r.firstSeen)||0:0,
+      at:{exp:tm('link:exp'),claim:tm('claim'),live:tm('link:live'),l1:tm('link:l1'),l2:tm('link:l2'),channel:tm('link:channel'),remind:tm('remind')},
       opens:r.opens||0,last,stuckH:Math.max(0,Math.round((NOW-last)/36e5))};
   });
 }
@@ -224,11 +280,16 @@ function demo(){
     const T=TASKS.map((ts,d)=>ts.map((_,k)=>!!(tasks[d]&&tasks[d][k])));
     const live=day>=4&&T[4][2], pass=live&&R()<.62*q, exp=pass&&R()<.5*q, bought=exp&&R()<.16;
     const last=opened?NOW-(day>=4?R()*20:day>=0?(4-day)*20+R()*30:30+R()*80)*36e5:NOW-(4+R()*9)*864e5;
-    out.push({inChannel:contact?R()<.74*Math.min(1,q):null,id:i+1,name:pick(NM)+' '+pick(LN),user:'user'+(1000+i),phone:'+7 9•• •••-••-'+String(10+Math.floor(R()*89)),src:s[0],started:NOW-(5+R()*9)*864e5,reg:contact?NOW-(4+R()*9)*864e5:0,contact,opened,admin:false,blocked:false,
+    const started=NOW-(5+R()*9)*864e5, reg=contact?started+R()*36e5:0, firstSeen=opened?Math.min(last,reg+R()*2*864e5):0;
+    const st=bought?3:exp&&R()<.5?1:0, at={exp:exp?NOW-R()*30*36e5:0,claim:pass?NOW-(1+R()*30)*36e5:0,live:live?NOW-3*36e5:0,l1:0,l2:0,channel:0,remind:0};
+    const nx=st===1?addDay(bday(NOW),Math.floor(R()*4)-1):'';
+    out.push({inChannel:contact?R()<.74*Math.min(1,q):null,id:i+1,name:pick(NM)+' '+pick(LN),user:'user'+(1000+i),phone:'+7 9•• •••-••-'+String(10+Math.floor(R()*89)),src:s[0],started,reg,contact,opened,admin:false,blocked:false,
       tasks:T,day,idea:day>=1&&T[1][1]?pick(ID):'',video:day>=3&&T[3][3]?'youtu.be/demo'+i:'',qs:day>=4&&T[4][1]?[pick(QU)]:[],letter:day>=3&&T[3][5],
-      remind:T[0][5],channelClick:T[0][0],l1:T[1][0],l2:T[2][0],live,pass,exp,bought,st:bought?3:exp&&R()<.5?1:0,man:'—',note:'',crm:bought,deal:'',opens:1,last,stuckH:Math.round((NOW-last)/36e5)});
+      remind:T[0][5],channelClick:T[0][0],l1:T[1][0],l2:T[2][0],live,pass,exp,bought,st,man:st?pick(MAN.slice(1)):'—',note:'',crm:bought,deal:'',
+      next:nx,pick:day>=3&&T[3][3]&&R()<.15,firstSeen,at,opens:1,last,stuckH:Math.round((NOW-last)/36e5)});
   }
   HOURS=Array.from({length:24},(_,h)=>Math.round(400*Math.exp(-((h-15)**2)/30)+20));
+  DAILY={}; out.forEach(p=>{ if(!p.firstSeen) return; for(let d=bday(p.firstSeen),e=bday(p.last);d<=e;d=addDay(d,1)){ if(d===bday(p.firstSeen)||R()<.7){ (DAILY[d]=DAILY[d]||{active:0,events:0}).active++; } } });
   return out;
 }
 
@@ -263,10 +324,19 @@ const fmt=n=>Number(n).toLocaleString('ru-RU');
 const pc=(a,b)=>b?Math.round(a/b*100):0;
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const TT={hot:'горячая',warm:'тёплая',cold:'холодная'};
+const today=()=>bday(NOW);
+/* «сегодня по плану»: дата связи сегодня или раньше, лид не закрыт */
+const planned=p=>!!p.next&&p.next<=today()&&p.st!==3&&p.st!==4;
+function nextTxt(p){ if(!p.next) return ''; const t=today(); if(p.next===t) return '<span class="nx">связаться сегодня</span>';
+  if(p.next<t){ const n=Math.round((Date.parse(t)-Date.parse(p.next))/864e5); return `<span class="nx late">связь просрочена на ${n} дн</span>`; }
+  return `<span class="nx">связаться ${dm(p.next)}</span>`; }
+const mans=()=>[...new Set(MAN.slice(1).concat(ALL.map(p=>p.man).filter(m=>m&&m!=='—')))];
+function vurl(v){ let u=String(v||'').trim(); if(!u) return ''; if(!/^https?:\/\//i.test(u)) u='https://'+u; try{ const x=new URL(u); return /^https?:$/.test(x.protocol)?x.href:''; }catch(e){ return ''; } }
 
 function build(){
   L=ALL.filter(p=>SHOW_TEAM||!p.admin);
-  L.forEach(p=>{p.score=PTS.reduce((s,[,v,f])=>s+v*pv(f,p),0);p.temp=p.score>=90||p.exp?'hot':p.score>=40?'warm':'cold'});
+  L.forEach(p=>{p.score=PTS.reduce((s,[,v,f])=>s+v*pv(f,p),0);p.temp=p.score>=90||p.exp?'hot':p.score>=40?'warm':'cold';
+    p.hotAt=p.temp==='hot'?(p.at.exp||p.at.claim||p.last):0; p.hotH=p.hotAt?Math.max(0,Math.round((NOW-p.hotAt)/36e5)):0});
   N=L.length;
   const reg=L.filter(p=>p.contact).length;
   FUN=[
@@ -294,7 +364,7 @@ function build(){
 
 /* ===== отрисовка ===== */
 const V=document.getElementById('view');
-let LF={q:'',temp:'',stage:'',src:'',seg:'',stuckOnly:false,lim:40};
+let LF={q:'',temp:'',stage:'',src:'',seg:'',stuckOnly:false,lim:40,man:lsGet('zp-admin-man'),sort:'score',plan:false};
 function empty(){ return N===0?'<section class="card" style="margin-bottom:16px"><h2>Пока пусто</h2><p class="hint" style="margin:0">Участницы появятся здесь, как только нажмут «старт» в боте. Действия в мини-аппе — когда начнут его открывать.</p></section>':''; }
 function kpis(){
   const reg=FUN[1][2], op=FUN[2][2], live=L.filter(p=>p.live).length, hot=L.filter(p=>p.temp==='hot').length, st=SEGS.find(s=>s.id==='stuck').list.length;
@@ -324,30 +394,59 @@ function insights(){
    ${bs?`<div class="in g"><b>Лучший источник: ${esc(bs.name)}</b><span>${bs.hotR}% горячих лидов против ${pc(L.filter(p=>p.temp==='hot').length,N)}% в среднем.</span></div>`:''}
    ${tot?`<div class="in"><b>Пик активности — ${pk}:00–${pk+1}:00 по Берлину</b><span>В это время лучше отправлять сообщения от бота.</span></div>`:''}</div>`;
 }
+/* динамика: регистрации и первые открытия — по участницам, активные — по действиям в мини-аппе */
+function series(){
+  const t=today(), reg={}, op={};
+  L.forEach(p=>{ if(p.reg){const d=bday(p.reg);reg[d]=(reg[d]||0)+1} if(p.firstSeen){const d=bday(p.firstSeen);op[d]=(op[d]||0)+1} });
+  let start=[...Object.keys(reg),...Object.keys(op),...Object.keys(DAILY)].sort()[0]||t;
+  if(start<addDay(t,-20)) start=addDay(t,-20);
+  const days=[]; for(let d=start;d<=t;d=addDay(d,1)) days.push(d);
+  return days.map(d=>({d,reg:reg[d]||0,op:op[d]||0,act:(DAILY[d]&&DAILY[d].active)||0}));
+}
+function dynamics(){
+  const s=series(), mx=Math.max(1,...s.flatMap(x=>[x.reg,x.op,x.act])), t=s[s.length-1]||{reg:0,op:0,act:0}, y=s[s.length-2]||{reg:0,op:0,act:0};
+  const h=v=>v?Math.max(3,Math.round(v/mx*100)):0;
+  const cmp=(a,b)=>{const df=a-b;return df?`<span class="${df>0?'up':'dn'}">${df>0?'+':'−'}${fmt(Math.abs(df))}</span>`:'как вчера'};
+  const tv=[['регистраций',t.reg,y.reg],['впервые открыли мини-апп',t.op,y.op],['были активны в мини-аппе',t.act,y.act]];
+  return `<section class="card full"><h2>Динамика по дням</h2><p class="hint">Сегодня против вчера и последние 3 недели. Дни считаются по Берлину, команда не входит.</p>
+   <div class="tvy">${tv.map(([n,a,b])=>`<div><b>${fmt(a)}</b><span>сегодня ${n} · вчера ${fmt(b)} · ${cmp(a,b)}</span></div>`).join('')}</div>
+   <div class="dyn-w"><div class="dyn" role="img" aria-label="Столбики по дням: регистрации, первые открытия мини-аппа и активные участницы">${s.map(x=>`<div class="dc${x.d===today()?' td':''}"><div class="bs"><i class="s1" style="height:${h(x.reg)}%" title="${dm(x.d)} · регистраций: ${x.reg}"></i><i class="s2" style="height:${h(x.op)}%" title="${dm(x.d)} · впервые открыли: ${x.op}"></i><i class="s3" style="height:${h(x.act)}%" title="${dm(x.d)} · активных: ${x.act}"></i></div><span>${dm(x.d)}</span></div>`).join('')}</div></div>
+   <div class="lg"><span><i class="s1"></i>регистрации в боте</span><span><i class="s2"></i>впервые открыли мини-апп</span><span><i class="s3"></i>активны в мини-аппе</span></div></section>`;
+}
 function vObzor(){
+  const pl=L.filter(planned).length;
   return `<h1>Где сейчас участницы похода</h1><p class="lead">Сколько людей на каждой стоянке, где теряем больше всего и кому продажам писать первыми.</p>
   ${empty()}${kpis()}
-  <div class="grid"><section class="card full"><h2>Маршрут: где теряем людей</h2><p class="hint">Каждая строка — сколько человек дошли до этого шага. Справа — сколько ушло после прошлого шага; красным — самый большой обрыв.</p><div class="route">${funnel()}</div></section>
+  <div class="grid">${dynamics()}<section class="card full"><h2>Маршрут: где теряем людей</h2><p class="hint">Каждая строка — сколько человек дошли до этого шага. Справа — сколько ушло после прошлого шага; красным — самый большой обрыв.</p><div class="route">${funnel()}</div></section>
   <section class="card"><h2>Что исправить</h2><p class="hint">Выводы считаются сами по свежим данным.</p>${insights()}</section>
-  <section class="card"><h2>Кому писать первыми</h2><p class="hint">Готовые списки для отдела продаж.</p>${SEGS.slice(0,4).map(s=>`<div class="st" style="grid-template-columns:minmax(0,1fr) auto"><div class="n">${esc(s.name)}<small>${esc(s.tag)}</small></div><button class="btn sm g" data-seg="${s.id}">${fmt(s.list.length)} →</button></div>`).join('')}</section></div>`;
+  <section class="card"><h2>Кому писать первыми</h2><p class="hint">Готовые списки для отдела продаж.</p><div class="st" style="grid-template-columns:minmax(0,1fr) auto"><div class="n">Связаться сегодня по плану<small>дата связи — сегодня или просрочена</small></div><button class="btn sm${pl?'':' g'}" data-plan="1">${fmt(pl)} →</button></div>${SEGS.slice(0,4).map(s=>`<div class="st" style="grid-template-columns:minmax(0,1fr) auto"><div class="n">${esc(s.name)}<small>${esc(s.tag)}</small></div><button class="btn sm g" data-seg="${s.id}">${fmt(s.list.length)} →</button></div>`).join('')}</section></div>`;
 }
 function filtered(){
   const q=LF.q.trim().toLowerCase(), seg=LF.seg&&SEGS.find(s=>s.id===LF.seg);
-  return (seg?seg.list:L).filter(p=>(!q||(p.name+' '+p.user+' '+p.phone+' '+p.idea).toLowerCase().includes(q))&&(!LF.temp||p.temp===LF.temp)&&(!LF.src||p.src===LF.src)&&(!LF.stage||stage(p)===LF.stage)&&(!LF.stuckOnly||(stuck(p)&&p.stuckH>24))).sort((a,b)=>b.score-a.score||b.last-a.last);
+  const so=LF.sort==='hot'?(a,b)=>(b.hotAt-a.hotAt)||b.score-a.score
+    :LF.sort==='next'?(a,b)=>((a.next||'9')<(b.next||'9')?-1:(a.next||'9')>(b.next||'9')?1:0)||b.score-a.score
+    :(a,b)=>b.score-a.score||b.last-a.last;
+  return (seg?seg.list:L).filter(p=>(!q||(p.name+' '+p.user+' '+p.phone+' '+p.idea).toLowerCase().includes(q))&&(!LF.temp||p.temp===LF.temp)&&(!LF.src||p.src===LF.src)&&(!LF.stage||stage(p)===LF.stage)&&(!LF.stuckOnly||(stuck(p)&&p.stuckH>24))
+    &&(!LF.man||p.man===LF.man)&&(!LF.plan||planned(p))).sort(so);
 }
 function vLidy(){
+  if(LF.man&&LF.man!=='—'&&!mans().includes(LF.man)) LF.man='';
   const f=filtered(), seg=LF.seg&&SEGS.find(s=>s.id===LF.seg), stages=[...new Set(L.map(stage))];
   return `<h1>Лиды для продаж</h1><p class="lead">Все участницы с этапом, местом, где застряли, баллами и статусом. Нажмите на строку — откроется карточка.</p>
   <div class="filters"><input id="fq" type="search" placeholder="Имя, ник, телефон или идея ролика" value="${esc(LF.q)}" aria-label="Поиск">
    <select id="fst" aria-label="Этап"><option value="">Все этапы</option>${stages.map(s=>`<option${LF.stage===s?' selected':''}>${esc(s)}</option>`).join('')}</select>
-   <select id="fsr" aria-label="Источник"><option value="">Все источники</option>${SRC.map(s=>`<option${LF.src===s?' selected':''}>${esc(s)}</option>`).join('')}</select></div>
+   <select id="fsr" aria-label="Источник"><option value="">Все источники</option>${SRC.map(s=>`<option${LF.src===s?' selected':''}>${esc(s)}</option>`).join('')}</select>
+   <select id="fman" aria-label="Чьи лиды"><option value="">Все менеджеры</option><option value="—"${LF.man==='—'?' selected':''}>Без менеджера</option>${mans().map(m=>`<option value="${esc(m)}"${LF.man===m?' selected':''}>Мои: ${esc(m)}</option>`).join('')}</select>
+   <select id="fso" aria-label="Сортировка">${[['score','По баллам'],['hot','Свежие горячие'],['next','По дате связи']].map(([k,t])=>`<option value="${k}"${LF.sort===k?' selected':''}>${t}</option>`).join('')}</select></div>
   <div class="filters">${[['','все'],['hot','горячие'],['warm','тёплые'],['cold','холодные']].map(([k,t])=>`<button class="chip${LF.temp===k?' on':''}" data-temp="${k}">${t}</button>`).join('')}
+   <button class="chip${LF.plan?' on':''}" id="fplan">сегодня по плану · ${fmt(L.filter(planned).length)}</button>
    <button class="chip${LF.stuckOnly?' on':''}" id="fstk">застряли &gt; 24 ч</button>
    ${seg?`<button class="chip on" id="fseg">сегмент: ${esc(seg.name)} ✕</button>`:''}</div>
   <div class="row" style="justify-content:space-between;margin-bottom:10px"><span class="hint" style="margin:0">Найдено: ${fmt(f.length)}</span>
-   <div class="row"><button class="btn sm" data-crm="list">Отправить ${fmt(f.filter(p=>!p.crm).length)} в CRM</button><button class="btn sm g" data-copy="list">Скопировать</button></div></div>
-  <section class="card" style="padding:4px 12px"><div class="scroll"><table class="stack"><thead><tr><th>Участница</th><th>Этап</th><th>Источник</th><th>Была в сети</th><th class="num">Баллы</th><th>Статус</th></tr></thead><tbody>
-  ${f.slice(0,LF.lim).map(p=>{const s=stuck(p);return `<tr class="click" data-id="${p.id}"><td class="who"><b>${esc(p.name)}</b><span>${p.user?'@'+esc(p.user):esc(p.phone)}</span></td><td>${esc(stage(p))}${s?`<span class="stuck">застряла: ${esc(s)}</span>`:''}</td><td>${esc(p.src)}</td><td>${ago(p.stuckH)}</td><td class="num">${p.score} <span class="pill t-${p.temp}">${TT[p.temp]}</span></td><td>${p.st?`<span class="crm-y">${esc(STL[p.st])}${p.man!=='—'?' · '+esc(p.man):''}</span>`:'<span class="crm-n">новый</span>'}${p.crm?'<span class="crm-y" style="display:block">в CRM</span>':''}</td></tr>`}).join('')}
+   <div class="row"><button class="btn sm" data-crm="list">Отправить ${fmt(f.filter(p=>!p.crm).length)} в CRM</button><button class="btn sm g" data-copy="list">Скопировать</button>${f.length?`<button class="btn sm g" id="selallb">Выбрать всех ${fmt(f.length)}</button>`:''}</div></div>
+  ${SEL.size?`<div class="selbar"><b>Выбрано: ${fmt(SEL.size)}</b><select id="bman" aria-label="Кому назначить">${['—'].concat(mans()).map(m=>`<option value="${esc(m)}">${m==='—'?'Снять менеджера':'Назначить: '+esc(m)}</option>`).join('')}</select><button class="btn sm" id="bassign">Применить</button><button class="btn sm g" id="bclear">Снять выбор</button></div>`:''}
+  <section class="card" style="padding:4px 12px"><div class="scroll"><table class="stack"><thead><tr><th class="ck"><input type="checkbox" id="selall" aria-label="Выбрать всех найденных"${f.length&&f.every(p=>SEL.has(String(p.id)))?' checked':''}></th><th>Участница</th><th>Этап</th><th>Источник</th><th>Была в сети</th><th class="num">Баллы</th><th>Статус</th></tr></thead><tbody>
+  ${f.slice(0,LF.lim).map(p=>{const s=stuck(p);return `<tr class="click" data-id="${p.id}"><td class="ck"><input type="checkbox" data-sel="${p.id}" aria-label="Выбрать ${esc(p.name)}"${SEL.has(String(p.id))?' checked':''}></td><td class="who"><b>${esc(p.name)}</b><span>${p.user?'@'+esc(p.user):esc(p.phone)}</span></td><td>${esc(stage(p))}${s?`<span class="stuck">застряла: ${esc(s)}</span>`:''}</td><td>${esc(p.src)}</td><td>${ago(p.stuckH)}</td><td class="num">${p.score} <span class="pill t-${p.temp}">${TT[p.temp]}</span>${p.hotAt?`<span class="hotago">горячая ${p.hotH<1?'меньше часа':p.hotH<48?p.hotH+' ч':Math.floor(p.hotH/24)+' дн'} назад</span>`:''}</td><td>${p.st?`<span class="crm-y">${esc(STL[p.st])}</span>`:'<span class="crm-n">новый</span>'}${p.man!=='—'?`<span class="crm-n" style="display:block">${esc(p.man)}</span>`:''}${nextTxt(p)}${p.crm?'<span class="crm-y" style="display:block">в CRM</span>':''}</td></tr>`}).join('')}
   </tbody></table></div></section>${f.length>LF.lim?`<div class="more"><button class="btn g" id="more">Показать ещё</button></div>`:''}
   <section class="card" style="margin-top:16px"><h2>Как считаются баллы</h2><p class="hint">Горячая — от 90 баллов или переход к экспедиции; тёплая — от 40.</p><div class="score">${PTS.map(([t,v])=>`<div><span>${esc(t)}</span><b>+${v}${t.startsWith('Дни')?' за день':''}</b></div>`).join('')}</div></section>`;
 }
@@ -356,6 +455,28 @@ function vSeg(){
   <div class="segs">${SEGS.map(s=>`<article class="seg"><span class="tag${s.tag==='вернуть'?' y':''}">${esc(s.tag)}</span><div class="seg-h"><b>${esc(s.name)}</b><span class="c">${fmt(s.list.length)}</span></div><p>${esc(s.why)}</p><div class="do"><b>Что делать:</b> ${esc(s.do)}</div>
    <div class="row"><button class="btn sm" data-crm="${s.id}">В CRM: ${fmt(s.list.filter(p=>!p.crm).length)} новых</button><button class="btn sm g" data-seg="${s.id}">Открыть список</button><button class="btn sm g" data-copy="${s.id}">Скопировать</button></div></article>`).join('')}</div>
   <p class="hint" style="margin-top:14px">В CRM уходят только те, кого туда ещё не отправляли. Если человек уже есть в CRM по телефону или нику, заявка добавится к его сделке, дубль не создастся. Сообщения от бота по сегментам включатся, когда будут тексты.</p>`;
+}
+/* ===== к эфиру: вопросы, ролики, идеи ===== */
+const normQ=s=>String(s).toLowerCase().replace(/ё/g,'е').replace(/[^\p{L}\p{N}\s]/gu,' ').replace(/\s+/g,' ').trim();
+function efirData(){
+  const qm=new Map();
+  L.forEach(p=>p.qs.forEach(q=>{const k=normQ(q);if(!k)return;if(!qm.has(k))qm.set(k,{t:q,who:[]});const g=qm.get(k);if(!g.who.includes(p))g.who.push(p)}));
+  return {qs:[...qm.values()].sort((a,b)=>b.who.length-a.who.length),
+    vids:L.filter(p=>p.video).sort((a,b)=>(b.pick-a.pick)||b.score-a.score),
+    ideas:L.filter(p=>p.idea).sort((a,b)=>b.score-a.score)};
+}
+const names=(arr,n)=>arr.slice(0,n).map(p=>`<button class="lnk" data-open="${p.id}">${esc(p.name)}</button>`).join(', ')+(arr.length>n?` <span class="who-l">и ещё ${arr.length-n}</span>`:'');
+function vEfir(){
+  const {qs,vids,ideas}=efirData(), picked=vids.filter(p=>p.pick).length, shown=EF.picked?vids.filter(p=>p.pick):vids, people=new Set(qs.flatMap(g=>g.who)).size;
+  return `<h1>К эфиру у костра</h1><p class="lead">Всё, что участницы прислали к эфиру 6 декабря: вопросы, ролики и идеи. Отметьте ролики, которые Алина разберёт в прямом эфире.</p>
+  <section class="kpis"><div class="kpi"><b>${fmt(qs.length)}</b><span>разных вопросов · от ${fmt(people)} чел.</span></div><div class="kpi"><b>${fmt(vids.length)}</b><span>прислали ролик</span></div><div class="kpi hot"><b>${fmt(picked)}</b><span>роликов отобрано для разбора</span></div><div class="kpi"><b>${fmt(ideas.length)}</b><span>записали идею ролика</span></div></section>
+  <div class="grid" style="margin-top:16px">
+  <section class="card full"><div class="row" style="justify-content:space-between"><h2>Вопросы к эфиру</h2>${qs.length?'<button class="btn sm g" data-efcopy="qs">Скопировать все</button>':''}</div><p class="hint">Одинаковые вопросы склеены, слева — сколько человек спросили. Сверху — самые частые.</p>
+   ${qs.map(g=>`<div class="q"><b class="qn">${g.who.length}</b><div><p>${esc(g.t)}</p>${names(g.who,4)}</div></div>`).join('')||'<p class="hint" style="margin:0">Вопросы появятся, когда участницы дойдут до дня 4 и запишут их.</p>'}</section>
+  <section class="card full"><div class="row" style="justify-content:space-between"><h2>Ролики участниц</h2><div class="row">${vids.length?`<button class="chip${EF.picked?' on':''}" id="efpk">только отобранные · ${fmt(picked)}</button>`:''}${picked?'<button class="btn sm g" data-efcopy="picked">Скопировать отобранные</button>':''}</div></div><p class="hint">Нажмите «Разобрать на эфире», чтобы отметить ролик. Отметку видит вся команда.</p>
+   ${shown.length?`<div class="vids">${shown.slice(0,EF.vlim).map(p=>{const u=vurl(p.video);return `<article class="vid${p.pick?' on':''}"><button class="lnk nm" data-open="${p.id}">${esc(p.name)}</button>${p.idea?`<p class="id">${esc(p.idea)}</p>`:''}${u?`<a class="op" href="${esc(u)}" target="_blank" rel="noopener" data-ext="1">Смотреть ролик ↗</a>`:`<span class="who-l">${esc(p.video)}</span>`}<button class="chip${p.pick?' on':''}" data-pick="${p.id}" style="justify-self:start">${p.pick?'✓ Разберём на эфире':'Разобрать на эфире'}</button></article>`}).join('')}</div>${shown.length>EF.vlim?`<div class="more"><button class="btn g" id="vmore">Показать ещё · осталось ${fmt(shown.length-EF.vlim)}</button></div>`:''}`:`<p class="hint" style="margin:0">${EF.picked?'Пока ничего не отобрано.':'Ролики появятся, когда участницы вставят ссылку в день 3.'}</p>`}</section>
+  <section class="card full"><h2>Идеи роликов</h2><p class="hint">О чём участницы снимают — темы для примеров на эфире и для продаж. Сверху — самые вовлечённые.</p>
+   ${ideas.length?`<div class="ideas">${ideas.slice(0,EF.ilim).map(p=>`<div>${esc(p.idea)}<button class="lnk" data-open="${p.id}">${esc(p.name)}${p.video?' · есть ролик':''}</button></div>`).join('')}</div>${ideas.length>EF.ilim?`<div class="more"><button class="btn g" id="imore">Показать ещё · осталось ${fmt(ideas.length-EF.ilim)}</button></div>`:''}`:'<p class="hint" style="margin:0">Идеи появятся с дня 1.</p>'}</section></div>`;
 }
 function vMarketing(){
   const ts=taskStats(), mx=Math.max(1,...HOURS), ss=srcStats();
@@ -382,13 +503,15 @@ function card(p){
   const s=stuck(p), dt=t=>new Date(t).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit',timeZone:'Europe/Berlin'});
   const tl=[[p.started,'Нажала «старт» в боте · источник: '+p.src,1]];
   if(p.reg) tl.push([p.reg,'Поделилась контактом']);
+  if(p.firstSeen) tl.push([p.firstSeen,'Впервые открыла мини-апп']);
+  [['channel','Открыла ссылку на канал'],['remind','Поставила напоминание об эфире'],['l1','Открыла урок 1'],['l2','Открыла урок 2'],['live','Перешла в эфир'],['claim','Забрала пропуск',1],['exp','Нажала «Узнать про экспедицию»',1]].forEach(([k,x,m])=>{ if(p.at&&p.at[k]) tl.push([p.at[k],x,m]); });
   if(p.opened) tl.push([p.last,'Последний раз в мини-аппе · заходила '+p.opens+' раз']);
   return `<div class="dr-h"><div><h3>${esc(p.name)}</h3><span class="hint">${p.user?'@'+esc(p.user)+' · ':''}${esc(p.phone||'телефона нет')}</span></div><button class="x" id="close" aria-label="Закрыть">✕</button></div>
   <div class="row" style="margin-top:10px">${p.user?`<a class="btn sm" href="https://t.me/${encodeURIComponent(p.user)}" target="_blank" rel="noopener">Написать в Telegram</a>`:''}${p.phone?`<button class="btn sm g" data-cp="${esc(p.phone)}">Скопировать телефон</button>`:''}</div>
-  <div class="facts"><div><span>Этап</span>${esc(stage(p))}</div><div><span>Баллы</span>${p.score} · <span class="pill t-${p.temp}" style="display:inline-block">${TT[p.temp]}</span></div><div><span>Источник</span>${esc(p.src)}</div><div><span>Была в сети</span>${ago(p.stuckH)}</div><div style="grid-column:1/-1"><span>Канал похода</span>${p.inChannel===true?'в канале':p.inChannel===false?'<b style="color:var(--red)">не вступила</b>':'пока неизвестно'}</div>${s?`<div style="grid-column:1/-1"><span>Застряла</span><b style="color:var(--red)">${esc(s)}</b></div>`:''}</div>
+  <div class="facts"><div><span>Этап</span>${esc(stage(p))}</div><div><span>Баллы</span>${p.score} · <span class="pill t-${p.temp}" style="display:inline-block">${TT[p.temp]}</span></div><div><span>Источник</span>${esc(p.src)}</div><div><span>Была в сети</span>${ago(p.stuckH)}</div>${p.hotAt?`<div><span>Стала горячей</span>${ago(p.hotH)}</div>`:''}${p.next?`<div><span>Связаться</span>${nextTxt(p)}</div>`:''}<div style="grid-column:1/-1"><span>Канал похода</span>${p.inChannel===true?'в канале':p.inChannel===false?'<b style="color:var(--red)">не вступила</b>':'пока неизвестно'}</div>${s?`<div style="grid-column:1/-1"><span>Застряла</span><b style="color:var(--red)">${esc(s)}</b></div>`:''}</div>
   <div class="days5">${DAYS.map((d,i)=>{const t=p.tasks[i],n=t.filter(Boolean).length,all=n===t.length;return `<div class="${all?'ok':''}${p.day===i&&!all&&s?' stop':''}">${d[0]}<b>${n?n+'/'+t.length:'—'}</b></div>`}).join('')}</div>
   <div class="dr-s"><h4>Ответы</h4>${p.idea?`<div class="ans"><span>идея ролика</span>${esc(p.idea)}</div>`:''}${p.video?`<div class="ans"><span>ссылка на ролик</span>${esc(p.video)}</div>`:''}${p.qs.map(q=>`<div class="ans"><span>вопрос к эфиру</span>${esc(q)}</div>`).join('')}${!p.idea&&!p.video&&!p.qs.length?'<p class="hint">Пока нет ответов.</p>':''}</div>
-  <div class="dr-s"><h4>Работа продаж</h4><div class="f2"><select id="cst" aria-label="Статус">${STL.map((t,i)=>`<option value="${i}"${p.st===i?' selected':''}>${t}</option>`).join('')}</select><select id="cman" aria-label="Менеджер">${(MAN.includes(p.man)?MAN:MAN.concat([p.man])).map(m=>`<option${p.man===m?' selected':''}>${esc(m)}</option>`).join('')}</select><textarea id="cnote" placeholder="Заметка к звонку">${esc(p.note)}</textarea></div>
+  <div class="dr-s"><h4>Работа продаж</h4><div class="f2"><select id="cst" aria-label="Статус">${STL.map((t,i)=>`<option value="${i}"${p.st===i?' selected':''}>${t}</option>`).join('')}</select><select id="cman" aria-label="Менеджер">${(MAN.includes(p.man)?MAN:MAN.concat([p.man])).map(m=>`<option${p.man===m?' selected':''}>${esc(m)}</option>`).join('')}</select><label style="grid-column:1/-1">Когда связаться в следующий раз<input type="date" id="cnext" value="${esc(p.next)}"></label><textarea id="cnote" placeholder="Заметка к звонку">${esc(p.note)}</textarea></div>
    <div class="row" style="margin-top:8px"><button class="btn sm" id="csave">Сохранить</button><button class="btn sm g" data-crm="one">${p.crm?'Отправить в CRM ещё раз':'Отправить в CRM'}</button>${p.crm?`<span class="crm-y">в CRM${p.deal?' · сделка '+esc(p.deal):''}</span>`:''}</div></div>
   <div class="dr-s"><h4>История</h4><ul class="tl">${tl.sort((a,b)=>a[0]-b[0]).map(([t,x,m])=>`<li class="${m?'m':''}"><span>${dt(t)}</span>${esc(x)}</li>`).join('')}</ul></div>
   <div class="dr-s"><h4>Из чего баллы</h4><div class="score">${PTS.filter(([,,f])=>pv(f,p)).map(([t,v,f])=>`<div><span>${esc(t)}</span><b>+${v*pv(f,p)}</b></div>`).join('')||'<p class="hint">Пока ноль.</p>'}</div></div>`;
@@ -403,7 +526,7 @@ function msg(title,text){V.innerHTML=`<section class="card" style="max-width:640
 function crmComment(p){
   return ['Зимний поход (мини-апп)','Этап: '+stage(p),stuck(p)?'Застряла: '+stuck(p):'','Баллы: '+p.score+' ('+TT[p.temp]+')','Была в сети: '+ago(p.stuckH),
     p.idea?'Идея ролика: '+p.idea:'',p.video?'Ролик: '+p.video:'',p.qs.length?'Вопросы к эфиру: '+p.qs.join(' | '):'',
-    p.st?'Статус в админке: '+STL[p.st]:'',p.man!=='—'?'Менеджер: '+p.man:'',p.note?'Заметка: '+p.note:''].filter(Boolean).join('\n');
+    p.st?'Статус в админке: '+STL[p.st]:'',p.man!=='—'?'Менеджер: '+p.man:'',p.next?'Связаться: '+dm(p.next):'',p.note?'Заметка: '+p.note:''].filter(Boolean).join('\n');
 }
 async function sendCRM(list,btn){
   let ok=0,bad=0; const errs={};
@@ -420,8 +543,8 @@ async function sendCRM(list,btn){
   toast(DEMO?'Демо: отмечено как отправленные — '+ok:('В CRM ушло: '+ok+(bad?' · не ушло: '+bad+' ('+Object.entries(errs).map(([k,v])=>k+' — '+v).join(', ')+')':'')));
   build(); route(); if(cur&&document.getElementById('dr').className==='open') openCard(cur.id);
 }
-const VIEWS={obzor:vObzor,lidy:vLidy,segmenty:vSeg,marketing:vMarketing,dannye:vData};
-function route(){ if(!ALL.length&&!LOADED) return; const h=location.hash.replace('#','');const k=VIEWS[h]?h:'obzor';V.innerHTML=VIEWS[k]();document.querySelectorAll('#tabs a').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+k))}
+const VIEWS={obzor:vObzor,lidy:vLidy,segmenty:vSeg,efir:vEfir,marketing:vMarketing,dannye:vData};
+function route(){ if(!ALL.length&&!LOADED) return; const h=location.hash.replace('#','');const k=VIEWS[h]?h:'obzor';V.innerHTML=VIEWS[k]();const dw=V.querySelector('.dyn-w');if(dw)dw.scrollLeft=dw.scrollWidth;document.querySelectorAll('#tabs a').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+k))}
 window.addEventListener('hashchange',()=>{closeCard();route();window.scrollTo(0,0)});
 async function api(body){ const r=await fetch(API,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(Object.assign({initData:INIT},body))}); let j={}; try{ j=await r.json(); }catch(e){} return {status:r.status,j}; }
 async function load(){
@@ -440,7 +563,37 @@ async function load(){
 document.addEventListener('click',async e=>{
   const t=e.target;
   if(t.id==='reload'){ load(); return; }
+  const ext=t.closest('a[data-ext]');if(ext&&W&&W.openLink){e.preventDefault();try{W.openLink(ext.href)}catch(err){window.open(ext.href,'_blank','noopener')}return}
+  const ckc=t.closest('td.ck,th.ck');if(ckc){ if(t.tagName!=='INPUT'){const i=ckc.querySelector('input');if(i)i.click();} return; }
   const row=t.closest('tr.click');if(row){openCard(row.dataset.id);return}
+  const op=t.closest('[data-open]');if(op){openCard(op.dataset.open);return}
+  if(t.closest('[data-plan]')){LF={...LF,plan:true,seg:'',lim:40};location.hash='lidy';route();return}
+  if(t.id==='fplan'){LF.plan=!LF.plan;route();return}
+  if(t.id==='selallb'){filtered().forEach(p=>SEL.add(String(p.id)));route();return}
+  if(t.id==='bclear'){SEL.clear();route();return}
+  if(t.id==='bassign'){
+    const v=document.getElementById('bman').value, man=v||'—', ids=[...SEL];
+    if(!ids.length) return;
+    const apply=()=>{ALL.forEach(p=>{if(SEL.has(String(p.id)))p.man=man});SEL.clear();build();route()};
+    if(DEMO){ apply(); toast('Демо: назначено '+fmt(ids.length)); return; }
+    t.disabled=true; t.textContent='Сохраняю…';
+    try{ let ok=true; for(let i=0;i<ids.length;i+=2000){ const {j}=await api({op:'assign',tg_ids:ids.slice(i,i+2000).map(Number),manager:man==='—'?'':man}); if(!j.ok){ok=false;break} }
+      if(ok){ const n=ids.length; apply(); toast((man==='—'?'Менеджер снят у ':'Назначено '+man+': ')+fmt(n)); } else { toast('Не сохранилось, попробуйте ещё раз'); t.disabled=false; t.textContent='Применить'; } }
+    catch(err){ toast('Нет связи, не сохранилось'); t.disabled=false; t.textContent='Применить'; }
+    return;
+  }
+  const pk=t.closest('[data-pick]');if(pk){
+    const p=ALL.find(x=>String(x.id)===pk.dataset.pick); if(!p) return; const v=!p.pick;
+    if(!DEMO){ pk.disabled=true; try{ const {j}=await api({op:'pick',tg_id:p.id,pick:v}); if(!j.ok){toast('Не сохранилось, попробуйте ещё раз');pk.disabled=false;return} }catch(err){toast('Нет связи, не сохранилось');pk.disabled=false;return} }
+    p.pick=v; route(); toast(v?'Отмечено: разберём на эфире':'Отметка снята'); return;
+  }
+  if(t.id==='efpk'){EF.picked=!EF.picked;route();return}
+  if(t.id==='vmore'){EF.vlim+=48;route();return}
+  if(t.id==='imore'){EF.ilim+=60;route();return}
+  const ec=t.closest('[data-efcopy]');if(ec){ const d=efirData();
+    const txt=ec.dataset.efcopy==='qs'?d.qs.map(g=>g.who.length+' × '+g.t.replace(/\s+/g,' ')+' — '+g.who.map(p=>p.name).join(', ')).join('\n')
+      :d.vids.filter(p=>p.pick).map(p=>[p.name,p.user?'@'+p.user:'',vurl(p.video)||p.video,p.idea].filter(Boolean).join(' — ')).join('\n');
+    copy(txt,'Скопировано'); return; }
   if(t.closest('#close')||t.id==='shade'){closeCard();return}
   const sg=t.closest('[data-seg]');if(sg){LF={...LF,seg:sg.dataset.seg,lim:40};location.hash='lidy';route();return}
   const tp=t.closest('[data-temp]');if(tp){LF.temp=tp.dataset.temp;route();return}
@@ -450,10 +603,10 @@ document.addEventListener('click',async e=>{
   if(t.id==='team'){SHOW_TEAM=!SHOW_TEAM;build();route();return}
   const cpp=t.closest('[data-cp]');if(cpp){copy(cpp.dataset.cp,'Телефон скопирован');return}
   if(t.id==='csave'&&cur){
-    const st=+document.getElementById('cst').value, man=document.getElementById('cman').value, note=document.getElementById('cnote').value;
-    if(DEMO){ Object.assign(cur,{st,man,note,bought:st===3}); toast('Сохранено (демо)'); build(); route(); return; }
+    const st=+document.getElementById('cst').value, man=document.getElementById('cman').value, note=document.getElementById('cnote').value, next=document.getElementById('cnext').value||'';
+    if(DEMO){ Object.assign(cur,{st,man,note,next,bought:st===3}); toast('Сохранено (демо)'); build(); route(); openCard(cur.id); return; }
     t.disabled=true; t.textContent='Сохраняю…';
-    try{ const {j}=await api({op:'lead',tg_id:cur.id,status:STK[st],manager:man==='—'?'':man,note}); if(j.ok){ Object.assign(cur,{st,man,note,bought:st===3}); toast('Сохранено'); build(); route(); openCard(cur.id); } else toast('Не сохранилось, попробуйте ещё раз'); }
+    try{ const {j}=await api({op:'lead',tg_id:cur.id,status:STK[st],manager:man==='—'?'':man,note,next}); if(j.ok){ Object.assign(cur,{st,man,note,next,bought:st===3}); toast('Сохранено'); build(); route(); openCard(cur.id); } else toast('Не сохранилось, попробуйте ещё раз'); }
     catch(err){ toast('Нет связи, не сохранилось'); }
     t.disabled=false; t.textContent='Сохранить'; return;
   }
@@ -468,7 +621,13 @@ document.addEventListener('click',async e=>{
     copy(txt,'Скопировано: '+fmt(list.length)+' строк — вставьте в таблицу или CRM');return}
 });
 document.addEventListener('input',e=>{if(e.target.id==='fq'){LF.q=e.target.value;const pos=e.target.selectionStart;route();const i=document.getElementById('fq');i.focus();i.setSelectionRange(pos,pos)}});
-document.addEventListener('change',e=>{if(e.target.id==='fst'){LF.stage=e.target.value;route()}if(e.target.id==='fsr'){LF.src=e.target.value;route()}});
+document.addEventListener('change',e=>{const t=e.target;
+  if(t.id==='fst'){LF.stage=t.value;route()}if(t.id==='fsr'){LF.src=t.value;route()}
+  if(t.id==='fman'){LF.man=t.value;lsSet('zp-admin-man',t.value);route()}
+  if(t.id==='fso'){LF.sort=t.value;route()}
+  if(t.dataset&&t.dataset.sel){t.checked?SEL.add(t.dataset.sel):SEL.delete(t.dataset.sel);route()}
+  if(t.id==='selall'){const f=filtered();f.forEach(p=>t.checked?SEL.add(String(p.id)):SEL.delete(String(p.id)));route()}
+});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeCard()});
 load();
 }
