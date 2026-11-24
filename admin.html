@@ -201,7 +201,7 @@ function fromLive(d){
       remind:!!(ev.remind||tasks[0][5]),channelClick:!!(ev['link:channel']||tasks[0][0]),
       l1:!!(ev['link:l1']||tasks[1][0]),l2:!!(ev['link:l2']||tasks[2][0]),
       live:!!(ev['link:live']||tasks[4][2]),pass:!!(sn.pass||ev.claim),exp:!!ev['link:exp'],
-      bought:sti===3,st:sti,man:ld.manager||'—',note:ld.note||'',
+      bought:sti===3,st:sti,man:ld.manager||'—',note:ld.note||'',crm:!!ld.crm,deal:ld.deal||'',
       opens:r.opens||0,last,stuckH:Math.max(0,Math.round((NOW-last)/36e5))};
   });
 }
@@ -226,7 +226,7 @@ function demo(){
     const last=opened?NOW-(day>=4?R()*20:day>=0?(4-day)*20+R()*30:30+R()*80)*36e5:NOW-(4+R()*9)*864e5;
     out.push({id:i+1,name:pick(NM)+' '+pick(LN),user:'user'+(1000+i),phone:'+7 9•• •••-••-'+String(10+Math.floor(R()*89)),src:s[0],started:NOW-(5+R()*9)*864e5,reg:contact?NOW-(4+R()*9)*864e5:0,contact,opened,admin:false,blocked:false,
       tasks:T,day,idea:day>=1&&T[1][1]?pick(ID):'',video:day>=3&&T[3][3]?'youtu.be/demo'+i:'',qs:day>=4&&T[4][1]?[pick(QU)]:[],letter:day>=3&&T[3][5],
-      remind:T[0][5],channelClick:T[0][0],l1:T[1][0],l2:T[2][0],live,pass,exp,bought,st:bought?3:exp&&R()<.5?1:0,man:'—',note:'',opens:1,last,stuckH:Math.round((NOW-last)/36e5)});
+      remind:T[0][5],channelClick:T[0][0],l1:T[1][0],l2:T[2][0],live,pass,exp,bought,st:bought?3:exp&&R()<.5?1:0,man:'—',note:'',crm:bought,deal:'',opens:1,last,stuckH:Math.round((NOW-last)/36e5)});
   }
   HOURS=Array.from({length:24},(_,h)=>Math.round(400*Math.exp(-((h-15)**2)/30)+20));
   return out;
@@ -343,17 +343,17 @@ function vLidy(){
    <button class="chip${LF.stuckOnly?' on':''}" id="fstk">застряли &gt; 24 ч</button>
    ${seg?`<button class="chip on" id="fseg">сегмент: ${esc(seg.name)} ✕</button>`:''}</div>
   <div class="row" style="justify-content:space-between;margin-bottom:10px"><span class="hint" style="margin:0">Найдено: ${fmt(f.length)}</span>
-   <div class="row"><button class="btn sm" data-copy="list">Скопировать для CRM</button></div></div>
+   <div class="row"><button class="btn sm" data-crm="list">Отправить ${fmt(f.filter(p=>!p.crm).length)} в CRM</button><button class="btn sm g" data-copy="list">Скопировать</button></div></div>
   <section class="card" style="padding:4px 12px"><div class="scroll"><table class="stack"><thead><tr><th>Участница</th><th>Этап</th><th>Источник</th><th>Была в сети</th><th class="num">Баллы</th><th>Статус</th></tr></thead><tbody>
-  ${f.slice(0,LF.lim).map(p=>{const s=stuck(p);return `<tr class="click" data-id="${p.id}"><td class="who"><b>${esc(p.name)}</b><span>${p.user?'@'+esc(p.user):esc(p.phone)}</span></td><td>${esc(stage(p))}${s?`<span class="stuck">застряла: ${esc(s)}</span>`:''}</td><td>${esc(p.src)}</td><td>${ago(p.stuckH)}</td><td class="num">${p.score} <span class="pill t-${p.temp}">${TT[p.temp]}</span></td><td>${p.st?`<span class="crm-y">${esc(STL[p.st])}${p.man!=='—'?' · '+esc(p.man):''}</span>`:'<span class="crm-n">новый</span>'}</td></tr>`}).join('')}
+  ${f.slice(0,LF.lim).map(p=>{const s=stuck(p);return `<tr class="click" data-id="${p.id}"><td class="who"><b>${esc(p.name)}</b><span>${p.user?'@'+esc(p.user):esc(p.phone)}</span></td><td>${esc(stage(p))}${s?`<span class="stuck">застряла: ${esc(s)}</span>`:''}</td><td>${esc(p.src)}</td><td>${ago(p.stuckH)}</td><td class="num">${p.score} <span class="pill t-${p.temp}">${TT[p.temp]}</span></td><td>${p.st?`<span class="crm-y">${esc(STL[p.st])}${p.man!=='—'?' · '+esc(p.man):''}</span>`:'<span class="crm-n">новый</span>'}${p.crm?'<span class="crm-y" style="display:block">в CRM</span>':''}</td></tr>`}).join('')}
   </tbody></table></div></section>${f.length>LF.lim?`<div class="more"><button class="btn g" id="more">Показать ещё</button></div>`:''}
   <section class="card" style="margin-top:16px"><h2>Как считаются баллы</h2><p class="hint">Горячая — от 90 баллов или переход к экспедиции; тёплая — от 40.</p><div class="score">${PTS.map(([t,v])=>`<div><span>${esc(t)}</span><b>+${v}${t.startsWith('Дни')?' за день':''}</b></div>`).join('')}</div></section>`;
 }
 function vSeg(){
   return `<h1>Сегменты</h1><p class="lead">Готовые списки: кого звать в продажу сегодня, кого греть и кого вернуть в поход. Обновляются сами.</p>
   <div class="segs">${SEGS.map(s=>`<article class="seg"><span class="tag${s.tag==='вернуть'?' y':''}">${esc(s.tag)}</span><div class="seg-h"><b>${esc(s.name)}</b><span class="c">${fmt(s.list.length)}</span></div><p>${esc(s.why)}</p><div class="do"><b>Что делать:</b> ${esc(s.do)}</div>
-   <div class="row"><button class="btn sm g" data-seg="${s.id}">Открыть список</button><button class="btn sm g" data-copy="${s.id}">Скопировать</button></div></article>`).join('')}</div>
-  <p class="hint" style="margin-top:14px">Отправка в CRM и сообщения от бота по сегменту включатся, когда будет доступ к CRM и согласованы тексты сообщений. Пока список можно скопировать и вставить в таблицу.</p>`;
+   <div class="row"><button class="btn sm" data-crm="${s.id}">В CRM: ${fmt(s.list.filter(p=>!p.crm).length)} новых</button><button class="btn sm g" data-seg="${s.id}">Открыть список</button><button class="btn sm g" data-copy="${s.id}">Скопировать</button></div></article>`).join('')}</div>
+  <p class="hint" style="margin-top:14px">В CRM уходят только те, кого туда ещё не отправляли. Если человек уже есть в CRM по телефону или нику, заявка добавится к его сделке, дубль не создастся. Сообщения от бота по сегментам включатся, когда будут тексты.</p>`;
 }
 function vMarketing(){
   const ts=taskStats(), mx=Math.max(1,...HOURS), ss=srcStats();
@@ -373,6 +373,7 @@ function vData(){
   <div class="grid"><section class="card"><h2>Из бота</h2><ul class="list"><li>Telegram-id, имя и ник</li><li>Номер телефона — при регистрации</li><li>Метка источника из ссылки <code>?start=</code></li><li>Заблокировала ли бота</li></ul></section>
   <section class="card"><h2>Из мини-аппа</h2><ul class="list"><li>Когда открывала и какие дни смотрела</li><li>Какие задачи отметила</li><li>Нажатия: канал, уроки, эфир, напоминание, пропуск, «Узнать про экспедицию»</li><li>Ключевые ответы: идея ролика, ссылка на ролик, вопросы к эфиру</li></ul><p class="hint" style="margin-top:8px">Не собираются: «кто я», факты о себе, картинки, творческая ДНК, письмо себе — они остаются в телефоне участницы.</p></section>
   <section class="card"><h2>Где хранится</h2><p>В базе Supabase проекта zimniy-pohod-bot (Ирландия): таблицы participants, hike_progress, hike_events, lead_status. В GitHub — только код.</p></section>
+  <section class="card"><h2>CRM</h2><p>Кнопки «Отправить в CRM» передают в CRM команды имя, телефон, ник, источник и комментарий: этап, где застряла, баллы, идею и ссылку на ролик, вопросы к эфиру, статус и заметку. Адрес CRM хранится на сервере.</p></section>
   <section class="card"><h2>Команда</h2><p>Админка открывается тем, у кого в таблице participants стоит отметка is_admin. ${SHOW_TEAM?'Команда сейчас показана в цифрах.':'Команда не входит в цифры.'}</p><button class="btn sm g" id="team">${SHOW_TEAM?'Скрыть команду из цифр':'Показать команду в цифрах'}</button></section></div>`;
 }
 function card(p){
@@ -386,7 +387,7 @@ function card(p){
   <div class="days5">${DAYS.map((d,i)=>{const t=p.tasks[i],n=t.filter(Boolean).length,all=n===t.length;return `<div class="${all?'ok':''}${p.day===i&&!all&&s?' stop':''}">${d[0]}<b>${n?n+'/'+t.length:'—'}</b></div>`}).join('')}</div>
   <div class="dr-s"><h4>Ответы</h4>${p.idea?`<div class="ans"><span>идея ролика</span>${esc(p.idea)}</div>`:''}${p.video?`<div class="ans"><span>ссылка на ролик</span>${esc(p.video)}</div>`:''}${p.qs.map(q=>`<div class="ans"><span>вопрос к эфиру</span>${esc(q)}</div>`).join('')}${!p.idea&&!p.video&&!p.qs.length?'<p class="hint">Пока нет ответов.</p>':''}</div>
   <div class="dr-s"><h4>Работа продаж</h4><div class="f2"><select id="cst" aria-label="Статус">${STL.map((t,i)=>`<option value="${i}"${p.st===i?' selected':''}>${t}</option>`).join('')}</select><select id="cman" aria-label="Менеджер">${(MAN.includes(p.man)?MAN:MAN.concat([p.man])).map(m=>`<option${p.man===m?' selected':''}>${esc(m)}</option>`).join('')}</select><textarea id="cnote" placeholder="Заметка к звонку">${esc(p.note)}</textarea></div>
-   <div class="row" style="margin-top:8px"><button class="btn sm" id="csave">Сохранить</button></div></div>
+   <div class="row" style="margin-top:8px"><button class="btn sm" id="csave">Сохранить</button><button class="btn sm g" data-crm="one">${p.crm?'Отправить в CRM ещё раз':'Отправить в CRM'}</button>${p.crm?`<span class="crm-y">в CRM${p.deal?' · сделка '+esc(p.deal):''}</span>`:''}</div></div>
   <div class="dr-s"><h4>История</h4><ul class="tl">${tl.sort((a,b)=>a[0]-b[0]).map(([t,x,m])=>`<li class="${m?'m':''}"><span>${dt(t)}</span>${esc(x)}</li>`).join('')}</ul></div>
   <div class="dr-s"><h4>Из чего баллы</h4><div class="score">${PTS.filter(([,,f])=>pv(f,p)).map(([t,v,f])=>`<div><span>${esc(t)}</span><b>+${v*pv(f,p)}</b></div>`).join('')||'<p class="hint">Пока ноль.</p>'}</div></div>`;
 }
@@ -397,6 +398,26 @@ let tt;function toast(t){const e=document.getElementById('toast');e.textContent=
 function copy(txt,msg){(navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>toast(msg),()=>toast('Не получилось скопировать'))}
 function msg(title,text){V.innerHTML=`<section class="card" style="max-width:640px;margin:40px auto"><h2>${esc(title)}</h2><p>${text}</p></section>`}
 
+function crmComment(p){
+  return ['Зимний поход (мини-апп)','Этап: '+stage(p),stuck(p)?'Застряла: '+stuck(p):'','Баллы: '+p.score+' ('+TT[p.temp]+')','Была в сети: '+ago(p.stuckH),
+    p.idea?'Идея ролика: '+p.idea:'',p.video?'Ролик: '+p.video:'',p.qs.length?'Вопросы к эфиру: '+p.qs.join(' | '):'',
+    p.st?'Статус в админке: '+STL[p.st]:'',p.man!=='—'?'Менеджер: '+p.man:'',p.note?'Заметка: '+p.note:''].filter(Boolean).join('\n');
+}
+async function sendCRM(list,btn){
+  let ok=0,bad=0; const errs={};
+  for(let i=0;i<list.length;i+=40){
+    const part=list.slice(i,i+40);
+    if(btn) btn.textContent='Отправляю '+Math.min(i+40,list.length)+' из '+list.length+'…';
+    if(DEMO){ part.forEach(p=>{p.crm=true}); ok+=part.length; continue; }
+    try{
+      const {j}=await api({op:'crm',leads:part.map(p=>({tg_id:p.id,comment:crmComment(p),tags:['зимний поход',TT[p.temp]].join(', ')}))});
+      if(!j.ok){ bad+=part.length; continue; }
+      j.results.forEach(r=>{ const p=ALL.find(x=>String(x.id)===String(r.tg_id)); if(r.ok&&p){ p.crm=true; p.deal=r.deal||''; ok++; } else { bad++; errs[r.error||'ошибка']=(errs[r.error||'ошибка']||0)+1; } });
+    }catch(e){ bad+=part.length; errs['нет связи']=(errs['нет связи']||0)+part.length; }
+  }
+  toast(DEMO?'Демо: отмечено как отправленные — '+ok:('В CRM ушло: '+ok+(bad?' · не ушло: '+bad+' ('+Object.entries(errs).map(([k,v])=>k+' — '+v).join(', ')+')':'')));
+  build(); route(); if(cur&&document.getElementById('dr').className==='open') openCard(cur.id);
+}
 const VIEWS={obzor:vObzor,lidy:vLidy,segmenty:vSeg,marketing:vMarketing,dannye:vData};
 function route(){ if(!ALL.length&&!LOADED) return; const h=location.hash.replace('#','');const k=VIEWS[h]?h:'obzor';V.innerHTML=VIEWS[k]();document.querySelectorAll('#tabs a').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+k))}
 window.addEventListener('hashchange',()=>{closeCard();route();window.scrollTo(0,0)});
@@ -433,6 +454,12 @@ document.addEventListener('click',async e=>{
     try{ const {j}=await api({op:'lead',tg_id:cur.id,status:STK[st],manager:man==='—'?'':man,note}); if(j.ok){ Object.assign(cur,{st,man,note,bought:st===3}); toast('Сохранено'); build(); route(); openCard(cur.id); } else toast('Не сохранилось, попробуйте ещё раз'); }
     catch(err){ toast('Нет связи, не сохранилось'); }
     t.disabled=false; t.textContent='Сохранить'; return;
+  }
+  const cr=t.closest('[data-crm]');if(cr){
+    const k=cr.dataset.crm, list=k==='one'?(cur?[cur]:[]):(k==='list'?filtered():(SEGS.find(s=>s.id===k)||{list:[]}).list).filter(p=>!p.crm);
+    if(!list.length){ toast('Все из этого списка уже в CRM'); return; }
+    if(list.length>1&&!cr.classList.contains('armed')){ cr.classList.add('armed'); cr.dataset.txt=cr.textContent; cr.textContent='Точно отправить '+fmt(list.length)+'?'; setTimeout(()=>{ if(cr.isConnected){ cr.classList.remove('armed'); cr.textContent=cr.dataset.txt; } },4000); return; }
+    cr.disabled=true; await sendCRM(list,cr); return;
   }
   const cp=t.closest('[data-copy]');if(cp){const k=cp.dataset.copy, list=k==='list'?filtered():(SEGS.find(s=>s.id===k)||{list:[]}).list;
     const txt=['Имя\tНик\tТелефон\tЭтап\tЗастряла\tБаллы\tТемпература\tИсточник\tИдея ролика\tСсылка на ролик\tВопросы к эфиру\tБыла в сети'].concat(list.map(p=>[p.name,p.user?'@'+p.user:'',p.phone,stage(p),stuck(p),p.score,TT[p.temp],p.src,p.idea,p.video,p.qs.join(' | '),ago(p.stuckH)].map(x=>String(x).replace(/[\t\n]/g,' ')).join('\t'))).join('\n');
