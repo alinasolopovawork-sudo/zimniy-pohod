@@ -43,6 +43,44 @@ async function openApp(chat: number, m: Awaited<ReturnType<typeof texts>>) {
   }
 }
 
+// Рассылки от рассыльщика (participants.broadcaster): любое сообщение — черновик,
+// «Разослать всем» — копия сообщения уходит всем зарегистрированным через очередь broadcasts.
+const SEND = "✅ Разослать всем", CANCEL = "✖️ Отмена";
+async function onBroadcaster(msg: any, chat: number) {
+  const from = msg.from;
+  const reply = (text: string, keyboard?: unknown) =>
+    tg("sendMessage", { chat_id: chat, text, reply_markup: keyboard ?? { remove_keyboard: true } });
+  if (msg.text === CANCEL) {
+    await db.from("broadcast_drafts").delete().eq("tg_id", from.id);
+    await reply("Отменено, ничего не отправлено.");
+    return;
+  }
+  if (msg.text === SEND) {
+    const { data: d } = await db.from("broadcast_drafts").select("chat_id,message_id").eq("tg_id", from.id).maybeSingle();
+    if (!d) { await reply("Черновика нет. Пришли сообщение, которое нужно разослать."); return; }
+    const { count } = await db.from("participants").select("tg_id", { count: "exact", head: true }).eq("blocked", false).not("registered_at", "is", null);
+    const { error } = await db.from("broadcasts").insert({
+      send_at: new Date().toISOString(), text: "", audience: "registered",
+      copy_chat_id: d.chat_id, copy_message_id: d.message_id, note: "из бота от " + (from.username ? "@" + from.username : from.id),
+    });
+    if (error) { console.error(error); await reply("Не получилось поставить рассылку. Попробуй ещё раз через минуту."); return; }
+    await db.from("broadcast_drafts").delete().eq("tg_id", from.id);
+    await reply(`Рассылка запущена: получат ${count ?? 0} зарегистрированных. Отправка начнётся в течение минуты.`);
+    return;
+  }
+  if (msg.media_group_id) {
+    await reply("Альбомы из нескольких фото разослать нельзя. Пришли одно фото или видео с подписью.");
+    return;
+  }
+  await db.from("broadcast_drafts").upsert({ tg_id: from.id, chat_id: chat, message_id: msg.message_id, created_at: new Date().toISOString() });
+  const { count } = await db.from("participants").select("tg_id", { count: "exact", head: true }).eq("blocked", false).not("registered_at", "is", null);
+  await tg("sendMessage", {
+    chat_id: chat, reply_to_message_id: msg.message_id,
+    text: `Это сообщение получат ${count ?? 0} зарегистрированных участниц — ровно в таком виде. Отправить?\n\nЕсли нужно поправить — просто пришли новый вариант.`,
+    reply_markup: { keyboard: [[{ text: SEND }], [{ text: CANCEL }]], resize_keyboard: true, one_time_keyboard: true },
+  });
+}
+
 async function onUpdate(u: any) {
   const msg = u.message;
   if (u.my_chat_member) {
@@ -64,6 +102,11 @@ async function onUpdate(u: any) {
     });
     await openApp(chat, m);
     return;
+  }
+
+  if (!(typeof msg.text === "string" && msg.text.startsWith("/start"))) {
+    const { data: me } = await db.from("participants").select("broadcaster").eq("tg_id", from.id).maybeSingle();
+    if (me?.broadcaster) { await onBroadcaster(msg, chat); return; }
   }
 
   if (typeof msg.text === "string" && msg.text.startsWith("/start")) {
