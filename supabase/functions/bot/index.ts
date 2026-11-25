@@ -25,13 +25,14 @@ const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replac
 async function openApp(chat: number, m: Awaited<ReturnType<typeof texts>>) {
   const label = m.app_button?.text || "платформа", url = m.app_url?.text;
   if (url) await tg("setChatMenuButton", { chat_id: chat, menu_button: { type: "web_app", text: label, web_app: { url } } });
-  // 3) Билет + кнопка канала
-  const reg = m.registered?.text ?? "";
+  // 3) Билет. Кнопка канала — здесь, только если нет отдельного сообщения про канал (messages.channel_msg)
+  const reg = m.registered?.text ?? "", chMsg = m.channel_msg?.text ?? "";
   const chBtn = m.channel_button?.text && m.channel_url?.text ? { inline_keyboard: [[{ text: m.channel_button.text, url: m.channel_url.text }]] } : undefined;
+  const regBtn = chMsg ? undefined : chBtn;
   if (reg) {
     let ok = false;
-    if (m.registered?.photo_url && reg.length <= 1024) ok = (await tg("sendPhoto", { chat_id: chat, photo: m.registered.photo_url, caption: reg, parse_mode: "HTML", reply_markup: chBtn })).ok;
-    if (!ok) await tg("sendMessage", { chat_id: chat, text: reg, parse_mode: "HTML", reply_markup: chBtn, link_preview_options: { is_disabled: true } });
+    if (m.registered?.photo_url && reg.length <= 1024) ok = (await tg("sendPhoto", { chat_id: chat, photo: m.registered.photo_url, caption: reg, parse_mode: "HTML", reply_markup: regBtn })).ok;
+    if (!ok) await tg("sendMessage", { chat_id: chat, text: reg, parse_mode: "HTML", reply_markup: regBtn, link_preview_options: { is_disabled: true } });
   }
   // 4) Платформа + кнопка мини-аппа
   const plat = m.platform?.text ?? "";
@@ -44,6 +45,8 @@ async function openApp(chat: number, m: Awaited<ReturnType<typeof texts>>) {
   // 5) Кружок Алины сразу после сообщения про платформу (file_id в messages.platform_circle)
   const circle = m.platform_circle?.text;
   if (circle) { const r = await tg("sendVideoNote", { chat_id: chat, video_note: circle }); if (!r.ok) console.error("circle", r); }
+  // 6) Канал — последним, после кружка, чтобы его не пропустили из-за платформы
+  if (chMsg) await tg("sendMessage", { chat_id: chat, text: chMsg, parse_mode: "HTML", reply_markup: chBtn, link_preview_options: { is_disabled: true } });
 }
 
 // Рассылки от рассыльщика (participants.broadcaster): любое сообщение — черновик,
@@ -231,6 +234,12 @@ async function onUpdate(u: any) {
     await tg("sendMessage", { chat_id: chat, text: "Кружок сохранён ✅ Теперь он приходит сразу после сообщения про платформу. Вот так выглядит конец цепочки после регистрации 👇" });
     await openApp(chat, await texts());
     return;
+  }
+
+  // /preview — команда для админов: показать конец цепочки после регистрации
+  if (msg.text === "/preview") {
+    const { data: a } = await db.from("participants").select("is_admin").eq("tg_id", from.id).maybeSingle();
+    if (a?.is_admin) { await openApp(chat, m); return; }
   }
 
   if (!(typeof msg.text === "string" && msg.text.startsWith("/start"))) {
