@@ -503,13 +503,6 @@ body.locked{min-height:100vh}
 .gate h2{font-family:var(--mono);font-weight:600;text-transform:uppercase;letter-spacing:-.03em;font-size:30px;line-height:1.1;margin:14px 0 22px;color:var(--snow)}
 .gate-cd{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;background:var(--beige);color:#23262d;border-radius:22px;padding:18px 12px;box-shadow:0 0 0 5px #1a2742,0 22px 36px -20px rgba(0,0,0,.9)}
 .gate-cd div{display:grid;gap:4px}
-.gate-txt{color:var(--snow-dim);font-size:16px;line-height:1.5;margin:22px auto 0;max-width:30em}
-.gate-txt b{color:var(--snow);font-weight:600}
-.gate-plan{list-style:none;margin:20px auto 0;padding:0;max-width:380px;text-align:left;display:grid;gap:6px}
-.gate-plan li{display:grid;grid-template-columns:4.2em minmax(0,1fr);gap:10px;align-items:baseline;background:rgba(244,247,251,.06);border:1px solid rgba(244,247,251,.1);border-radius:10px;padding:9px 12px;font-size:14.5px;color:var(--snow)}
-.gate-plan li span{font-family:var(--mono);font-size:12.5px;color:var(--rose)}
-.gate-plan li i{font-style:normal;color:var(--snow-dim)}
-.gate-acts{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:22px}
 .gate-cd b{font-family:var(--mono);font-weight:600;font-size:38px;line-height:1;font-variant-numeric:tabular-nums}
 .gate-cd span{font-family:var(--mono);font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:#8a7f69}
 /* экран регистрации */
@@ -1123,14 +1116,8 @@ const HIKE_END=new Date('2026-12-07T00:00:00+01:00');   /* после поход
 const isLocked=()=>Date.now()<HIKE_START.getTime()&&!PREVIEW&&!ADMIN&&TEST_OPEN!==true;
 function gate(){
   document.body.classList.add('locked');
-  /* время старта по часам участницы, если её пояс не берлинский */
-  let loc=''; try{ const o={hour:'2-digit',minute:'2-digit'}, a=HIKE_START.toLocaleTimeString('ru-RU',o), z=HIKE_START.toLocaleTimeString('ru-RU',Object.assign({timeZone:'Europe/Berlin'},o)); if(a!==z) loc=(HIKE_START.getDate()===2?'':HIKE_START.getDate()+' '+(HIKE_START.getMonth()===10?'ноября':'декабря')+' в ')+a; }catch(e){}
-  const ch=okUrl(CHANNEL_URL);
-  $('#day').innerHTML='<section class="gate"><span class="k">старт 2 декабря · 00:00 по Берлину</span><h2>До старта похода</h2>'
+  $('#day').innerHTML='<section class="gate"><span class="k">старт 02.12 · 00:00 по Берлину</span><h2>До старта похода</h2>'
     +'<div class="gate-cd"><div><b id="gD">0</b><span>дней</span></div><div><b id="gH">00</b><span>часов</span></div><div><b id="gM">00</b><span>минут</span></div><div><b id="gS">00</b><span>секунд</span></div></div>'
-    +'<p class="gate-txt"><b>Регистрация есть — ты в походе.</b> Он начнётся 2 декабря в 00:00 по Берлину'+(loc?' (у тебя это '+esc(loc)+')':'')+': здесь откроется первый день, «Сборы». Напомним в боте.</p>'
-    +'<ul class="gate-plan">'+DAYS.map(d=>'<li><span>'+String(DATES[d.n].d).padStart(2,'0')+'.'+String(DATES[d.n].m+1).padStart(2,'0')+'</span><div>'+esc(d.name)+' <i>· '+esc(d.tag.toLowerCase())+'</i></div></li>').join('')+'</ul>'
-    +'<div class="gate-acts">'+(ch?'<a class="btn snow" href="'+esc(ch)+'" target="_blank" rel="noopener noreferrer">Вступить в канал похода ↗</a>':'')+'</div>'
     +'</section>';
   const p=n=>String(n).padStart(2,'0');
   const t=()=>{
