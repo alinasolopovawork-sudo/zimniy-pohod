@@ -41,6 +41,9 @@ async function openApp(chat: number, m: Awaited<ReturnType<typeof texts>>) {
     if (m.platform?.photo_url && plat.length <= 1024) ok2 = (await tg("sendPhoto", { chat_id: chat, photo: m.platform.photo_url, caption: plat, parse_mode: "HTML", reply_markup: kb })).ok;
     if (!ok2) await tg("sendMessage", { chat_id: chat, text: plat, parse_mode: "HTML", reply_markup: kb });
   }
+  // 5) Кружок Алины сразу после сообщения про платформу (file_id в messages.platform_circle)
+  const circle = m.platform_circle?.text;
+  if (circle) { const r = await tg("sendVideoNote", { chat_id: chat, video_note: circle }); if (!r.ok) console.error("circle", r); }
 }
 
 // Рассылки от рассыльщика (participants.broadcaster): любое сообщение — черновик,
@@ -218,6 +221,15 @@ async function onUpdate(u: any) {
     await openApp(chat, m);
     const ch = await channelId();
     if (ch) await checkMember(ch, from.id);
+    return;
+  }
+
+  // Новый кружок для приветственной цепочки: принимаем от того, чей id записан в messages.circle_capture (одноразово)
+  if (msg.video_note && m.circle_capture?.text && m.circle_capture.text === String(from.id)) {
+    await db.from("messages").upsert({ key: "platform_circle", text: msg.video_note.file_id, note: "кружок после сообщения про платформу; бот записывает сам" });
+    await db.from("messages").delete().eq("key", "circle_capture");
+    await tg("sendMessage", { chat_id: chat, text: "Кружок сохранён ✅ Теперь он приходит сразу после сообщения про платформу. Вот так выглядит конец цепочки после регистрации 👇" });
+    await openApp(chat, await texts());
     return;
   }
 
