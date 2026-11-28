@@ -327,7 +327,7 @@ main.wrap{padding-block:34px 40px}
 .tips h3{margin:0;font-family:var(--mono);font-weight:600;text-transform:uppercase;font-size:22px}
 .tips ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:14px;counter-reset:t}
 .tips li{counter-increment:t;display:grid;gap:4px;padding-top:12px;border-top:1.5px solid #23262d}
-.tips li::before{content:"0" counter(t);font-family:var(--mono);font-size:12px;color:var(--rose-deep);font-weight:600}
+.tips li::before{content:counter(t,decimal-leading-zero);font-family:var(--mono);font-size:12px;color:var(--rose-deep);font-weight:600}
 .tips li b{font-size:17px;font-weight:600}
 .tips li span{font-size:14px;color:#5a5244;line-height:1.5}
 @media (max-width:600px){ .tips{padding:22px 18px} }
@@ -513,6 +513,23 @@ body.locked{min-height:100vh}
   .gate-cd b{font-size:30px}
   .gate-cd span{font-size:9.5px}
 }
+/* правки по блокам: день 1 — видео и плашка, день 2 — развилка, день 3 — материалы, «Секретная точка» */
+.day-head.kicker{margin-bottom:18px}
+.callout{background:var(--rose);color:#2a1d26;border-radius:14px;padding:16px 18px;font-size:16px;line-height:1.5}
+.callout b{display:block;margin-bottom:4px;font-family:var(--mono);font-size:13px;letter-spacing:.04em;text-transform:uppercase}
+.lnk{border:0;background:none;padding:0;font:inherit;color:var(--yellow);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.fork{display:grid;gap:10px;justify-items:center;text-align:center;margin:0 0 30px}
+.fork h3{margin:0;font-family:var(--mono);font-weight:600;text-transform:uppercase;font-size:clamp(20px,5vw,26px);line-height:1.15;letter-spacing:-.01em;text-wrap:balance}
+.fork svg{width:100%;max-width:340px;height:auto}
+.fork-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:14px;width:100%;text-align:left}
+.fork-c{border-radius:14px;padding:16px 18px;background:var(--snow-fill);border:1px solid var(--snow-line);border-top:3px solid var(--yellow)}
+.fork-c.two{border-top-color:var(--rose)}
+.fork-k{display:block;font-family:var(--mono);font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--snow-dim);margin-bottom:6px}
+.fork-c p{margin:0;font-size:16px;line-height:1.5}
+.mat{display:grid;gap:10px;justify-items:start}
+.mat .hint a{color:var(--yellow)}
+.talk.site .t-lead{max-width:52ch}
+.tips.big li span{font-size:16px;color:#23262d}
 </style>
 </head>
 <body>
@@ -542,6 +559,8 @@ body.locked{min-height:100vh}
 /* ===== Ссылки на уроки и эфир: вставь сюда, когда будут готовы ===== */
 const LESSON_1='';            // ссылка на YouTube, урок дня 1
 const LESSON_2='';            // ссылка на YouTube, урок дня 2
+const LESSON_1_REPEAT='';     // ссылка на «Урок 1: Съёмка. Версия для тех, кто проходит второй раз» (день 2)
+const MATERIALS_URL='';       // ссылка на Google Диск с материалами (день 3, «Привал»)
 const LIVE_URL='';            // ссылка на прямой эфир у костра
 const CHANNEL_URL='https://t.me/+zEnjgArTqOxkMmVi'; // ссылка на канал похода (Telegram и т.п.)
 const LIVE_TIME='16:00 по Берлину'; // время эфира, например: '19:00 по Берлину'
@@ -602,21 +621,22 @@ function addToCal(done){
 function realToday(){ const t=new Date(); for(let i=0;i<5;i++){ if(t.getFullYear()===HIKE_YEAR&&t.getMonth()===DATES[i].m&&t.getDate()===DATES[i].d) return i; } return -1; }
 const DAYS=[
   {n:0,key:'sbory',name:'Сборы',icon:'pack',tag:'Собираем рюкзак',
-   intro:'Прежде чем выйти в зимний поход, соберём рюкзак. Только кладём в него не вещи, а себя: что я люблю, что меня окружает, каким я вижу мир. Это и будет твоё снаряжение на весь путь.'},
+   intro:'Прежде чем выйти в зимний поход, соберём рюкзак. Только кладём в него не вещи, а себя: что я люблю, что меня окружает, каким я вижу мир. Это и будет твоё снаряжение на весь путь. Сегодня выходит первый урок: мы погружаемся в атмосферу, узнаём об идее ролика, собираем первые кадры и выходим в путь.'},
   {n:1,key:'v-put',name:'В путь',icon:'flag',tag:'Урок 1 · идея',
-   intro:'Выходим. Первый шаг всегда про направление: о чём будет твой ролик. Это история не про красивые места, а про тебя. Что живёт внутри, что ты замечаешь, когда никто не смотрит, чем ты отличаешься от других. Ищем свою настоящую интонацию.'},
+   intro:'Сегодня мы используем день, чтобы воплотить свою идею и отснять первые кадры, опираясь на урок первого дня. И доделываем упражнение «Творческая ДНК», если ещё не успели.'},
   {n:2,key:'prival',name:'Привал',icon:'mug',tag:'Урок 2 · монтаж',
-   intro:'Привал. Снимаем рюкзаки, наливаем горячий чай и раскладываем всё, что собрали в пути. Из отдельных кадров начинает складываться история. Монтаж — это когда ты решаешь, что важно, а что можно оставить в снегу.'},
+   intro:'Привал. Мы отсняли кадры и наконец переходим к монтажу: завариваем горячий чай, открываем программу монтажа и раскладываем всё, что собрали в пути. Из отдельных кадров начинает складываться история.'},
   {n:3,key:'nochevka',name:'Ночёвка',icon:'tent',tag:'Время доснять и доделать',
    intro:'Остаёмся здесь на ночь, в палатках. Никуда не спешим: можно пересмотреть черновик свежим взглядом, доснять то, чего не хватает, и перемонтировать. К утру ролик будет готов.'},
   {n:4,key:'koster',name:'У костра',icon:'fire',tag:'Встреча в прямом эфире',
    intro:'Собираемся у костра. Смотрим ролики друг друга, делимся тем, что получилось и что далось труднее всего. Здесь нет правильных ответов, есть только твоя история.'}
 ];
 
+const TV=2;   /* версия списка задач; старые отметки по номерам переносим на новые места */
 const blank=()=>({me:{name:'',about:'',facts:[],f1:'',f2:'',f3:'',music:[],images:[],cover:''},dna:{colors:[],words:[],style:'',inspire:[],dreams:[]},
   d0:{expect:'',hard:'',pack:{}},d1:{idea:'',show:'',shots:[],refs:[],notes:''},
   d2:{start:'',middle:'',end:'',music:'',check:{},notes:''},d3:{reshoot:[],change:[],check:{},final:'',letter:'',letterTo:'',sealed:''},
-  d4:{questions:[],takeaway:''},exp:{claimed:false,no:''},done:{},tasks:{0:{},1:{},2:{},3:{},4:{}},auto:{}});
+  d4:{questions:[],takeaway:''},exp:{claimed:false,no:''},done:{},tasks:{0:{},1:{},2:{},3:{},4:{}},auto:{},tv:TV});
 let D=blank();
 const S={day:0,storeErr:''};
 let ACCESS=null;   /* null — проверяем, true — пускаем, false — экран регистрации */
@@ -624,7 +644,11 @@ let ADMIN=false;   /* админ (по ответу CHECK_URL) видит всё
 const PREVIEW=/[?&]preview=1/.test(location.search);
 
 /* ---------- storage ---------- */
-function merge(src){ const b=blank(); Object.keys(b).forEach(k=>{ if(src&&src[k]&&typeof src[k]==='object'&&!Array.isArray(src[k])) b[k]=Object.assign(b[k],src[k]); }); [0,1,2,3,4].forEach(i=>{ if(!b.tasks[i]||typeof b.tasks[i]!=='object') b.tasks[i]={}; }); return b; }
+const TASK_MOVE=[{0:0,1:2,2:3,4:4,5:5},{0:0,2:1,4:2},{0:0,1:1,3:2,4:3},{},{2:1}];
+function moveTasks(b){ [0,1,2,3,4].forEach(n=>{ const old=b.tasks[n]||{}, nt={}, na={};
+    Object.keys(TASK_MOVE[n]).forEach(i=>{ if(old[i]===true) nt[TASK_MOVE[n][i]]=true; if(b.auto&&b.auto[n+'-'+i]!==undefined) na[n+'-'+TASK_MOVE[n][i]]=b.auto[n+'-'+i]; });
+    b.tasks[n]=nt; if(b.auto){ Object.keys(b.auto).forEach(k=>{ if(k.split('-')[0]==n) delete b.auto[k]; }); Object.assign(b.auto,na); } }); }
+function merge(src){ const b=blank(); Object.keys(b).forEach(k=>{ if(src&&src[k]&&typeof src[k]==='object'&&!Array.isArray(src[k])) b[k]=Object.assign(b[k],src[k]); }); [0,1,2,3,4].forEach(i=>{ if(!b.tasks[i]||typeof b.tasks[i]!=='object') b.tasks[i]={}; }); b.tasks=Object.assign({},b.tasks); [0,1,2,3,4].forEach(i=>{ b.tasks[i]=Object.assign({},b.tasks[i]); }); if(src&&Number(src.tv)!==TV) moveTasks(b); b.tv=TV; return b; }
 function load(){
   let raw=null;
   try{ raw=localStorage.getItem(STORE); localStorage.setItem(STORE+'-p','1'); localStorage.removeItem(STORE+'-p'); }catch(e){ S.storeErr='blocked'; }
@@ -744,56 +768,34 @@ function snowfall(){
 const field=(path,label,ph,area)=>'<div class="f"><label for="b-'+path+'">'+label+'</label>'+(area||(ph&&ph.length>12)?'<textarea id="b-'+path+'" data-b="'+path+'" rows="1" class="'+(area?'':'one')+'" placeholder="'+esc(ph||'')+'">'+esc(getP(path)||'')+'</textarea>':'<input id="b-'+path+'" data-b="'+path+'" value="'+esc(getP(path)||'')+'" placeholder="'+esc(ph||'')+'">')+'</div>';
 const list=(path,ph)=>{ const L=getP(path)||[]; return (L.length?'<ul class="lines">'+L.map((v,i)=>'<li><span>'+esc(v)+'</span><button type="button" data-dellist="'+path+'" data-i="'+i+'" aria-label="Убрать">×</button></li>').join('')+'</ul>':'')+'<form class="addrow" data-addlist="'+path+'"><input class="inp" placeholder="'+esc(ph)+'" aria-label="'+esc(ph)+'"><button class="btn sm" type="submit">Добавить</button></form>'; };
 const checks=(path,items)=>{ const st=getP(path)||{}, n=items.filter((_,i)=>st[i]).length; return '<div class="checks">'+items.map((t,i)=>'<label class="'+(st[i]?'on':'')+'"><input type="checkbox" data-check="'+path+'" data-i="'+i+'"'+(st[i]?' checked':'')+'><span>'+esc(t)+'</span></label>').join('')+'</div><span class="prog">'+n+' из '+items.length+'</span>'; };
-const SID={'Кто я':'s-kto','Моя творческая ДНК':'s-dna','С чем я выхожу в путь':'s-put','Моя идея':'s-idea','Кадры, которые я сниму':'s-kadry','Референсы':'s-refs','Мысли по дороге':'s-mysli','Структура истории':'s-struct','Чек-лист монтажа':'s-mont','Что хочу доснять':'s-dosn','Что поменять в монтаже':'s-pomen','Утро: ролик готов':'s-final','Мой ролик':'s-rolik','Вопросы к эфиру':'s-vopr','Что я забираю с собой':'s-zab'};
+const SID={'Референсы *':'s-refs','Кто я':'s-kto','Моя творческая ДНК':'s-dna','С чем я выхожу в путь':'s-put','Моя идея':'s-idea','Кадры, которые я сниму':'s-kadry','Референсы':'s-refs','Мысли по дороге':'s-mysli','Структура истории':'s-struct','Чек-лист монтажа':'s-mont','Что хочу доснять':'s-dosn','Что поменять в монтаже':'s-pomen','Утро: ролик готов':'s-final','Мой ролик':'s-rolik','Вопросы к эфиру':'s-vopr','Что я забираю с собой':'s-zab'};
 const TASKS=[
  [{t:'Присоединиться к каналу похода',s:'Там будут ссылки на уроки, эфир и общение с другими участниками.',link:'channel'},
-  {t:'Понять, кто я',s:'Имя и три неочевидных факта о себе, которые отражают тебя больше всего.',go:'s-kto'},
+  {t:'Посмотреть Урок 1: съёмка идеи',link:'l1'},
+  {t:'Заполнить анкету «Рефлексия о себе»',s:'Имя и три неочевидных факта о себе, которые отражают тебя больше всего.',go:'s-kto'},
   {t:'Собрать свою творческую ДНК',s:'Картинки и музыка, в которых узнаёшь себя: места, где тебе хорошо, любимый свет и цвета, вещи с историей, близкие люди, кадры из фильмов. Плюс свои цвета, стиль и видео, которые мечтаешь снимать.',go:'s-dna'},
-  {t:'Собрать рюкзак',s:'Зарядить телефон, освободить память, найти наушники или микрофон.'},
-  {t:'Подготовиться к первому уроку',s:'Выбери на завтра время, когда тебя никто не отвлечёт, и найди тихое место.'},
+  {t:'Подготовиться к первому уроку',s:'Посмотри свой план на завтра.'},
   {t:'Поставить напоминание об эфире у костра',remind:1,s:'6 декабря, воскресенье'+(LIVE_TIME?', '+LIVE_TXT:'')+'. Здесь мы вместе посмотрим ваши ролики.',live:1}],
  [{t:'Посмотреть урок 1',s:'Про идею и поиск своей интонации.',link:'l1'},
-  {t:'Записать идею своего ролика',s:'О чём он и что ты хочешь показать о себе.',go:'s-idea'},
   {t:'Составить список кадров',s:'Что хочется поймать в кадр.',go:'s-kadry'},
-  {t:'Собрать 3–5 референсов',s:'Ролики, кадры, свет и музыка для настроения.',go:'s-refs'},
   {t:'Снять первые кадры',s:'Не жди идеального момента: начни с того, что рядом.'}],
  [{t:'Посмотреть урок 2',s:'Про монтаж.',link:'l2'},
-  {t:'Отобрать лучшие кадры',s:'Оставь только то, что работает на историю.',go:'s-mont'},
-  {t:'Продумать структуру',s:'Начало, середина и финал.',go:'s-struct'},
-  {t:'Выбрать музыку',s:'Трек, который передаёт твоё настроение.',go:'s-mont'},
-  {t:'Собрать черновой монтаж',s:'Пусть неидеально, главное — целиком.',go:'s-mont'}],
- [{t:'Пересмотреть черновик свежим взглядом',s:'Лучше утром или после перерыва.'},
-  {t:'Доснять недостающие кадры',s:'Всё, чего не хватило истории.',go:'s-dosn'},
-  {t:'Доработать монтаж',s:'Звук, цвет, титры, ритм.',go:'s-pomen'},
-  {t:'Сохранить финальную версию и вставить ссылку',s:'Чтобы показать ролик у костра.',go:'s-final'},
-  {t:'Завтра эфир у костра — освободить вечер',s:'6 декабря'+(LIVE_TIME?', '+LIVE_TXT:'')+'. Приходи с готовым роликом.',live:1},
-  {t:'Написать письмо себе в будущее',s:'Запечатай его — оно откроется 25 февраля.',go:'s-letter'}],
- [{t:'Подготовить ссылку на свой ролик',go:'s-rolik'},
-  {t:'Записать вопросы к эфиру',s:'Что хочется спросить или обсудить.',go:'s-vopr'},
-  {t:'Прийти на эфир у костра',link:'live'},
-  {t:'Записать, что забираю с собой из похода',go:'s-zab'}]
+  {t:'Отобрать лучшие кадры',s:'Оставь только то, что работает на историю.'},
+  {t:'Выбрать музыку',s:'Трек, который передаёт твоё настроение.'},
+  {t:'Начать монтаж',s:'Пусть неидеально, главное — целиком.'}],
+ [{t:'Закончить монтаж ролика и поделиться ссылкой в канале с путешественниками'}],
+ [{t:'Подготовить вкусняшки и тёплый напиток на предстоящий эфир'},
+  {t:'Прийти на эфир у костра',s:'6 декабря'+(LIVE_TIME?', '+LIVE_TXT:''),link:'live'}]
 ];
+const REMIND_I=TASKS[0].findIndex(k=>k.remind);
 const LINKS={channel:()=>CHANNEL_URL,l1:()=>LESSON_1,l2:()=>LESSON_2,live:()=>LIVE_URL};
 /* задачи отмечаются сами, когда заполнено то, о чём они просят. Срабатывает один раз в момент заполнения:
    если участница сама снимет галочку, она не вернётся, пока поле не заполнят заново. Ссылки (канал, уроки, эфир) — по нажатию */
 const has=v=>!!String(v||'').trim(), isLink=v=>/^\S+\.\S{2,}/.test(String(v||'').trim());
 const AUTO=[
-  [0,1,()=>has(D.me.name)&&has(D.me.f1)&&has(D.me.f2)&&has(D.me.f3)],
-  [0,2,()=>[D.me.images.length,D.me.music.length,D.dna.colors.length,has(D.dna.style),D.dna.dreams.length,D.dna.inspire.length].filter(Boolean).length>=4],
-  [1,1,()=>has(D.d1.idea)],
-  [1,2,()=>D.d1.shots.length>=3],
-  [1,3,()=>D.d1.refs.length>=3],
-  [2,1,()=>!!D.d2.check[0]],
-  [2,2,()=>has(D.d2.start)&&has(D.d2.middle)&&has(D.d2.end)],
-  [2,3,()=>has(D.d2.music)||!!D.d2.check[1]],
-  [2,4,()=>!!D.d2.check[2]],
-  [3,0,()=>D.d3.change.length>=1],
-  [3,2,()=>!!D.d3.check[2]],
-  [3,3,()=>isLink(D.d3.final)],
-  [3,5,()=>has(D.d3.sealed)],
-  [4,0,()=>isLink(D.d3.final)],
-  [4,1,()=>D.d4.questions.length>=1],
-  [4,3,()=>has(D.d4.takeaway)]];
+  [0,2,()=>has(D.me.name)&&has(D.me.f1)&&has(D.me.f2)&&has(D.me.f3)],
+  [0,3,()=>[D.me.images.length,D.me.music.length,D.dna.colors.length,has(D.dna.style),D.dna.dreams.length,D.dna.inspire.length].filter(Boolean).length>=4],
+  [1,1,()=>D.d1.shots.length>=3]];
 function autoTasks(){ if(!D.auto||typeof D.auto!=='object') D.auto={}; const got=[];
   AUTO.forEach(([n,i,f])=>{ let v=false; try{ v=!!f(); }catch(e){} const k=n+'-'+i;
     if(v&&!D.auto[k]&&!(D.tasks[n]&&D.tasks[n][i])){ D.tasks[n][i]=true; got.push(TASKS[n][i].t); }
@@ -823,7 +825,7 @@ function routeBlock(){
   if(S.calSel==null) S.calSel=S.day;
   const c=S.calSel, today=realToday(), nums=[30,1,2,3,4,5,6], wd=['пн','вт','ср','чт','пт','сб','вс'], first=2;
   const week=wd.map(w=>'<div class="cv-wd">'+w+'</div>').join('')+nums.map((n,j)=>{ const i=j-first; return i>=0&&i<5
-    ?'<button class="cv-day'+(c===i?' on':'')+(today===i?' today':'')+(D.done[i]?' done':'')+'" type="button" data-cal="'+i+'" aria-label="День '+i+', '+CAL_VIEW[i].what+'"><span class="dn">'+n+'</span><span class="lb">'+CAL_VIEW[i].what+'</span></button>'
+    ?'<button class="cv-day'+(c===i?' on':'')+(today===i?' today':'')+(D.done[i]?' done':'')+'" type="button" data-cal="'+i+'" aria-label="День '+(i+1)+', '+CAL_VIEW[i].what+'"><span class="dn">'+n+'</span><span class="lb">'+CAL_VIEW[i].what+'</span></button>'
     :'<div class="cv-day off" aria-hidden="true"><span class="dn">'+n+'</span><span class="lb">&nbsp;</span></div>'; }).join('');
   const st=D.tasks[c]||{}, v=CAL_VIEW[c], d=DAYS[c];
   const evs=TASKS[c].map((k,i)=>{ let act='';
@@ -833,13 +835,13 @@ function routeBlock(){
     if(k.live&&!act) act='<span class="cv-fire">🔥 6.12</span>';
     if(k.remind) return '<div class="cv-ev fire'+(st[i]?' ok':'')+'"><span aria-hidden="true"></span><div class="b"><label><b>'+esc(k.t)+'</b>'+(k.s?'<span>'+esc(k.s)+'</span>':'')+'</label>'+act+'</div></div>';
     return '<div class="cv-ev'+(i===0?' pink':'')+(k.live?' fire':'')+(st[i]?' ok':'')+'"><input type="checkbox" id="cv'+c+'-'+i+'" data-check="tasks.'+c+'" data-i="'+i+'"'+(st[i]?' checked':'')+' aria-label="Готово: '+esc(k.t)+'"><div class="b"><label for="cv'+c+'-'+i+'"><b>'+esc(k.t)+'</b>'+(k.s?'<span>'+esc(k.s)+'</span>':'')+'</label>'+act+'</div></div>'; }).join('');
-  return '<section class="cv-sec"><h3 class="cv-title">Что нас ждёт</h3>'
+  return '<section class="cv-sec" id="cal"><h3 class="cv-title">Что нас ждёт</h3>'
     +'<div class="cv-app"><div class="cv-top"><b>Ноябрь <i>·</i> Декабрь</b></div>'
     +'<div class="cv-week">'+week+'</div>'
-    +'<div class="cv-head">День '+c+' · '+v.what+'<small>'+v.sub+(today===c?' · сегодня':'')+'</small><span class="cv-prog">'+tasksDone(c)+' из '+TASKS[c].length+' задач готово</span></div>'
+    +'<div class="cv-head">День '+(c+1)+' · '+v.what+'<small>'+v.sub+(today===c?' · сегодня':'')+'</small><span class="cv-prog">'+tasksDone(c)+' из '+TASKS[c].length+' задач готово</span></div>'
     +'<div class="cv-view">'+evs
     +'</div>'
-    +(c===S.day?'':'<div class="cv-foot"><button class="cv-go" type="button" data-day="'+c+'">Открыть день '+c+' →</button></div>')
+    +(c===S.day?'':'<div class="cv-foot"><button class="cv-go" type="button" data-day="'+c+'">Открыть день '+(c+1)+' →</button></div>')
     +'</div></section>';
 }
 const NIGHT=['s-kto','s-idea','s-struct','s-dosn','s-rolik'];
@@ -867,6 +869,7 @@ function day0(){
   const colors=(dn.colors.length?'<div class="swatches">'+dn.colors.map((c,i)=>'<div class="sw"><button class="c" type="button" style="background:'+esc(c.hex)+'" data-copy="'+esc(c.hex)+'" aria-label="Скопировать '+esc(c.hex)+'"></button><b>'+esc(c.name||c.hex.toUpperCase())+'</b><button class="x" type="button" data-delcolor="'+i+'">убрать</button></div>').join('')+'</div>':'')
       +'<form class="coloradd" id="colorForm"><input type="color" id="colorIn" value="#9fc3ea" aria-label="Цвет"><input class="inp" id="colorName" placeholder="зимнее небо, тёплый свет" aria-label="Название цвета"><button class="btn sm" type="submit">Добавить</button></form>';
   return '<div class="grid">'+routeBlock()
+    +'<div class="callout"><b>Для тех, кто уже проходил летний мастер-класс</b>Для вас новый урок будет завтра, а пока делайте это же упражнение: оно поможет вам в реализации идеи.</div>'
     +'<section class="talk" id="s-kto"><span class="t-part">кто я</span><p class="t-lead">Мы начинаем создавать гениальные вещи, когда познаём свою внутреннюю глубину.</p>'
       +stp('01','Как тебя зовут?','',field('me.name','','имя'))
       +stp('02','Что о тебе знают немногие?','Три неочевидных факта, которые отражают тебя больше всего.','<div class="f">'+facts+'</div>')
@@ -881,13 +884,25 @@ function day0(){
     +'</section>'
     +'</div>';
 }
-const EXP={key:'ekspediciya',name:'Экспедиция'};
+const EXP={key:'ekspediciya',name:'Секретная точка'};
 const EXP_URL='https://solopovafilmyourstory.com/home#rec826934466'; // ссылка «узнать про экспедицию»
+/* блоки с сайта курса solopovafilmyourstory.com/home, тексты без изменений */
+const SITE_SKILLS=['Поиск аутентичных идей для авторских роликов, научитесь черпать вдохновение из своей жизни','Съемка качественных кадров на телефон, которые не отличить от кадров, снятых на камеру','Цветокоррекция роликов, которая передает атмосферу','Кинематографичный монтаж на телефоне','Передача смыслов, историй и эмоций через визуальный сторителлинг','Использование естественного освещения в своих видео','Саунд-дизайн для создания глубины звука в роликах','Сценарный сторителлинг, захватывающий внимание','Продвижение ваших роликов в социальных сетях, работа с алгоритмами','Работа с нейросетями для интеграции ИИ во все этапы работы'];
+const SITE_STAGES=['Поиск аутентичных идей для своих роликов','Подготовка к съемке','Съёмка','Свет','Монтаж','Саунд-дизайн','Сторителлинг','Алгоритмы и продвижение','Конец путешествия','Работа с нейросетями'];
+function siteBlocks(){
+  return '<section class="talk site"><span class="t-part">шамбала</span>'
+    +'<p class="t-lead">Но это будет не просто курс, мы отправимся с вами в путешествие в Непал в поисках таинственной Шамбалы.</p>'
+    +'<p class="t-lead">Говорят, что в мире существует одно тайное затерянное место, о котором многие века ходят легенды. Оно является пределом мечтаний каждого творца.</p>'
+    +'<p class="t-lead">Это место зовется Шамбала. Именно там таятся самые гениальные идеи. Именно там существует самая глубокая связь с собой и своим творчеством…</p>'
+    +'<p class="t-lead">Шамбала — это место, попадая в которое, ты можешь воплотить самую гениальную идею и создать свой самый большой в жизни шедевр…</p></section>'
+    +'<section class="tips big"><div class="tips-h"><span class="tips-k">с 15 декабря по 25 февраля</span><h3>Основные навыки, которые вы приобретете на курсе</h3></div><ol>'+SITE_SKILLS.map(t=>'<li><span>'+esc(t)+'</span></li>').join('')+'</ol></section>'
+    +'<section class="tips big"><div class="tips-h"><span class="tips-k">маршрут</span><h3>Наш маршрут путешествия к Шамбале</h3></div><ol>'+SITE_STAGES.map(t=>'<li><span>'+esc(t)+'</span></li>').join('')+'</ol></section>';
+}
 function expedition(){
   if(!D.exp) D.exp={claimed:false,no:''};
   if(!D.exp.no){ D.exp.no=String(1000+Math.floor(Math.random()*9000)); persist(); }
   const nm=(D.me.name||'').trim(), idea=(D.d1.idea||'').trim().replace(/\s+/g,' '), ideaShort=idea.length>70?idea.slice(0,68)+'…':idea;
-  const head='<div class="day-head"><span class="k">film your story · что дальше</span><h2>Экспедиция</h2><p class="intro">Поход заканчивается, а путь только начинается. Дальше нас ждёт экспедиция: большое путешествие, в котором твоя идея вырастает в настоящий фильм.</p></div>';
+  const head='<div class="day-head"><span class="k">film your story · что дальше</span><h2>Секретная точка</h2><p class="intro">Наш мастер-класс подходит к концу, но для всех участников мастер-класса действуют особые условия на зимний поток Film Your Story. Это большое путешествие на 3 месяца, где мы учимся создавать настоящие мини-фильмы о своей жизни.</p></div>'+siteBlocks();
   const ticket='<div class="xp-ticket"><div class="xp-main"><span class="xp-k">film your story · экспедиция</span><h3>Пропуск<br>в экспедицию</h3>'
     +'<dl><dt>творец</dt><dd>'+esc(nm||'—')+'</dd><dt>идея</dt><dd>'+esc(ideaShort||'твоя история')+'</dd><dt>маршрут</dt><dd>от идеи до фильма</dd><dt>старт</dt><dd>скоро</dd></dl></div>'
     +'<div class="xp-stub" aria-hidden="true"><span class="xp-bar"></span><span class="xp-no">№ '+D.exp.no+'</span></div></div>';
@@ -909,28 +924,30 @@ function liveBanner(){
     +(LIVE_AT?'<button class="live-go ghost" type="button" data-cal-add="1">В календарь</button>':'')+'</div></section>';
 }
 function day1(){
-  return lessonCard(LESSON_1,'Урок 1. Идея','Смотри на YouTube')
+  const fork='<section class="fork"><h3>Сегодня наши пути похода расходятся</h3>'
+    +'<svg viewBox="0 0 320 84" aria-hidden="true"><path d="M160 0 C160 30 160 34 160 40 C160 56 70 50 70 76 M160 40 C160 56 250 50 250 76" fill="none" stroke="#efdb55" stroke-width="3" stroke-linecap="round" stroke-dasharray="1 7"/><circle cx="70" cy="78" r="5" fill="#efdb55"/><circle cx="250" cy="78" r="5" fill="#f4b5d4"/></svg>'
+    +'<div class="fork-cols"><div class="fork-c"><span class="fork-k">Ты проходишь впервые</span><p>Тебе сегодня смотреть урок не нужно. Переходи к <button class="lnk" type="button" data-go="cal">календарю</button> и съёмке кадров <button class="lnk" type="button" data-day="0">со вчерашнего урока</button>.</p></div>'
+    +'<div class="fork-c two"><span class="fork-k">Ты проходишь мастер-класс второй раз</span><p>Тебя ждёт новая идея для воплощения в уроке ниже.</p></div></div></section>';
+  return fork+lessonCard(LESSON_1_REPEAT,'Урок 1: Съёмка. Версия для тех, кто проходит второй раз','Смотри на YouTube')
     +'<div class="grid">'+routeBlock()
-    +card('pen','Моя идея','Ролик о том, что отражает тебя изнутри.',field('d1.idea','Идея моего ролика','О чём он, в одном-двух предложениях',true)+field('d1.show','Что я хочу показать о себе','Черта, чувство, взгляд на мир',true))
     +card('cam','Кадры, которые я сниму','Список того, что хочется поймать в кадр.',list('d1.shots','руки с кружкой, следы на снегу'))
-    +card('star','Референсы','Ссылки и скриншоты для настроения.',refsBlock(),true)
+    +card('star','Референсы *','Ссылки и скриншоты для настроения. * Необязательно.',refsBlock(),true)
     +card('flag','Мысли по дороге','Всё, что приходит в голову после урока.',field('d1.notes','Заметки','',true))
     +'</div>';
 }
 function day2(){
+  const mu=okUrl(MATERIALS_URL), ch=okUrl(CHANNEL_URL);
+  const mat='<div class="mat">'+(mu?'<a class="btn fire" href="'+esc(mu)+'" target="_blank" rel="noopener noreferrer">Ссылка на материалы</a>':'<span class="btn off">Ссылка на материалы</span>')
+    +'<p class="hint">Все материалы есть и '+(ch?'<a href="'+esc(ch)+'" target="_blank" rel="noopener noreferrer">в канале</a>':'в канале')+': вдруг тебе там удобнее скачать.</p></div>';
   return lessonCard(LESSON_2,'Урок 2. Монтаж','Смотри на YouTube')
     +'<div class="grid">'+routeBlock()
-    +card('pen','Структура истории','Три части, из которых складывается ролик.',field('d2.start','Начало','Чем зацеплю с первых секунд',true)+field('d2.middle','Середина','Что происходит, как раскрывается история',true)+field('d2.end','Финал','Какое чувство или мысль останется',true))
-    +card('mug','Чек-лист монтажа','Отмечай по шагам.',checks('d2.check',['Отобрать лучшие кадры','Выбрать музыку','Собрать черновую версию','Добавить звук и титры','Поработать с цветом'])
-      +field('d2.music','Музыка','Название трека или ссылка')+field('d2.notes','Заметки к монтажу','',true))
+    +card('mug','Заметки к монтажу','',field('d2.notes','Заметки','',true)+mat)
     +'</div>';
 }
 function day3(){
   return '<div class="grid">'+routeBlock()
     +card('cam','Что хочу доснять','Кадры, которых не хватило.',list('d3.reshoot','общий план утром'))
     +card('pen','Что поменять в монтаже','Смотри черновик свежим взглядом.',list('d3.change','убрать паузу в начале'))
-    +letterBlock()
-    +card('tent','Утро: ролик готов','Последние шаги перед костром.',checks('d3.check',['Посмотреть ролик целиком, без остановок','Показать близкому человеку','Финальная версия готова'])+field('d3.final','Ссылка на мой ролик','YouTube, Google Диск или Instagram'),true)
     +'</div>';
 }
 const LETTER_OPEN='2027-02-25', LETTER_OPEN_TXT='25 февраля';
@@ -960,11 +977,7 @@ function day4(){
   const allDone=[0,1,2,3].every(i=>D.done[i]);
   return lessonCard(LIVE_URL,'Прямой эфир у костра',LIVE_WHEN||'Присоединяйся по ссылке',true)
     +(LIVE_WHEN&&!okUrl(LIVE_URL)?'<p class="hint" style="color:var(--snow-dim);margin:-12px 0 20px">'+esc(LIVE_WHEN)+'</p>':'')
-    +'<div class="grid">'+routeBlock()
-    +card('cam','Мой ролик','Его увидят у костра.',field('d3.final','Ссылка на мой ролик','YouTube, Google Диск или Instagram')+(okUrl(D.d3.final)?'<a class="btn sm ghost" href="'+esc(okUrl(D.d3.final))+'" target="_blank" rel="noopener noreferrer">Открыть ролик ↗</a>':''))
-    +card('fire','Вопросы к эфиру','Что хочется спросить или обсудить.',list('d4.questions','Мой вопрос'))
-    +card('heart','Что я забираю с собой','Пара строк о том, что открылось в пути.',field('d4.takeaway','Мои выводы в конце пути','',true),true)
-    +'</div>'
+    +'<div class="grid">'+routeBlock()+'</div>'
     +(allDone&&D.done[4]?'<div class="final"><b>Поход пройден</b>Спасибо, что дошли до костра. Твоя история уже снята, и это только начало.</div>':'');
 }
 
@@ -988,7 +1001,12 @@ function render(){
   const d=DAYS[S.day], next=S.day===4?{n:5,name:EXP.name}:DAYS[S.day+1];
   const dd=DATES[d.n], dstr=String(dd.d).padStart(2,'0')+'.'+String(dd.m+1).padStart(2,'0')+'.26';
   const DH_BG={};
-  $('#day').innerHTML='<div class="day-head'+(DH_BG[d.n]?' bg" style="--dh-img:url(\''+DH_BG[d.n]+'\')':'')+'"><span class="k">день '+d.n+' · '+dstr.slice(0,5)+'</span><h2>'+esc(d.name)+'</h2><p class="intro">'+esc(d.intro)+'</p></div>'
+  const chip='<span class="k">день '+(d.n+1)+' · '+dstr.slice(0,5)+'</span>', ttl='<h2>'+esc(d.name)+'</h2><p class="intro">'+esc(d.intro)+'</p>';
+  /* день 1: сразу после «день 1 · 02.12» видео урока, потом «Сборы» и объяснение, потом календарь */
+  const head=S.day===0
+    ?'<div class="day-head kicker">'+chip+'</div>'+lessonCard(LESSON_1,'Урок 1: съёмка идеи','Смотри на YouTube')+'<div class="day-head">'+ttl+'</div>'
+    :'<div class="day-head'+(DH_BG[d.n]?' bg" style="--dh-img:url(\''+DH_BG[d.n]+'\')':'')+'">'+chip+ttl+'</div>';
+  $('#day').innerHTML=head
     +[day0,day1,day2,day3,day4][S.day]()
     +(S.day<4?liveBanner():'')
     +'<div class="day-end"><span></span>'+(next?'<button class="btn snow" type="button" data-day="'+next.n+'">Дальше: '+esc(next.name.toLowerCase())+' →</button>':'')+'</div>';
@@ -1023,7 +1041,7 @@ document.addEventListener('click',e=>{
     let hit=false; TASKS.forEach((ts,n)=>ts.forEach((k,i)=>{ if(k.link===to&&!D.tasks[n][i]){ D.tasks[n][i]=true; hit=true; } }));
     if(hit){ persist(); setTimeout(refreshTasks,400); } }
   const rm=t.closest('[data-remind]'); if(rm){ const [c,i]=rm.dataset.remind.split('-').map(Number); addToCal(()=>{ D.tasks[c][i]=true; persist(); render(); toast('Открываю календарь'); }); return; }
-  if(t.closest('[data-cal-add]')){ addToCal(()=>{ D.tasks[0][5]=true; persist(); render(); toast('Открываю календарь'); }); return; }
+  if(t.closest('[data-cal-add]')){ addToCal(()=>{ D.tasks[0][REMIND_I]=true; persist(); render(); toast('Открываю календарь'); }); return; }
   const cl=t.closest('[data-cal]'); if(cl){ S.calSel=Number(cl.dataset.cal); render(); return; }
   const dy=t.closest('[data-day]'); if(dy){ S.calSel=null; go(Number(dy.dataset.day),true); return; }
   const gt=t.closest('[data-go]'); if(gt){ const el=document.getElementById(gt.dataset.go); if(el) el.scrollIntoView({behavior:'smooth',block:'start'}); return; }
