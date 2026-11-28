@@ -219,11 +219,11 @@ td.ck,th.ck{width:34px;padding-inline:4px}
 /* ===== справочники из мини-аппа (index.html: DAYS, TASKS) ===== */
 const DAYS=[["Сборы","02.12"],["В путь","03.12"],["Привал","04.12"],["Ночёвка","05.12"],["У костра","06.12"]];
 const TASKS=[
- ["Присоединиться к каналу похода","Понять, кто я","Собрать свою творческую ДНК","Собрать рюкзак","Подготовиться к первому уроку","Поставить напоминание об эфире"],
- ["Посмотреть урок 1","Записать идею своего ролика","Составить список кадров","Собрать 3–5 референсов","Снять первые кадры"],
- ["Посмотреть урок 2","Отобрать лучшие кадры","Продумать структуру","Выбрать музыку","Собрать черновой монтаж"],
- ["Пересмотреть черновик","Доснять недостающие кадры","Доработать монтаж","Сохранить финал и вставить ссылку","Освободить вечер под эфир","Написать письмо себе"],
- ["Подготовить ссылку на ролик","Записать вопросы к эфиру","Прийти на эфир у костра","Записать, что забираю с собой"]];
+ ["Присоединиться к каналу похода","Посмотреть Урок 1","Заполнить анкету «Рефлексия о себе»","Собрать свою творческую ДНК","Подготовиться к первому уроку","Поставить напоминание об эфире"],
+ ["Посмотреть свой 1-й урок по съёмке","Составить список кадров","Снять первые кадры"],
+ ["Посмотреть урок 2","Отобрать лучшие кадры","Выбрать музыку","Начать монтаж"],
+ ["Закончить монтаж и поделиться ссылкой в канале"],
+ ["Подготовить вкусняшки и напиток","Прийти на эфир у костра"]];
 const STK=["new","contacted","thinking","bought","refused"], STL=["Новый","Связались","Думает","Купила","Отказ"];
 const MAN=["—","Софья","Менеджер 2","Менеджер 3"];
 const API='https://wrhkgedbwgdjzcjtctcy.supabase.co/functions/v1/hike?admin';
@@ -257,8 +257,8 @@ function fromLive(d){
       inChannel:r.inChannel===true?true:r.inChannel===false?false:null,started:Date.parse(r.started)||NOW,reg:r.reg?Date.parse(r.reg):0,contact:!!r.reg,opened,admin:!!r.admin,blocked:!!r.blocked,tasks,day,
       idea:sn.idea||'',video:sn.video||'',qs:sn.questions||[],letter:!!sn.letter,
       remind:!!(ev.remind||tasks[0][5]),channelClick:!!(ev['link:channel']||tasks[0][0]),
-      l1:!!(ev['link:l1']||tasks[1][0]),l2:!!(ev['link:l2']||tasks[2][0]),
-      live:!!(ev['link:live']||tasks[4][2]),pass:!!(sn.pass||ev.claim),exp:!!ev['link:exp'],
+      l1:!!(ev['link:l1']||tasks[0][1]||tasks[1][0]),l2:!!(ev['link:l2']||tasks[2][0]),
+      live:!!(ev['link:live']||tasks[4][1]),pass:!!(sn.pass||ev.claim),exp:!!ev['link:exp'],
       bought:sti===3,st:sti,man:ld.manager||'—',note:ld.note||'',crm:!!ld.crm,deal:ld.deal||'',
       next:ld.next||'',pick:ld.pick===true,firstSeen:r.firstSeen?Date.parse(r.firstSeen)||0:0,
       at:{exp:tm('link:exp'),claim:tm('claim'),live:tm('link:live'),l1:tm('link:l1'),l2:tm('link:l2'),channel:tm('link:channel'),remind:tm('remind')},
@@ -272,7 +272,7 @@ function demo(){
   const NM=["Аня","Катя","Маша","Лиза","Даша","Полина","Ира","Оля","Света","Наташа","Юля","Вика"], LN=["К.","С.","М.","Л.","Р.","Т."];
   const ID=["бабушка и её тетрадь с рецептами","мой утренний путь до работы","один день на даче у мамы","моя собака и первый снег"];
   const QU=["Как перестать стесняться снимать на улице?","На какой телефон лучше снимать?","Сколько должен длиться ролик?"];
-  const TB=[[.86,.71,.43,.62,.55,.48],[.82,.66,.51,.38,.44],[.77,.58,.6,.63,.41],[.7,.36,.52,.47,.66,.39],[.62,.46,.71,.4]];
+  const TB=[[.86,.8,.71,.43,.55,.48],[.8,.5,.44],[.77,.6,.63,.41],[.5],[.6,.71]];
   let seed=7; const R=()=>(seed=seed*16807%2147483647)/2147483647, pick=a=>a[Math.floor(R()*a.length)];
   const out=[];
   for(let i=0;i<1300;i++){
@@ -282,15 +282,15 @@ function demo(){
     if(opened) for(let d=0;d<5;d++){ if(R()>(d===0?.9:[0,.79,.78,.8,.86][d]*Math.min(1.1,q))) break; day=d;
       tasks[d]=TASKS[d].map((_,k)=>R()<Math.min(.97,TB[d][k]*(0.85+q*.2))); if(!tasks[d].some(Boolean)) tasks[d][0]=true; if(d<4&&tasks[d].filter(Boolean).length<2&&R()<.45) break; }
     const T=TASKS.map((ts,d)=>ts.map((_,k)=>!!(tasks[d]&&tasks[d][k])));
-    const live=day>=4&&T[4][2], pass=live&&R()<.62*q, exp=pass&&R()<.5*q, bought=exp&&R()<.16;
+    const live=day>=4&&T[4][1], pass=live&&R()<.62*q, exp=pass&&R()<.5*q, bought=exp&&R()<.16;
     const last=opened?NOW-(day>=4?R()*20:day>=0?(4-day)*20+R()*30:30+R()*80)*36e5:NOW-(4+R()*9)*864e5;
     const started=NOW-(5+R()*9)*864e5, reg=contact?started+R()*36e5:0, firstSeen=opened?Math.min(last,reg+R()*2*864e5):0;
     const st=bought?3:exp&&R()<.5?1:0, at={exp:exp?NOW-R()*30*36e5:0,claim:pass?NOW-(1+R()*30)*36e5:0,live:live?NOW-3*36e5:0,l1:0,l2:0,channel:0,remind:0};
     const nx=st===1?addDay(bday(NOW),Math.floor(R()*4)-1):'';
     out.push({inChannel:contact?R()<.74*Math.min(1,q):null,id:i+1,name:pick(NM)+' '+pick(LN),user:'user'+(1000+i),phone:'+7 9•• •••-••-'+String(10+Math.floor(R()*89)),src:s[0],started,reg,contact,opened,admin:false,blocked:false,
-      tasks:T,day,idea:day>=1&&T[1][1]?pick(ID):'',video:day>=3&&T[3][3]?'youtu.be/demo'+i:'',qs:day>=4&&T[4][1]?[pick(QU)]:[],letter:day>=3&&T[3][5],
-      remind:T[0][5],channelClick:T[0][0],l1:T[1][0],l2:T[2][0],live,pass,exp,bought,st,man:st?pick(MAN.slice(1)):'—',note:'',crm:bought,deal:'',
-      next:nx,pick:day>=3&&T[3][3]&&R()<.15,firstSeen,at,opens:1,last,stuckH:Math.round((NOW-last)/36e5)});
+      tasks:T,day,idea:day>=1&&R()<.55?pick(ID):'',video:day>=3&&R()<.5?'youtu.be/demo'+i:'',qs:day>=4&&R()<.5?[pick(QU)]:[],letter:day>=3&&R()<.3,
+      remind:T[0][5],channelClick:T[0][0],l1:T[0][1]||T[1][0],l2:T[2][0],live,pass,exp,bought,st,man:st?pick(MAN.slice(1)):'—',note:'',crm:bought,deal:'',
+      next:nx,pick:day>=3&&R()<.15,firstSeen,at,opens:1,last,stuckH:Math.round((NOW-last)/36e5)});
   }
   HOURS=Array.from({length:24},(_,h)=>Math.round(400*Math.exp(-((h-15)**2)/30)+20));
   DAILY={}; out.forEach(p=>{ if(!p.firstSeen) return; for(let d=bday(p.firstSeen),e=bday(p.last);d<=e;d=addDay(d,1)){ if(d===bday(p.firstSeen)||R()<.7){ (DAILY[d]=DAILY[d]||{active:0,events:0}).active++; } } });
@@ -308,7 +308,7 @@ function stage0(p){
   if(p.exp) return 'Перешла к экспедиции';
   if(p.pass) return 'Забрала пропуск';
   if(p.live) return 'Была на эфире';
-  if(p.day>=0) return 'День '+p.day+' · '+DAYS[p.day][0];
+  if(p.day>=0) return 'День '+(p.day+1)+' · '+DAYS[p.day][0];
   if(p.opened) return 'Открыла, не начала';
   if(p.contact) return 'Только регистрация';
   return 'Нажала старт, нет контакта';
@@ -319,11 +319,11 @@ function stuck0(p){
   if(!p.opened) return 'не открыла мини-апп';
   if(p.pass) return 'не перешла на сайт экспедиции';
   if(p.live) return 'не забрала пропуск';
-  if(p.day<0) return 'не начала день 0';
+  if(p.day<0) return 'не начала день 1';
   const t=p.tasks[p.day], k=t.findIndex(x=>!x);
-  if(k<0&&p.day<4) return 'не начала день '+(p.day+1);
+  if(k<0&&p.day<4) return 'не начала день '+(p.day+2);
   if(k<0) return '';
-  return 'день '+p.day+': «'+TASKS[p.day][k]+'»';
+  return 'день '+(p.day+1)+': «'+TASKS[p.day][k]+'»';
 }
 const ago=h=>h<1?'только что':h<24?h+' ч назад':Math.floor(h/24)+' дн назад';
 const fmt=n=>Number(n).toLocaleString('ru-RU');
@@ -350,7 +350,7 @@ function build(){
    ["Нажали «старт» в боте","",N],
    ["Поделились контактом","регистрация в боте",reg],
    ["Открыли мини-апп","",L.filter(p=>p.opened).length],
-   ...DAYS.map((d,i)=>["День "+i+" · "+d[0],d[1]+" · хотя бы одна задача",L.filter(p=>p.day>=i).length]),
+   ...DAYS.map((d,i)=>["День "+(i+1)+" · "+d[0],d[1]+" · хотя бы одна задача",L.filter(p=>p.day>=i).length]),
    ["Пришли на эфир","нажали «Перейти в эфир» или отметили задачу",L.filter(p=>p.live).length],
    ["Забрали пропуск","страница «Экспедиция»",L.filter(p=>p.pass).length],
    ["Нажали «Узнать про экспедицию»","переход на сайт",L.filter(p=>p.exp).length],
